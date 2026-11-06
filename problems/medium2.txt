@@ -1,0 +1,808 @@
+=== course-schedule-ii
+title: Course Schedule II
+difficulty: medium
+tags: graph, topological-sort, bfs, dfs
+sig: findOrder(numCourses: int, prerequisites: int[][]) -> int[]
+compare: topo
+--- description
+There are `numCourses` courses labeled `0` to `numCourses - 1`. Each pair `prerequisites[i] = [a, b]` means course `b` must be taken before course `a`.
+
+Return an order in which you can take all the courses. If several orders work, any of them is accepted. If it is impossible, return an empty array.
+
+**Constraints**
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= numCourses * (numCourses - 1)`
+- All pairs are distinct.
+--- tests
+[2, [[1,0]]] => [0,1]
+[4, [[1,0],[2,0],[3,1],[3,2]]] => [0,1,2,3]
+[1, []] => [0]
+[2, [[0,1],[1,0]]] => []
+[3, []]
+[6, [[5,4],[4,3],[3,2],[2,1],[1,0]]]
+[3, [[0,1],[1,2],[2,0]]]
+[5, [[1,0],[2,0],[3,1],[4,3],[4,2]]]
+--- python
+class Solution:
+    def findOrder(self, numCourses, prerequisites):
+        g = [[] for _ in range(numCourses)]; indeg = [0] * numCourses
+        for a, b in prerequisites:
+            g[b].append(a); indeg[a] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0); out = []
+        while q:
+            u = q.popleft(); out.append(u)
+            for v in g[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return out if len(out) == numCourses else []
+--- javascript
+var findOrder = function(numCourses, prerequisites) {
+    const g = Array.from({ length: numCourses }, () => []), state = new Array(numCourses).fill(0), out = [];
+    for (const [a, b] of prerequisites) g[a].push(b);
+    const dfs = u => { if (state[u] === 1) return false; if (state[u] === 2) return true; state[u] = 1; for (const v of g[u]) if (!dfs(v)) return false; state[u] = 2; out.push(u); return true; };
+    for (let i = numCourses - 1; i >= 0; i--) if (!dfs(i)) return [];
+    return out;
+};
+
+=== search-in-rotated-sorted-array
+title: Search in Rotated Sorted Array
+difficulty: medium
+tags: array, binary-search
+sig: search(nums: int[], target: int) -> int
+--- description
+An ascending array of **distinct** integers has been rotated at some unknown pivot, so `[0,1,2,4,5,6,7]` might become `[4,5,6,7,0,1,2]`.
+
+Given the rotated array `nums` and a `target`, return the index of `target`, or `-1` if it is absent. Your solution must run in O(log n).
+
+**Constraints**
+- `1 <= nums.length <= 5000`
+- `-10^4 <= nums[i], target <= 10^4`
+--- tests
+[[4,5,6,7,0,1,2], 0] => 4
+[[4,5,6,7,0,1,2], 3] => -1
+[[1], 0] => -1
+[[1], 1]
+[[3,1], 1]
+[[5,1,3], 5]
+[[6,7,8,1,2,3,4,5], 8]
+[[1,2,3,4,5,6], 4]
+--- python
+class Solution:
+    def search(self, nums, target):
+        lo, hi = 0, len(nums) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[lo] <= nums[mid]:
+                if nums[lo] <= target < nums[mid]:
+                    hi = mid - 1
+                else:
+                    lo = mid + 1
+            else:
+                if nums[mid] < target <= nums[hi]:
+                    lo = mid + 1
+                else:
+                    hi = mid - 1
+        return -1
+--- javascript
+var search = function(nums, target) {
+    return nums.indexOf(target);
+};
+
+=== house-robber
+title: House Robber
+difficulty: medium
+tags: array, dynamic-programming
+sig: rob(nums: int[]) -> int
+--- description
+Houses along a street hold `nums[i]` dollars each. You cannot rob two **adjacent** houses on the same night because that would trigger the alarms.
+
+Return the most money you can take without robbing two neighbors.
+
+**Constraints**
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 400`
+--- tests
+[[1,2,3,1]] => 4
+[[2,7,9,3,1]] => 12
+[[5]] => 5
+[[2,1,1,2]]
+[[0,0,0]]
+[[1,3,1,3,100]]
+[[400,1,1,400,1,1,400]]
+--- python
+class Solution:
+    def rob(self, nums):
+        a = b = 0
+        for x in nums:
+            a, b = b, max(b, a + x)
+        return b
+--- javascript
+var rob = function(nums) {
+    const dp = [];
+    for (let i = 0; i < nums.length; i++) dp[i] = Math.max(i >= 1 ? dp[i - 1] : 0, (i >= 2 ? dp[i - 2] : 0) + nums[i]);
+    return dp[nums.length - 1];
+};
+
+=== maximum-product-subarray
+title: Maximum Product Subarray
+difficulty: medium
+tags: array, dynamic-programming
+sig: maxProduct(nums: int[]) -> int
+--- description
+Given an integer array `nums`, return the largest product of any non-empty **contiguous** subarray.
+
+**Constraints**
+- `1 <= nums.length <= 2 * 10^4`
+- `-10 <= nums[i] <= 10`
+- Every subarray's product fits in a 32-bit integer.
+--- tests
+[[2,3,-2,4]] => 6
+[[-2,0,-1]] => 0
+[[-2]] => -2
+[[-2,3,-4]]
+[[0,2]]
+[[-1,-2,-3,0]]
+[[2,-5,-2,-4,3]]
+[[-2,-3,7,-2,0,-1,9]]
+--- python
+class Solution:
+    def maxProduct(self, nums):
+        best = hi = lo = nums[0]
+        for x in nums[1:]:
+            hi, lo = max(x, hi * x, lo * x), min(x, hi * x, lo * x)
+            best = max(best, hi)
+        return best
+--- javascript
+var maxProduct = function(nums) {
+    let best = -Infinity;
+    for (let i = 0; i < nums.length; i++) { let p = 1; for (let j = i; j < nums.length; j++) { p *= nums[j]; best = Math.max(best, p); } }
+    return best;
+};
+
+=== longest-subarray-of-1s-after-deleting-one-element
+title: Longest Subarray of 1's After Deleting One Element
+difficulty: medium
+tags: array, sliding-window
+sig: longestSubarray(nums: int[]) -> int
+--- description
+Given a binary array `nums`, you **must** delete exactly one element. Return the length of the longest run of consecutive `1`s you can end up with (it may be `0`).
+
+**Constraints**
+- `1 <= nums.length <= 10^5`
+- `nums[i]` is `0` or `1`.
+--- tests
+[[1,1,0,1]] => 3
+[[0,1,1,1,0,1,1,0,1]] => 5
+[[1,1,1]] => 2
+[[0]]
+[[1]]
+[[0,0,0]]
+[[1,0,0,1,1,0,1,1,1]]
+--- python
+class Solution:
+    def longestSubarray(self, nums):
+        left = zeros = best = 0
+        for right, x in enumerate(nums):
+            zeros += x == 0
+            while zeros > 1:
+                zeros -= nums[left] == 0; left += 1
+            best = max(best, right - left)
+        return best
+--- javascript
+var longestSubarray = function(nums) {
+    let best = 0;
+    for (let d = 0; d < nums.length; d++) {
+        let run = 0;
+        for (let i = 0; i < nums.length; i++) { if (i === d) continue; run = nums[i] ? run + 1 : 0; best = Math.max(best, run); }
+    }
+    return best;
+};
+
+=== minimum-remove-to-make-valid-parentheses
+title: Minimum Remove to Make Valid Parentheses
+difficulty: medium
+tags: string, stack
+sig: minRemoveToMakeValid(s: str) -> str
+compare: min_remove_parens
+--- description
+`s` contains lowercase letters plus `'('` and `')'`. Delete the **fewest** parentheses possible so that the remaining string has balanced parentheses, and return it. Letters must never be deleted.
+
+If several results are possible, any of them is accepted.
+
+**Constraints**
+- `1 <= s.length <= 10^5`
+--- tests
+["lee(t(c)o)de)"] => "lee(t(c)o)de"
+["a)b(c)d"] => "ab(c)d"
+["))(("] => ""
+["(a(b(c)d)"]
+["abc"]
+["())()((("]
+[")(a)("]
+--- python
+class Solution:
+    def minRemoveToMakeValid(self, s):
+        s = list(s); st = []
+        for i, c in enumerate(s):
+            if c == '(':
+                st.append(i)
+            elif c == ')':
+                if st:
+                    st.pop()
+                else:
+                    s[i] = ''
+        for i in st:
+            s[i] = ''
+        return ''.join(s)
+--- javascript
+var minRemoveToMakeValid = function(s) {
+    let out = [], open = 0;
+    for (const c of s) { if (c === ')') { if (!open) continue; open--; } else if (c === '(') open++; out.push(c); }
+    const res = [];
+    for (let i = out.length - 1; i >= 0; i--) { if (out[i] === '(' && open > 0) { open--; continue; } res.push(out[i]); }
+    return res.reverse().join('');
+};
+
+=== 132-pattern
+title: 132 Pattern
+difficulty: medium
+tags: array, stack, monotonic-stack
+sig: find132pattern(nums: int[]) -> bool
+--- description
+A **132 pattern** is three positions `i < j < k` with `nums[i] < nums[k] < nums[j]`: small, then big, then middle.
+
+Given `nums`, return `true` if it contains a 132 pattern.
+
+**Constraints**
+- `1 <= nums.length <= 2 * 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+--- tests
+[[1,2,3,4]] => false
+[[3,1,4,2]] => true
+[[-1,3,2,0]] => true
+[[1,0,1,-4,-3]]
+[[3,5,0,3,4]]
+[[1]]
+[[1,4,0,-1,-2,-3,-1,-2]]
+[[6,12,3,4,6,11,20]]
+--- python
+class Solution:
+    def find132pattern(self, nums):
+        st, third = [], float('-inf')
+        for x in reversed(nums):
+            if x < third:
+                return True
+            while st and st[-1] < x:
+                third = st.pop()
+            st.append(x)
+        return False
+--- javascript
+var find132pattern = function(nums) {
+    let mn = Infinity;
+    for (let j = 0; j < nums.length; j++) {
+        mn = Math.min(mn, nums[j]);
+        for (let k = j + 1; k < nums.length; k++) if (mn < nums[k] && nums[k] < nums[j]) return true;
+    }
+    return false;
+};
+
+=== merge-intervals
+title: Merge Intervals
+difficulty: medium
+tags: array, sorting, intervals
+sig: merge(intervals: int[][]) -> int[][]
+compare: unordered
+--- description
+Given a list of intervals `[start, end]`, merge every group of overlapping intervals and return the resulting non-overlapping intervals. Intervals that only touch, like `[1,4]` and `[4,5]`, count as overlapping.
+
+The result can be in any order.
+
+**Constraints**
+- `1 <= intervals.length <= 10^4`
+- `0 <= start <= end <= 10^4`
+--- tests
+[[[1,3],[2,6],[8,10],[15,18]]] => [[1,6],[8,10],[15,18]]
+[[[1,4],[4,5]]] => [[1,5]]
+[[[4,7],[1,4]]] => [[1,7]]
+[[[1,4],[0,4]]]
+[[[1,4],[2,3]]]
+[[[1,10],[2,3],[4,5],[11,12]]]
+[[[5,5]]]
+--- python
+class Solution:
+    def merge(self, intervals):
+        out = []
+        for s, e in sorted(intervals):
+            if out and s <= out[-1][1]:
+                out[-1][1] = max(out[-1][1], e)
+            else:
+                out.append([s, e])
+        return out
+--- javascript
+var merge = function(intervals) {
+    intervals.sort((a, b) => a[0] - b[0]);
+    const out = [];
+    for (const [s, e] of intervals) {
+        if (out.length && s <= out[out.length - 1][1]) out[out.length - 1][1] = Math.max(out[out.length - 1][1], e);
+        else out.push([s, e]);
+    }
+    return out;
+};
+
+=== insert-interval
+title: Insert Interval
+difficulty: medium
+tags: array, intervals
+sig: insert(intervals: int[][], newInterval: int[]) -> int[][]
+--- description
+`intervals` is a list of non-overlapping intervals sorted by start. Insert `newInterval`, merging wherever it overlaps, and return the list. It must still be sorted and non-overlapping.
+
+**Constraints**
+- `0 <= intervals.length <= 10^4`
+- `0 <= start <= end <= 10^5`
+--- tests
+[[[1,3],[6,9]], [2,5]] => [[1,5],[6,9]]
+[[[1,2],[3,5],[6,7],[8,10],[12,16]], [4,8]] => [[1,2],[3,10],[12,16]]
+[[], [5,7]] => [[5,7]]
+[[[1,5]], [2,3]]
+[[[1,5]], [6,8]]
+[[[3,5]], [0,1]]
+[[[1,5]], [0,0]]
+[[[2,5],[6,7],[8,9]], [0,10]]
+--- python
+class Solution:
+    def insert(self, intervals, newInterval):
+        s, e = newInterval; left, right = [], []
+        for a, b in intervals:
+            if b < s:
+                left.append([a, b])
+            elif a > e:
+                right.append([a, b])
+            else:
+                s, e = min(s, a), max(e, b)
+        return left + [[s, e]] + right
+--- javascript
+var insert = function(intervals, newInterval) {
+    const all = intervals.concat([newInterval]).sort((a, b) => a[0] - b[0]), out = [];
+    for (const [s, e] of all) {
+        if (out.length && s <= out[out.length - 1][1]) out[out.length - 1][1] = Math.max(out[out.length - 1][1], e);
+        else out.push([s, e]);
+    }
+    return out;
+};
+
+=== implement-trie-prefix-tree
+title: Implement Trie (Prefix Tree)
+difficulty: medium
+tags: trie, design, string
+design: Trie
+methods:
+  Trie()
+  insert(word: str) -> void
+  search(word: str) -> bool
+  startsWith(prefix: str) -> bool
+--- description
+A **trie** stores strings so that prefix lookups are fast. Implement the `Trie` class:
+
+- `insert(word)` adds `word`.
+- `search(word)` returns `true` if `word` was inserted before.
+- `startsWith(prefix)` returns `true` if any inserted word starts with `prefix`.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each return value, with `null` for methods that return nothing.
+
+**Constraints**
+- `1 <= word.length, prefix.length <= 2000`, lowercase letters
+- At most `3 * 10^4` calls in total.
+--- tests
+[["Trie","insert","search","search","startsWith","insert","search"],[[],["apple"],["apple"],["app"],["app"],["app"],["app"]]] => [null,null,true,false,true,null,true]
+[["Trie","search","startsWith","insert","startsWith","search"],[[],["a"],["a"],["a"],["a"],["a"]]]
+[["Trie","insert","insert","search","search","startsWith","startsWith","search"],[[],["car"],["card"],["ca"],["card"],["care"],["card"],["cards"]]]
+[["Trie","insert","insert","startsWith","search","startsWith"],[[],["hello"],["help"],["hel"],["hell"],["hello"]]]
+--- python
+class Trie:
+    def __init__(self):
+        self.root = {}
+    def insert(self, word):
+        n = self.root
+        for c in word:
+            n = n.setdefault(c, {})
+        n['$'] = True
+    def _walk(self, s):
+        n = self.root
+        for c in s:
+            if c not in n:
+                return None
+            n = n[c]
+        return n
+    def search(self, word):
+        n = self._walk(word)
+        return n is not None and '$' in n
+    def startsWith(self, prefix):
+        return self._walk(prefix) is not None
+--- javascript
+class Trie {
+    constructor() { this.words = new Set(); }
+    insert(word) { this.words.add(word); }
+    search(word) { return this.words.has(word); }
+    startsWith(prefix) { for (const w of this.words) if (w.startsWith(prefix)) return true; return false; }
+}
+
+=== spiral-matrix
+title: Spiral Matrix
+difficulty: medium
+tags: array, matrix, simulation
+sig: spiralOrder(matrix: int[][]) -> int[]
+--- description
+Given an `m x n` matrix, return all of its elements in **clockwise spiral** order, starting at the top-left corner.
+
+**Constraints**
+- `1 <= m, n <= 10`
+--- tests
+[[[1,2,3],[4,5,6],[7,8,9]]] => [1,2,3,6,9,8,7,4,5]
+[[[1,2,3,4],[5,6,7,8],[9,10,11,12]]] => [1,2,3,4,8,12,11,10,9,5,6,7]
+[[[7]]]
+[[[1,2,3]]]
+[[[1],[2],[3]]]
+[[[1,2],[3,4],[5,6],[7,8]]]
+--- python
+class Solution:
+    def spiralOrder(self, matrix):
+        out = []
+        while matrix:
+            out += matrix.pop(0)
+            matrix = [list(r) for r in zip(*matrix)][::-1]
+        return out
+--- javascript
+var spiralOrder = function(matrix) {
+    const out = [];
+    let top = 0, bot = matrix.length - 1, l = 0, r = matrix[0].length - 1;
+    while (top <= bot && l <= r) {
+        for (let j = l; j <= r; j++) out.push(matrix[top][j]);
+        top++;
+        for (let i = top; i <= bot; i++) out.push(matrix[i][r]);
+        r--;
+        if (top <= bot) { for (let j = r; j >= l; j--) out.push(matrix[bot][j]); bot--; }
+        if (l <= r) { for (let i = bot; i >= top; i--) out.push(matrix[i][l]); l++; }
+    }
+    return out;
+};
+
+=== rotate-image
+title: Rotate Image
+difficulty: medium
+tags: array, matrix, math
+sig: rotate(matrix: int[][]) -> void @0
+--- description
+Rotate the `n x n` image `matrix` by 90 degrees **clockwise**, in place. Do not allocate another matrix. The judge reads `matrix` after your function returns.
+
+**Constraints**
+- `1 <= n <= 20`
+- `-1000 <= matrix[i][j] <= 1000`
+--- tests
+[[[1,2,3],[4,5,6],[7,8,9]]] => [[7,4,1],[8,5,2],[9,6,3]]
+[[[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]] => [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+[[[1]]]
+[[[1,2],[3,4]]]
+[[[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]]]
+--- python
+class Solution:
+    def rotate(self, matrix):
+        matrix.reverse()
+        for i in range(len(matrix)):
+            for j in range(i):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+--- javascript
+var rotate = function(matrix) {
+    const n = matrix.length, copy = matrix.map(r => r.slice());
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) matrix[j][n - 1 - i] = copy[i][j];
+};
+
+=== letter-combinations-of-a-phone-number
+title: Letter Combinations of a Phone Number
+difficulty: medium
+tags: string, backtracking
+sig: letterCombinations(digits: str) -> str[]
+compare: unordered
+--- description
+On a phone keypad, digits map to letters: `2: abc, 3: def, 4: ghi, 5: jkl, 6: mno, 7: pqrs, 8: tuv, 9: wxyz`.
+
+Given a string of digits from `2` to `9`, return every letter string it could spell, in any order. An empty input gives an empty list.
+
+**Constraints**
+- `0 <= digits.length <= 4`
+--- tests
+["23"] => ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+[""] => []
+["2"] => ["a","b","c"]
+["79"]
+["234"]
+["7777"]
+--- python
+class Solution:
+    def letterCombinations(self, digits):
+        if not digits:
+            return []
+        keys = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}
+        return [''.join(p) for p in product(*(keys[d] for d in digits))]
+--- javascript
+var letterCombinations = function(digits) {
+    if (!digits) return [];
+    const keys = { 2: 'abc', 3: 'def', 4: 'ghi', 5: 'jkl', 6: 'mno', 7: 'pqrs', 8: 'tuv', 9: 'wxyz' };
+    let out = [''];
+    for (const d of digits) out = out.flatMap(p => keys[d].split('').map(c => p + c));
+    return out;
+};
+
+=== one-edit-distance
+title: One Edit Distance
+difficulty: medium
+tags: string, two-pointers
+sig: isOneEditDistance(s: str, t: str) -> bool
+--- description
+Given strings `s` and `t`, return `true` if they are **exactly one edit** apart. One edit means inserting one character, deleting one character, or replacing one character with a different one.
+
+Identical strings are zero edits apart, so they return `false`.
+
+**Constraints**
+- `0 <= s.length, t.length <= 10^4`
+- lowercase letters, uppercase letters and digits
+--- tests
+["ab", "acb"] => true
+["", ""] => false
+["a", ""] => true
+["cab", "ad"]
+["1203", "1213"]
+["abc", "abc"]
+["teacher", "detacher"]
+["a", "A"]
+["abcd", "abdc"]
+--- python
+class Solution:
+    def isOneEditDistance(self, s, t):
+        if len(s) > len(t):
+            s, t = t, s
+        if len(t) - len(s) > 1:
+            return False
+        for i in range(len(s)):
+            if s[i] != t[i]:
+                return s[i + 1:] == t[i + 1:] if len(s) == len(t) else s[i:] == t[i + 1:]
+        return len(t) - len(s) == 1
+--- javascript
+var isOneEditDistance = function(s, t) {
+    const m = s.length, n = t.length;
+    if (Math.abs(m - n) > 1) return false;
+    const dp = Array.from({ length: m + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+        dp[i][j] = s[i - 1] === t[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+    return dp[m][n] === 1;
+};
+
+=== container-with-most-water
+title: Container With Most Water
+difficulty: medium
+tags: array, two-pointers, greedy
+sig: maxArea(height: int[]) -> int
+--- description
+You get `n` vertical lines, where line `i` stands at position `i` with height `height[i]`. Pick two lines that, together with the x-axis, hold the most water.
+
+Return the largest amount of water such a container can store. The container cannot be tilted.
+
+**Constraints**
+- `2 <= n <= 10^5`
+- `0 <= height[i] <= 10^4`
+--- tests
+[[1,8,6,2,5,4,8,3,7]] => 49
+[[1,1]] => 1
+[[4,3,2,1,4]]
+[[1,2,1]]
+[[0,0]]
+[[2,3,10,5,7,8,9]]
+--- python
+class Solution:
+    def maxArea(self, height):
+        i, j, best = 0, len(height) - 1, 0
+        while i < j:
+            best = max(best, (j - i) * min(height[i], height[j]))
+            if height[i] < height[j]:
+                i += 1
+            else:
+                j -= 1
+        return best
+--- javascript
+var maxArea = function(height) {
+    let best = 0;
+    for (let i = 0; i < height.length; i++) for (let j = i + 1; j < height.length; j++) best = Math.max(best, (j - i) * Math.min(height[i], height[j]));
+    return best;
+};
+
+=== combination-sum
+title: Combination Sum
+difficulty: medium
+tags: array, backtracking
+sig: combinationSum(candidates: int[], target: int) -> int[][]
+compare: unordered_nested
+--- description
+Given an array of **distinct** positive integers `candidates` and a `target`, return every unique combination of candidates that adds up to `target`. Each candidate may be used **any number of times**.
+
+Two combinations are the same if they use the same numbers the same number of times. The answer can be in any order.
+
+**Constraints**
+- `1 <= candidates.length <= 30`
+- `2 <= candidates[i] <= 40`
+- `1 <= target <= 40`
+--- tests
+[[2,3,6,7], 7] => [[2,2,3],[7]]
+[[2,3,5], 8] => [[2,2,2,2],[2,3,3],[3,5]]
+[[2], 1] => []
+[[7,3,2], 18]
+[[8,7,4,3], 11]
+[[5], 15]
+--- python
+class Solution:
+    def combinationSum(self, candidates, target):
+        out = []
+        def go(i, rem, path):
+            if rem == 0:
+                out.append(path[:]); return
+            if i == len(candidates) or rem < 0:
+                return
+            path.append(candidates[i]); go(i, rem - candidates[i], path); path.pop()
+            go(i + 1, rem, path)
+        go(0, target, [])
+        return out
+--- javascript
+var combinationSum = function(candidates, target) {
+    const dp = Array.from({ length: target + 1 }, () => []);
+    dp[0] = [[]];
+    for (const c of candidates)
+        for (let s = c; s <= target; s++)
+            for (const comb of dp[s - c]) dp[s].push(comb.concat([c]));
+    return dp[target];
+};
+
+=== subsets
+title: Subsets
+difficulty: medium
+tags: array, backtracking, bit-manipulation
+sig: subsets(nums: int[]) -> int[][]
+compare: unordered_nested
+--- description
+Given an array of **distinct** integers `nums`, return all of its subsets (the power set), including the empty set. There must be no duplicate subsets, and the answer can be in any order.
+
+**Constraints**
+- `1 <= nums.length <= 10`
+- `-10 <= nums[i] <= 10`
+--- tests
+[[1,2,3]] => [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+[[0]] => [[],[0]]
+[[5,-5]]
+[[4,1,0,-1]]
+[[1,2,3,4,5]]
+--- python
+class Solution:
+    def subsets(self, nums):
+        out = [[]]
+        for x in nums:
+            out += [s + [x] for s in out]
+        return out
+--- javascript
+var subsets = function(nums) {
+    const out = [];
+    for (let mask = 0; mask < (1 << nums.length); mask++) out.push(nums.filter((_, i) => mask & (1 << i)));
+    return out;
+};
+
+=== validate-binary-search-tree
+title: Validate Binary Search Tree
+difficulty: medium
+tags: tree, binary-search-tree, dfs
+sig: isValidBST(root: TreeNode) -> bool
+--- description
+Given the `root` of a binary tree, return `true` if it is a valid **binary search tree**:
+
+- every value in a node's left subtree is **strictly less** than the node's value,
+- every value in its right subtree is **strictly greater**, and
+- both subtrees are themselves valid BSTs.
+
+**Constraints**
+- `1 <= number of nodes <= 10^4`
+- `-2^31 <= Node.val <= 2^31 - 1`
+--- tests
+[[2,1,3]] => true
+[[5,1,4,null,null,3,6]] => false
+[[1]] => true
+[[2,2,2]]
+[[5,4,6,null,null,3,7]]
+[[-2147483648,null,2147483647]]
+[[10,5,15,null,null,6,20]]
+[[3,1,5,0,2,4,6]]
+--- python
+class Solution:
+    def isValidBST(self, root):
+        def ok(n, lo, hi):
+            if not n:
+                return True
+            return lo < n.val < hi and ok(n.left, lo, n.val) and ok(n.right, n.val, hi)
+        return ok(root, float('-inf'), float('inf'))
+--- javascript
+var isValidBST = function(root) {
+    const vals = [];
+    const walk = n => { if (!n) return; walk(n.left); vals.push(n.val); walk(n.right); };
+    walk(root);
+    for (let i = 1; i < vals.length; i++) if (vals[i] <= vals[i - 1]) return false;
+    return true;
+};
+
+=== lowest-common-ancestor-of-a-binary-tree
+title: Lowest Common Ancestor of a Binary Tree
+difficulty: medium
+tags: tree, dfs
+sig: lowestCommonAncestor(root: TreeNode, p: TreeRef, q: TreeRef) -> TreeRef
+--- description
+Given a binary tree and two of its nodes `p` and `q`, return their **lowest common ancestor**: the deepest node that has both `p` and `q` as descendants. A node counts as a descendant of itself.
+
+In the tests, `p` and `q` are given by value, and the judge passes you the actual node objects. The output shows the value of the node you return.
+
+**Constraints**
+- `2 <= number of nodes <= 10^5`
+- All values are unique, `p != q`, and both exist in the tree.
+--- tests
+[[3,5,1,6,2,0,8,null,null,7,4], 5, 1] => 3
+[[3,5,1,6,2,0,8,null,null,7,4], 5, 4] => 5
+[[1,2], 1, 2] => 1
+[[3,5,1,6,2,0,8,null,null,7,4], 7, 6]
+[[3,5,1,6,2,0,8,null,null,7,4], 0, 8]
+[[1,2,3,null,4], 4, 3]
+--- python
+class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        if root is None or root is p or root is q:
+            return root
+        l = self.lowestCommonAncestor(root.left, p, q)
+        r = self.lowestCommonAncestor(root.right, p, q)
+        return root if l and r else l or r
+--- javascript
+var lowestCommonAncestor = function(root, p, q) {
+    const parent = new Map([[root, null]]), st = [root];
+    while (st.length) { const n = st.pop(); for (const c of [n.left, n.right]) if (c) { parent.set(c, n); st.push(c); } }
+    const anc = new Set();
+    for (let x = p; x; x = parent.get(x)) anc.add(x);
+    let y = q;
+    while (!anc.has(y)) y = parent.get(y);
+    return y;
+};
+
+=== daily-temperatures
+title: Daily Temperatures
+difficulty: medium
+tags: array, stack, monotonic-stack
+sig: dailyTemperatures(temperatures: int[]) -> int[]
+--- description
+Given daily `temperatures`, return an array `answer` where `answer[i]` is how many days after day `i` you must wait for a **strictly warmer** day. Use `0` if no warmer day ever comes.
+
+**Constraints**
+- `1 <= temperatures.length <= 10^5`
+- `30 <= temperatures[i] <= 100`
+--- tests
+[[73,74,75,71,69,72,76,73]] => [1,1,4,2,1,1,0,0]
+[[30,40,50,60]] => [1,1,1,0]
+[[30,60,90]] => [1,1,0]
+[[90,80,70]]
+[[50]]
+[[55,55,55,56]]
+--- python
+class Solution:
+    def dailyTemperatures(self, temperatures):
+        ans, st = [0] * len(temperatures), []
+        for i, t in enumerate(temperatures):
+            while st and temperatures[st[-1]] < t:
+                j = st.pop(); ans[j] = i - j
+            st.append(i)
+        return ans
+--- javascript
+var dailyTemperatures = function(temperatures) {
+    return temperatures.map((t, i) => { for (let j = i + 1; j < temperatures.length; j++) if (temperatures[j] > t) return j - i; return 0; });
+};

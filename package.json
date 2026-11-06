@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "problems:verify": "python3 scripts/beet.py verify",
+    "problems:build": "python3 scripts/beet.py build"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

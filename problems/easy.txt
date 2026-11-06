@@ -1,0 +1,1041 @@
+=== two-sum
+title: Two Sum
+difficulty: easy
+tags: array, hash-map
+sig: twoSum(nums: int[], target: int) -> int[]
+compare: unordered
+--- description
+You are given an integer array `nums` and an integer `target`. Find the two **different positions** whose values add up to `target` and return those two indices.
+
+Each input has exactly one valid pair, and you may not use the same element twice. The indices can be returned in any order.
+
+**Constraints**
+- `2 <= nums.length <= 10^4`
+- `-10^9 <= nums[i], target <= 10^9`
+
+**Follow-up:** can you beat O(n²)?
+--- tests
+[[2,7,11,15], 9] => [0,1]
+[[3,2,4], 6] => [1,2]
+[[3,3], 6] => [0,1]
+[[-1,-2,-3,-4,-5], -8]
+[[0,4,3,0], 0]
+[[1,5,9,13,2], 15]
+[[1000000000,-999999993,5], 7]
+--- python
+class Solution:
+    def twoSum(self, nums, target):
+        seen = {}
+        for i, x in enumerate(nums):
+            if target - x in seen:
+                return [seen[target - x], i]
+            seen[x] = i
+--- javascript
+var twoSum = function(nums, target) {
+    const seen = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];
+        seen.set(nums[i], i);
+    }
+};
+
+=== contains-duplicate
+title: Contains Duplicate
+difficulty: easy
+tags: array, hash-set
+sig: containsDuplicate(nums: int[]) -> bool
+--- description
+Given an integer array `nums`, return `true` if any value shows up **two or more times**, and `false` if every value is distinct.
+
+**Constraints**
+- `1 <= nums.length <= 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+--- tests
+[[1,2,3,1]] => true
+[[1,2,3,4]] => false
+[[1,1,1,3,3,4,3,2,4,2]] => true
+[[7]]
+[[-5,5]]
+[[0,0]]
+[[2,14,18,22,22]]
+--- python
+class Solution:
+    def containsDuplicate(self, nums):
+        return len(set(nums)) != len(nums)
+--- javascript
+var containsDuplicate = function(nums) {
+    return new Set(nums).size !== nums.length;
+};
+
+=== valid-anagram
+title: Valid Anagram
+difficulty: easy
+tags: string, hash-map, sorting
+sig: isAnagram(s: str, t: str) -> bool
+--- description
+Given two strings `s` and `t`, return `true` if `t` uses exactly the same letters as `s` with the same counts (just rearranged), otherwise return `false`.
+
+**Constraints**
+- `1 <= s.length, t.length <= 5 * 10^4`
+- `s` and `t` contain lowercase English letters only.
+
+**Follow-up:** how would you adapt it if the strings could contain any Unicode characters?
+--- tests
+["anagram", "nagaram"] => true
+["rat", "car"] => false
+["a", "ab"] => false
+["aacc", "ccac"]
+["listen", "silent"]
+["abc", "abc"]
+["aabbcc", "abcabd"]
+--- python
+class Solution:
+    def isAnagram(self, s, t):
+        return Counter(s) == Counter(t)
+--- javascript
+var isAnagram = function(s, t) {
+    return s.split('').sort().join('') === t.split('').sort().join('');
+};
+
+=== valid-palindrome
+title: Valid Palindrome
+difficulty: easy
+tags: string, two-pointers
+sig: isPalindrome(s: str) -> bool
+--- description
+A phrase counts as a palindrome if, after lowercasing everything and throwing away every character that is not a letter or digit, it reads the same forwards and backwards.
+
+Given a string `s`, return `true` if it is a palindrome under that rule, otherwise `false`. An empty cleaned string counts as a palindrome.
+
+**Constraints**
+- `1 <= s.length <= 2 * 10^5`
+- `s` contains printable ASCII characters.
+--- tests
+["A man, a plan, a canal: Panama"] => true
+["race a car"] => false
+[" "] => true
+["0P"] => false
+["ab_a"]
+["No 'x' in Nixon"]
+[".,"]
+["12321"]
+--- python
+class Solution:
+    def isPalindrome(self, s):
+        t = [c.lower() for c in s if c.isalnum()]
+        return t == t[::-1]
+--- javascript
+var isPalindrome = function(s) {
+    const t = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return t === t.split('').reverse().join('');
+};
+
+=== valid-palindrome-ii
+title: Valid Palindrome II
+difficulty: easy
+tags: string, two-pointers, greedy
+sig: validPalindrome(s: str) -> bool
+--- description
+Given a string `s`, return `true` if it is already a palindrome or can become one by deleting **at most one** character. Otherwise return `false`.
+
+**Constraints**
+- `1 <= s.length <= 10^5`
+- `s` contains lowercase English letters only.
+--- tests
+["aba"] => true
+["abca"] => true
+["abc"] => false
+["deeee"]
+["eeeed"]
+["ebcbbececabbacecbbcbe"]
+["cbbcc"]
+["abcdba"]
+["abccbxa"]
+--- python
+class Solution:
+    def validPalindrome(self, s):
+        def pal(i, j):
+            while i < j:
+                if s[i] != s[j]:
+                    return False
+                i += 1; j -= 1
+            return True
+        i, j = 0, len(s) - 1
+        while i < j:
+            if s[i] != s[j]:
+                return pal(i + 1, j) or pal(i, j - 1)
+            i += 1; j -= 1
+        return True
+--- javascript
+var validPalindrome = function(s) {
+    const pal = (i, j) => { while (i < j) { if (s[i] !== s[j]) return false; i++; j--; } return true; };
+    let i = 0, j = s.length - 1;
+    while (i < j) {
+        if (s[i] !== s[j]) return pal(i + 1, j) || pal(i, j - 1);
+        i++; j--;
+    }
+    return true;
+};
+
+=== remove-duplicates-from-sorted-array
+title: Remove Duplicates from Sorted Array
+difficulty: easy
+tags: array, two-pointers
+sig: removeDuplicates(nums: int[]) -> int @prefix0
+--- description
+You get an integer array `nums` sorted in non-decreasing order. Remove the repeated values **in place** so each distinct value appears once, keeping their original relative order. Return `k`, the number of distinct values.
+
+After your function returns, the first `k` slots of `nums` must hold the distinct values in order. Whatever is left beyond index `k - 1` does not matter. The judge checks `nums[0..k-1]`.
+
+Use O(1) extra memory.
+
+**Constraints**
+- `1 <= nums.length <= 3 * 10^4`
+- `-100 <= nums[i] <= 100`
+--- tests
+[[1,1,2]] => [1,2]
+[[0,0,1,1,1,2,2,3,3,4]] => [0,1,2,3,4]
+[[1]]
+[[1,2,3]]
+[[-3,-3,-3]]
+[[-1,0,0,0,0,3,3]]
+--- python
+class Solution:
+    def removeDuplicates(self, nums):
+        k = 1
+        for i in range(1, len(nums)):
+            if nums[i] != nums[k - 1]:
+                nums[k] = nums[i]; k += 1
+        return k
+--- javascript
+var removeDuplicates = function(nums) {
+    let k = 1;
+    for (let i = 1; i < nums.length; i++) if (nums[i] !== nums[k - 1]) nums[k++] = nums[i];
+    return k;
+};
+
+=== linked-list-cycle
+title: Linked List Cycle
+difficulty: easy
+tags: linked-list, two-pointers
+sig: hasCycle(head: ListNode) -> bool
+params: head, pos
+--- description
+Given the `head` of a singly linked list, return `true` if following `next` pointers ever brings you back to a node you already visited (a cycle), otherwise `false`.
+
+In the tests, `pos` is the index the tail's `next` points back to (`-1` means no cycle). Your function only receives `head`, not `pos`.
+
+**Constraints**
+- `0 <= number of nodes <= 10^4`
+- `-10^5 <= Node.val <= 10^5`
+
+**Follow-up:** can you do it with O(1) memory?
+--- tests
+[[3,2,0,-4], 1] => true
+[[1,2], 0] => true
+[[1], -1] => false
+[[], -1]
+[[1,2,3,4,5], -1]
+[[1,2,3,4,5], 4]
+[[1,1,1], -1]
+--- harness.python
+_args = json.loads(sys.stdin.read())
+_nodes = [ListNode(v) for v in _args[0]]
+for _i in range(len(_nodes) - 1): _nodes[_i].next = _nodes[_i + 1]
+if _nodes and _args[1] >= 0: _nodes[-1].next = _nodes[_args[1]]
+_print(Solution().hasCycle(_nodes[0] if _nodes else None))
+--- harness.javascript
+const __nodes = __args[0].map(v => new ListNode(v));
+for (let i = 0; i + 1 < __nodes.length; i++) __nodes[i].next = __nodes[i + 1];
+if (__nodes.length && __args[1] >= 0) __nodes[__nodes.length - 1].next = __nodes[__args[1]];
+__print(hasCycle(__nodes.length ? __nodes[0] : null));
+--- python
+class Solution:
+    def hasCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow is fast:
+                return True
+        return False
+--- javascript
+var hasCycle = function(head) {
+    let slow = head, fast = head;
+    while (fast && fast.next) {
+        slow = slow.next; fast = fast.next.next;
+        if (slow === fast) return true;
+    }
+    return false;
+};
+
+=== palindrome-linked-list
+title: Palindrome Linked List
+difficulty: easy
+tags: linked-list, two-pointers
+sig: isPalindrome(head: ListNode) -> bool
+--- description
+Given the `head` of a singly linked list, return `true` if the sequence of values reads the same from front to back as from back to front.
+
+**Constraints**
+- `1 <= number of nodes <= 10^5`
+- `0 <= Node.val <= 9`
+
+**Follow-up:** O(n) time and O(1) extra space?
+--- tests
+[[1,2,2,1]] => true
+[[1,2]] => false
+[[1]]
+[[1,2,1]]
+[[1,2,3,2,2]]
+[[9,9,9,9]]
+[[1,0,0]]
+--- python
+class Solution:
+    def isPalindrome(self, head):
+        vals = []
+        while head:
+            vals.append(head.val); head = head.next
+        return vals == vals[::-1]
+--- javascript
+var isPalindrome = function(head) {
+    const v = [];
+    for (let n = head; n; n = n.next) v.push(n.val);
+    for (let i = 0, j = v.length - 1; i < j; i++, j--) if (v[i] !== v[j]) return false;
+    return true;
+};
+
+=== reverse-linked-list
+title: Reverse Linked List
+difficulty: easy
+tags: linked-list, recursion
+sig: reverseList(head: ListNode) -> ListNode
+--- description
+Given the `head` of a singly linked list, reverse the direction of every link and return the new head.
+
+**Constraints**
+- `0 <= number of nodes <= 5000`
+- `-5000 <= Node.val <= 5000`
+
+**Follow-up:** write it both iteratively and recursively.
+--- tests
+[[1,2,3,4,5]] => [5,4,3,2,1]
+[[1,2]] => [2,1]
+[[]] => []
+[[7]]
+[[3,3,1]]
+[[-1,0,1,2]]
+--- python
+class Solution:
+    def reverseList(self, head):
+        prev = None
+        while head:
+            head.next, prev, head = prev, head, head.next
+        return prev
+--- javascript
+var reverseList = function(head) {
+    let prev = null;
+    while (head) { const nx = head.next; head.next = prev; prev = head; head = nx; }
+    return prev;
+};
+
+=== invert-binary-tree
+title: Invert Binary Tree
+difficulty: easy
+tags: tree, dfs, bfs
+sig: invertTree(root: TreeNode) -> TreeNode
+--- description
+Given the `root` of a binary tree, mirror it: swap the left and right child of **every** node. Return the root.
+
+Trees are written in level order, with `null` marking a missing child.
+
+**Constraints**
+- `0 <= number of nodes <= 100`
+- `-100 <= Node.val <= 100`
+--- tests
+[[4,2,7,1,3,6,9]] => [4,7,2,9,6,3,1]
+[[2,1,3]] => [2,3,1]
+[[]] => []
+[[1]]
+[[1,2]]
+[[1,null,2,null,3]]
+[[5,3,8,1,4,null,9,0]]
+--- python
+class Solution:
+    def invertTree(self, root):
+        if root:
+            root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+        return root
+--- javascript
+var invertTree = function(root) {
+    if (!root) return null;
+    const l = invertTree(root.left);
+    root.left = invertTree(root.right);
+    root.right = l;
+    return root;
+};
+
+=== maximum-depth-of-binary-tree
+title: Maximum Depth of Binary Tree
+difficulty: easy
+tags: tree, dfs, bfs
+sig: maxDepth(root: TreeNode) -> int
+--- description
+Given the `root` of a binary tree, return its depth: the number of nodes on the longest path from the root down to a leaf. An empty tree has depth `0`.
+
+**Constraints**
+- `0 <= number of nodes <= 10^4`
+- `-100 <= Node.val <= 100`
+--- tests
+[[3,9,20,null,null,15,7]] => 3
+[[1,null,2]] => 2
+[[]] => 0
+[[0]]
+[[1,2,3,4,null,null,5,6]]
+[[1,2,null,3,null,4,null,5]]
+--- python
+class Solution:
+    def maxDepth(self, root):
+        return 0 if not root else 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
+--- javascript
+var maxDepth = function(root) {
+    return root ? 1 + Math.max(maxDepth(root.left), maxDepth(root.right)) : 0;
+};
+
+=== diameter-of-binary-tree
+title: Diameter of Binary Tree
+difficulty: easy
+tags: tree, dfs
+sig: diameterOfBinaryTree(root: TreeNode) -> int
+--- description
+The diameter of a binary tree is the number of **edges** on the longest path between any two nodes. That path does not have to pass through the root.
+
+Given the `root`, return the diameter.
+
+**Constraints**
+- `1 <= number of nodes <= 10^4`
+- `-100 <= Node.val <= 100`
+--- tests
+[[1,2,3,4,5]] => 3
+[[1,2]] => 1
+[[1]] => 0
+[[4,-7,-3,null,null,-9,-3,9,-7,-4,null,6,null,-6,-6,null,null,0,6,5,null,9,null,null,-1,-4,null,null,null,-2]]
+[[1,2,null,3,4,5,null,null,6]]
+[[1,null,2,null,3,null,4]]
+--- python
+class Solution:
+    def diameterOfBinaryTree(self, root):
+        best = 0
+        def h(n):
+            nonlocal best
+            if not n:
+                return 0
+            l, r = h(n.left), h(n.right)
+            best = max(best, l + r)
+            return 1 + max(l, r)
+        h(root)
+        return best
+--- javascript
+var diameterOfBinaryTree = function(root) {
+    let best = 0;
+    const h = n => { if (!n) return 0; const l = h(n.left), r = h(n.right); best = Math.max(best, l + r); return 1 + Math.max(l, r); };
+    h(root);
+    return best;
+};
+
+=== balanced-binary-tree
+title: Balanced Binary Tree
+difficulty: easy
+tags: tree, dfs
+sig: isBalanced(root: TreeNode) -> bool
+--- description
+A binary tree is **height-balanced** when, at every node, the heights of the left and right subtrees differ by at most 1.
+
+Given the `root`, return `true` if the tree is height-balanced.
+
+**Constraints**
+- `0 <= number of nodes <= 5000`
+- `-10^4 <= Node.val <= 10^4`
+--- tests
+[[3,9,20,null,null,15,7]] => true
+[[1,2,2,3,3,null,null,4,4]] => false
+[[]] => true
+[[1,2,2,3,null,null,3,4,null,null,4]]
+[[1,null,2]]
+[[1,null,2,null,3]]
+[[1,2,3,4,5,6,null,8]]
+--- python
+class Solution:
+    def isBalanced(self, root):
+        def h(n):
+            if not n:
+                return 0
+            l, r = h(n.left), h(n.right)
+            if l < 0 or r < 0 or abs(l - r) > 1:
+                return -1
+            return 1 + max(l, r)
+        return h(root) >= 0
+--- javascript
+var isBalanced = function(root) {
+    const h = n => { if (!n) return 0; const l = h(n.left), r = h(n.right); if (l < 0 || r < 0 || Math.abs(l - r) > 1) return -1; return 1 + Math.max(l, r); };
+    return h(root) >= 0;
+};
+
+=== same-tree
+title: Same Tree
+difficulty: easy
+tags: tree, dfs
+sig: isSameTree(p: TreeNode, q: TreeNode) -> bool
+--- description
+Given the roots `p` and `q` of two binary trees, return `true` if they have exactly the same shape and every matching node has the same value.
+
+**Constraints**
+- `0 <= number of nodes in each tree <= 100`
+- `-10^4 <= Node.val <= 10^4`
+--- tests
+[[1,2,3], [1,2,3]] => true
+[[1,2], [1,null,2]] => false
+[[1,2,1], [1,1,2]] => false
+[[], []]
+[[1], []]
+[[5,4,8,11,null,13,4], [5,4,8,11,null,13,4]]
+--- python
+class Solution:
+    def isSameTree(self, p, q):
+        if not p or not q:
+            return p is q
+        return p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+--- javascript
+var isSameTree = function(p, q) {
+    if (!p || !q) return p === q;
+    return p.val === q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+};
+
+=== subtree-of-another-tree
+title: Subtree of Another Tree
+difficulty: easy
+tags: tree, dfs
+sig: isSubtree(root: TreeNode, subRoot: TreeNode) -> bool
+--- description
+Given the roots of two binary trees `root` and `subRoot`, return `true` if some node in `root` has a subtree that is **identical** to `subRoot` (same shape and values, all the way down to the leaves).
+
+A tree counts as a subtree of itself.
+
+**Constraints**
+- `1 <= number of nodes in root <= 2000`
+- `1 <= number of nodes in subRoot <= 1000`
+- `-10^4 <= Node.val <= 10^4`
+--- tests
+[[3,4,5,1,2], [4,1,2]] => true
+[[3,4,5,1,2,null,null,null,null,0], [4,1,2]] => false
+[[1,1], [1]] => true
+[[1], [1]]
+[[12], [2]]
+[[3,4,5,1,null,2], [3,1,2]]
+[[1,2,3], [1,2]]
+--- python
+class Solution:
+    def isSubtree(self, root, subRoot):
+        def same(a, b):
+            if not a or not b:
+                return a is b
+            return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)
+        if not root:
+            return False
+        return same(root, subRoot) or self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)
+--- javascript
+var isSubtree = function(root, subRoot) {
+    const same = (a, b) => (!a || !b) ? a === b : a.val === b.val && same(a.left, b.left) && same(a.right, b.right);
+    if (!root) return false;
+    return same(root, subRoot) || isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+};
+
+=== symmetric-tree
+title: Symmetric Tree
+difficulty: easy
+tags: tree, dfs, bfs
+sig: isSymmetric(root: TreeNode) -> bool
+--- description
+Given the `root` of a binary tree, return `true` if the tree is a mirror image of itself around its center.
+
+**Constraints**
+- `1 <= number of nodes <= 1000`
+- `-100 <= Node.val <= 100`
+
+**Follow-up:** solve it both recursively and iteratively.
+--- tests
+[[1,2,2,3,4,4,3]] => true
+[[1,2,2,null,3,null,3]] => false
+[[1]] => true
+[[1,2,2,2,null,2]]
+[[2,3,3,4,5,5,4,null,null,8,9,9,8]]
+[[1,2,3]]
+--- python
+class Solution:
+    def isSymmetric(self, root):
+        def m(a, b):
+            if not a or not b:
+                return a is b
+            return a.val == b.val and m(a.left, b.right) and m(a.right, b.left)
+        return m(root.left, root.right)
+--- javascript
+var isSymmetric = function(root) {
+    const m = (a, b) => (!a || !b) ? a === b : a.val === b.val && m(a.left, b.right) && m(a.right, b.left);
+    return m(root.left, root.right);
+};
+
+=== binary-search
+title: Binary Search
+difficulty: easy
+tags: array, binary-search
+sig: search(nums: int[], target: int) -> int
+--- description
+Given a strictly increasing integer array `nums` and a `target`, return the index of `target`, or `-1` if it is not present.
+
+Your solution must run in O(log n) time.
+
+**Constraints**
+- `1 <= nums.length <= 10^4`
+- All values are distinct and sorted ascending.
+--- tests
+[[-1,0,3,5,9,12], 9] => 4
+[[-1,0,3,5,9,12], 2] => -1
+[[5], 5] => 0
+[[5], -5]
+[[1,3,5,7,9,11], 1]
+[[1,3,5,7,9,11], 11]
+[[1,3,5,7,9,11], 12]
+--- python
+class Solution:
+    def search(self, nums, target):
+        lo, hi = 0, len(nums) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[mid] < target:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return -1
+--- javascript
+var search = function(nums, target) {
+    let lo = 0, hi = nums.length - 1;
+    while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (nums[mid] === target) return mid;
+        if (nums[mid] < target) lo = mid + 1; else hi = mid - 1;
+    }
+    return -1;
+};
+
+=== valid-parentheses
+title: Valid Parentheses
+difficulty: easy
+tags: string, stack
+sig: isValid(s: str) -> bool
+--- description
+Given a string `s` made only of the characters `( ) [ ] { }`, return `true` if it is well formed:
+
+- every opening bracket is closed by the same kind of bracket,
+- brackets close in the correct order, and
+- every closing bracket has a matching opener.
+
+**Constraints**
+- `1 <= s.length <= 10^4`
+--- tests
+["()"] => true
+["()[]{}"] => true
+["(]"] => false
+["([])"] => true
+["([)]"]
+["{[]}"]
+["("]
+["]"]
+["(((())))[]{}"]
+--- python
+class Solution:
+    def isValid(self, s):
+        pairs = {')': '(', ']': '[', '}': '{'}
+        st = []
+        for c in s:
+            if c in pairs:
+                if not st or st.pop() != pairs[c]:
+                    return False
+            else:
+                st.append(c)
+        return not st
+--- javascript
+var isValid = function(s) {
+    const pairs = { ')': '(', ']': '[', '}': '{' }, st = [];
+    for (const c of s) {
+        if (pairs[c]) { if (st.pop() !== pairs[c]) return false; }
+        else st.push(c);
+    }
+    return st.length === 0;
+};
+
+=== valid-word-abbreviation
+title: Valid Word Abbreviation
+difficulty: easy
+tags: string, two-pointers
+sig: validWordAbbreviation(word: str, abbr: str) -> bool
+--- description
+A word can be abbreviated by replacing any number of **non-adjacent, non-empty** runs of letters with their lengths. For example, `"substitution"` can become `"s10n"`, `"sub4u4"`, `"12"` or `"substitution"`. The replaced runs must not touch, and the numbers must not have leading zeros (so `"s010n"` and `"s0ubstitution"` are invalid).
+
+Given a `word` and an abbreviation `abbr`, return `true` if `abbr` is a valid abbreviation of `word`.
+
+**Constraints**
+- `1 <= word.length <= 20`, lowercase letters only
+- `1 <= abbr.length <= 10`, lowercase letters and digits
+- Every number in `abbr` fits in a 32-bit integer.
+--- tests
+["internationalization", "i12iz4n"] => true
+["apple", "a2e"] => false
+["substitution", "s10n"] => true
+["substitution", "s010n"] => false
+["substitution", "s0ubstitution"]
+["substitution", "12"]
+["a", "2"]
+["hi", "1i"]
+["word", "w2d"]
+["word", "3d"]
+--- python
+class Solution:
+    def validWordAbbreviation(self, word, abbr):
+        i = j = 0
+        while i < len(word) and j < len(abbr):
+            if abbr[j].isdigit():
+                if abbr[j] == '0':
+                    return False
+                n = 0
+                while j < len(abbr) and abbr[j].isdigit():
+                    n = n * 10 + int(abbr[j]); j += 1
+                i += n
+            else:
+                if word[i] != abbr[j]:
+                    return False
+                i += 1; j += 1
+        return i == len(word) and j == len(abbr)
+--- javascript
+var validWordAbbreviation = function(word, abbr) {
+    let i = 0, j = 0;
+    while (i < word.length && j < abbr.length) {
+        if (abbr[j] >= '0' && abbr[j] <= '9') {
+            if (abbr[j] === '0') return false;
+            let n = 0;
+            while (j < abbr.length && abbr[j] >= '0' && abbr[j] <= '9') n = n * 10 + Number(abbr[j++]);
+            i += n;
+        } else {
+            if (word[i] !== abbr[j]) return false;
+            i++; j++;
+        }
+    }
+    return i === word.length && j === abbr.length;
+};
+
+=== meeting-rooms
+title: Meeting Rooms
+difficulty: easy
+tags: array, sorting, intervals
+sig: canAttendMeetings(intervals: int[][]) -> bool
+--- description
+You are given a list of meetings `intervals[i] = [start, end]`. Return `true` if one person could attend **all** of them, meaning no two meetings overlap.
+
+A meeting that ends at time `t` does not clash with one that starts at `t`.
+
+**Constraints**
+- `0 <= intervals.length <= 10^4`
+- `0 <= start < end <= 10^6`
+--- tests
+[[[0,30],[5,10],[15,20]]] => false
+[[[7,10],[2,4]]] => true
+[[]] => true
+[[[1,5],[5,10]]]
+[[[1,5],[4,10]]]
+[[[13,15],[1,13]]]
+[[[9,10],[4,9],[4,17]]]
+--- python
+class Solution:
+    def canAttendMeetings(self, intervals):
+        intervals.sort()
+        return all(intervals[i][0] >= intervals[i - 1][1] for i in range(1, len(intervals)))
+--- javascript
+var canAttendMeetings = function(intervals) {
+    intervals.sort((a, b) => a[0] - b[0]);
+    for (let i = 1; i < intervals.length; i++) if (intervals[i][0] < intervals[i - 1][1]) return false;
+    return true;
+};
+
+=== implement-stack-using-queues
+title: Implement Stack using Queues
+difficulty: easy
+tags: stack, queue, design
+design: MyStack
+methods:
+  MyStack()
+  push(x: int) -> void
+  pop() -> int
+  top() -> int
+  empty() -> bool
+--- description
+Build a last-in-first-out **stack** using only queue operations: add to the back, look at or remove from the front, size, and is-empty. In Python, treat `collections.deque` as a queue (only `append`, `popleft`, `[0]`, `len`). In JavaScript, use arrays only with `push` and `shift`.
+
+Implement the `MyStack` class:
+- `push(x)` puts `x` on top of the stack.
+- `pop()` removes the top element and returns it.
+- `top()` returns the top element.
+- `empty()` returns whether the stack is empty.
+
+Every `pop` and `top` call is made on a non-empty stack.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each call's return value, with `null` for methods that return nothing.
+
+**Follow-up:** can you do it with just one queue?
+--- tests
+[["MyStack","push","push","top","pop","empty"],[[],[1],[2],[],[],[]]] => [null,null,null,2,2,false]
+[["MyStack","push","pop","empty"],[[],[5],[],[]]]
+[["MyStack","push","push","push","pop","top","pop","pop","empty"],[[],[1],[2],[3],[],[],[],[],[]]]
+[["MyStack","empty","push","top","push","top","pop","top"],[[],[],[9],[],[4],[],[],[]]]
+--- python
+class MyStack:
+    def __init__(self):
+        self.q = deque()
+    def push(self, x):
+        self.q.append(x)
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+    def pop(self):
+        return self.q.popleft()
+    def top(self):
+        return self.q[0]
+    def empty(self):
+        return not self.q
+--- javascript
+class MyStack {
+    constructor() { this.q = []; }
+    push(x) { this.q.push(x); for (let i = 0; i < this.q.length - 1; i++) this.q.push(this.q.shift()); }
+    pop() { return this.q.shift(); }
+    top() { return this.q[0]; }
+    empty() { return this.q.length === 0; }
+}
+
+=== implement-queue-using-stacks
+title: Implement Queue using Stacks
+difficulty: easy
+tags: stack, queue, design
+design: MyQueue
+methods:
+  MyQueue()
+  push(x: int) -> void
+  pop() -> int
+  peek() -> int
+  empty() -> bool
+--- description
+Build a first-in-first-out **queue** using only stack operations: push to the top, look at or pop from the top, size, and is-empty. Use Python lists or JavaScript arrays only with `append`/`push` and `pop`.
+
+Implement the `MyQueue` class:
+- `push(x)` adds `x` to the back of the queue.
+- `pop()` removes the front element and returns it.
+- `peek()` returns the front element.
+- `empty()` returns whether the queue is empty.
+
+Every `pop` and `peek` call is made on a non-empty queue.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each return value, with `null` for methods that return nothing.
+
+**Follow-up:** make each operation **amortized** O(1).
+--- tests
+[["MyQueue","push","push","peek","pop","empty"],[[],[1],[2],[],[],[]]] => [null,null,null,1,1,false]
+[["MyQueue","push","pop","empty"],[[],[3],[],[]]]
+[["MyQueue","push","push","pop","push","peek","pop","pop","empty"],[[],[1],[2],[],[3],[],[],[],[]]]
+[["MyQueue","empty","push","push","push","peek","pop","peek"],[[],[],[7],[8],[9],[],[],[]]]
+--- python
+class MyQueue:
+    def __init__(self):
+        self.inn, self.out = [], []
+    def push(self, x):
+        self.inn.append(x)
+    def _move(self):
+        if not self.out:
+            while self.inn:
+                self.out.append(self.inn.pop())
+    def pop(self):
+        self._move(); return self.out.pop()
+    def peek(self):
+        self._move(); return self.out[-1]
+    def empty(self):
+        return not self.inn and not self.out
+--- javascript
+class MyQueue {
+    constructor() { this.a = []; this.b = []; }
+    push(x) { this.a.push(x); }
+    move() { if (!this.b.length) while (this.a.length) this.b.push(this.a.pop()); }
+    pop() { this.move(); return this.b.pop(); }
+    peek() { this.move(); return this.b[this.b.length - 1]; }
+    empty() { return !this.a.length && !this.b.length; }
+}
+
+=== valid-word
+title: Valid Word
+difficulty: easy
+tags: string
+sig: isValid(word: str) -> bool
+--- description
+A word is **valid** if all of these hold:
+
+- it has at least 3 characters,
+- it contains only English letters (either case) and digits,
+- it has at least one **vowel** (`a e i o u` in either case), and
+- it has at least one **consonant** (any English letter that is not a vowel).
+
+Given a string `word`, return `true` if it is valid.
+
+**Constraints**
+- `1 <= word.length <= 20`
+- `word` contains English letters, digits, `'@'`, `'#'` and `'$'`.
+--- tests
+["234Adas"] => true
+["b3"] => false
+["a3$e"] => false
+["AEIOU"]
+["bcdfg1"]
+["Ab1"]
+["UuE6"]
+["aya"]
+["3a@b"]
+--- python
+class Solution:
+    def isValid(self, word):
+        if len(word) < 3 or not word.isalnum() or not word.isascii():
+            return False
+        v = any(c in 'aeiouAEIOU' for c in word)
+        c = any(ch.isalpha() and ch not in 'aeiouAEIOU' for ch in word)
+        return v and c
+--- javascript
+var isValid = function(word) {
+    if (word.length < 3 || !/^[A-Za-z0-9]+$/.test(word)) return false;
+    return /[aeiouAEIOU]/.test(word) && /[b-df-hj-np-tv-zB-DF-HJ-NP-TV-Z]/.test(word);
+};
+
+=== merge-sorted-array
+title: Merge Sorted Array
+difficulty: easy
+tags: array, two-pointers, sorting
+sig: merge(nums1: int[], m: int, nums2: int[], n: int) -> void @0
+--- description
+You get two arrays sorted in non-decreasing order: `nums1` with `m` real values followed by `n` placeholder zeros, and `nums2` with `n` values.
+
+Merge `nums2` into `nums1` **in place** so `nums1` becomes one sorted array of length `m + n`. Do not return anything. The judge reads `nums1`.
+
+**Constraints**
+- `nums1.length == m + n`, `nums2.length == n`
+- `0 <= m, n <= 200`, `1 <= m + n`
+- `-10^9 <= values <= 10^9`
+
+**Follow-up:** O(m + n) time with no extra array?
+--- tests
+[[1,2,3,0,0,0], 3, [2,5,6], 3] => [1,2,2,3,5,6]
+[[1], 1, [], 0] => [1]
+[[0], 0, [1], 1] => [1]
+[[4,5,6,0,0,0], 3, [1,2,3], 3]
+[[2,0], 1, [1], 1]
+[[-1,0,0,3,3,3,0,0,0], 6, [1,2,2], 3]
+--- python
+class Solution:
+    def merge(self, nums1, m, nums2, n):
+        i, j, k = m - 1, n - 1, m + n - 1
+        while j >= 0:
+            if i >= 0 and nums1[i] > nums2[j]:
+                nums1[k] = nums1[i]; i -= 1
+            else:
+                nums1[k] = nums2[j]; j -= 1
+            k -= 1
+--- javascript
+var merge = function(nums1, m, nums2, n) {
+    let i = m - 1, j = n - 1, k = m + n - 1;
+    while (j >= 0) nums1[k--] = (i >= 0 && nums1[i] > nums2[j]) ? nums1[i--] : nums2[j--];
+};
+
+=== closest-binary-search-tree-value
+title: Closest Binary Search Tree Value
+difficulty: easy
+tags: tree, binary-search-tree, binary-search
+sig: closestValue(root: TreeNode, target: float) -> int
+--- description
+Given the `root` of a binary search tree and a (possibly fractional) `target`, return the node value closest to `target`. If two values are equally close, return the **smaller** one.
+
+**Constraints**
+- `1 <= number of nodes <= 10^4`
+- `0 <= Node.val <= 10^9`
+- `-10^9 <= target <= 10^9`
+
+**Hint:** use the BST ordering to walk a single path instead of visiting every node.
+--- tests
+[[4,2,5,1,3], 3.714286] => 4
+[[1], 4.428571] => 1
+[[4,2,5,1,3], 3.5] => 3
+[[10,5,15,2,7,null,20], 6]
+[[10,5,15,2,7,null,20], 17.5]
+[[10,5,15,2,7,null,20], -3]
+[[8,3,10,1,6,null,14,null,null,4,7,13], 12.4]
+--- python
+class Solution:
+    def closestValue(self, root, target):
+        best = root.val
+        while root:
+            if abs(root.val - target) < abs(best - target) or (abs(root.val - target) == abs(best - target) and root.val < best):
+                best = root.val
+            root = root.left if target < root.val else root.right
+        return best
+--- javascript
+var closestValue = function(root, target) {
+    let best = root.val;
+    while (root) {
+        const d = Math.abs(root.val - target), bd = Math.abs(best - target);
+        if (d < bd || (d === bd && root.val < best)) best = root.val;
+        root = target < root.val ? root.left : root.right;
+    }
+    return best;
+};
+
+=== verifying-an-alien-dictionary
+title: Verifying an Alien Dictionary
+difficulty: easy
+tags: array, string, hash-map
+sig: isAlienSorted(words: str[], order: str) -> bool
+--- description
+An alien language uses the same lowercase letters as English but in a different order. `order` is a permutation of the 26 letters giving that alphabet.
+
+Given a list of `words`, return `true` if they are sorted lexicographically under the alien alphabet. As usual, a word that is a prefix of another comes first (so `"app"` must come before `"apple"`).
+
+**Constraints**
+- `1 <= words.length <= 100`
+- `1 <= words[i].length <= 20`
+- `order.length == 26`
+--- tests
+[["hello","leetcode"], "hlabcdefgijkmnopqrstuvwxyz"] => true
+[["word","world","row"], "worldabcefghijkmnpqstuvxyz"] => false
+[["apple","app"], "abcdefghijklmnopqrstuvwxyz"] => false
+[["app","apple"], "abcdefghijklmnopqrstuvwxyz"]
+[["kuvp","q"], "ngxlkthsjuoqcpavbfdermiywz"]
+[["a"], "zyxwvutsrqponmlkjihgfedcba"]
+[["zz","za","b"], "zyxwvutsrqponmlkjihgfedcba"]
+--- python
+class Solution:
+    def isAlienSorted(self, words, order):
+        rank = {c: i for i, c in enumerate(order)}
+        keys = [[rank[c] for c in w] for w in words]
+        return all(keys[i] <= keys[i + 1] for i in range(len(keys) - 1))
+--- javascript
+var isAlienSorted = function(words, order) {
+    const rank = {};
+    for (let i = 0; i < 26; i++) rank[order[i]] = i;
+    for (let i = 0; i + 1 < words.length; i++) {
+        const a = words[i], b = words[i + 1];
+        let j = 0;
+        while (j < a.length && j < b.length && a[j] === b[j]) j++;
+        if (j === b.length && j < a.length) return false;
+        if (j < a.length && rank[a[j]] > rank[b[j]]) return false;
+    }
+    return true;
+};

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { createClient } from "@/lib/supabase/client";
+import { compact, formatArgs } from "@/lib/format";
 
 const LANGUAGES = [
   { id: "python", label: "Python 3" },
@@ -11,7 +12,7 @@ const LANGUAGES = [
 const AUTOSAVE_MS = 1500;
 
 type TestResult = {
-  passed: boolean; status: string;
+  passed: boolean; status: string; hidden: boolean;
   input?: string; expected?: string; stdout?: string | null; stderr?: string | null;
 };
 type RunResponse = {
@@ -21,6 +22,7 @@ type RunResponse = {
 
 type Props = {
   problemId: number;
+  params: string[];
   starterCode: Record<string, string>;
   initialDrafts: Record<string, string>;
   initialLanguage: string | null;
@@ -29,7 +31,7 @@ type Props = {
 
 const localKey = (problemId: number, lang: string) => `beetcode:draft:${problemId}:${lang}`;
 
-export default function Workspace({ problemId, starterCode, initialDrafts, initialLanguage, signedIn }: Props) {
+export default function Workspace({ problemId, params, starterCode, initialDrafts, initialLanguage, signedIn }: Props) {
   const supabase = useRef(createClient()).current;
   const [language, setLanguage] = useState(
     initialLanguage && starterCode[initialLanguage] ? initialLanguage : LANGUAGES[0].id,
@@ -177,29 +179,49 @@ export default function Workspace({ problemId, starterCode, initialDrafts, initi
             {running === "submit" ? "Submitting…" : "Submit"}
           </button>
         </div>
-        {result && <Results result={result} />}
+        {result && <Results result={result} params={params} />}
       </div>
     </section>
   );
 }
 
-function Results({ result }: { result: RunResponse }) {
+const STATUS_LABEL: Record<string, string> = {
+  accepted: "Accepted",
+  wrong_answer: "Wrong Answer",
+  runtime_error: "Runtime Error",
+  compile_error: "Compile Error",
+  time_limit: "Time Limit Exceeded",
+};
+
+function Results({ result, params }: { result: RunResponse; params: string[] }) {
   if (result.error) return <p className="text-red-400">{result.error}</p>;
   const ok = result.status === "accepted";
   return (
     <div>
-      <p className={`mb-2 text-base font-semibold ${ok ? "text-emerald-400" : "text-red-400"}`}>
-        {ok ? "Accepted" : result.status.replace("_", " ")}
+      <p className={`mb-1 text-base font-semibold ${ok ? "text-emerald-400" : "text-red-400"}`}>
+        {STATUS_LABEL[result.status] ?? result.status}
         <span className="ml-2 text-sm font-normal text-zinc-400">
-          {result.passed}/{result.total} tests passed · {result.runtimeMs} ms
+          {result.passed}/{result.total} tests passed{ok ? ` · ${result.runtimeMs} ms` : ""}
         </span>
       </p>
-      {result.results.filter((r) => r.input !== undefined).map((r, i) => (
+      <div className="mb-3 flex flex-wrap gap-1">
+        {result.results.map((r, i) => (
+          <span
+            key={i}
+            title={`${r.hidden ? "Hidden test" : "Example"} ${i + 1}: ${r.status}`}
+            className={`h-2 w-5 rounded-full ${r.passed ? "bg-emerald-500" : "bg-red-500"}`}
+          />
+        ))}
+      </div>
+      {result.results.map((r, i) => r.input === undefined ? null : (
         <div key={i} className="mb-2 rounded-md border border-zinc-800 p-3 font-mono text-xs">
-          <p className={r.passed ? "text-emerald-400" : "text-red-400"}>Case {i + 1}: {r.passed ? "passed" : r.status}</p>
-          <p className="mt-1 text-zinc-500">Input</p><pre className="whitespace-pre-wrap">{r.input}</pre>
-          <p className="mt-1 text-zinc-500">Expected</p><pre className="whitespace-pre-wrap">{r.expected}</pre>
-          <p className="mt-1 text-zinc-500">Your output</p><pre className="whitespace-pre-wrap">{r.stdout ?? ""}</pre>
+          <p className={r.passed ? "text-emerald-400" : "text-red-400"}>
+            {r.hidden ? "Hidden test" : `Example ${i + 1}`}: {r.passed ? "passed" : r.status}
+          </p>
+          <p className="mt-1 text-zinc-500">Input</p>
+          {formatArgs(r.input, params).map((line, j) => <pre key={j} className="whitespace-pre-wrap break-all">{line}</pre>)}
+          <p className="mt-1 text-zinc-500">Expected</p><pre className="whitespace-pre-wrap break-all">{compact(r.expected)}</pre>
+          <p className="mt-1 text-zinc-500">Your output</p><pre className="whitespace-pre-wrap break-all">{compact(r.stdout)}</pre>
           {r.stderr && (<><p className="mt-1 text-zinc-500">Error</p><pre className="whitespace-pre-wrap text-red-300">{r.stderr}</pre></>)}
         </div>
       ))}

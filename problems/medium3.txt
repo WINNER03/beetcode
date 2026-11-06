@@ -1,0 +1,1079 @@
+=== meeting-rooms-ii
+title: Meeting Rooms II
+difficulty: medium
+tags: array, sorting, heap, intervals
+sig: minMeetingRooms(intervals: int[][]) -> int
+--- description
+Given meeting times `intervals[i] = [start, end]`, return the minimum number of conference rooms needed so that every meeting has a room.
+
+A meeting ending at time `t` frees its room for a meeting starting at `t`.
+
+**Constraints**
+- `1 <= intervals.length <= 10^4`
+- `0 <= start < end <= 10^6`
+--- tests
+[[[0,30],[5,10],[15,20]]] => 2
+[[[7,10],[2,4]]] => 1
+[[[1,5],[5,10]]] => 1
+[[[1,10],[2,9],[3,8],[4,7]]]
+[[[9,10],[4,9],[4,17]]]
+[[[2,11],[6,16],[11,16]]]
+[[[1,2]]]
+--- python
+class Solution:
+    def minMeetingRooms(self, intervals):
+        ends = []
+        for s, e in sorted(intervals):
+            if ends and ends[0] <= s:
+                heapq.heapreplace(ends, e)
+            else:
+                heapq.heappush(ends, e)
+        return len(ends)
+--- javascript
+var minMeetingRooms = function(intervals) {
+    const ev = [];
+    for (const [s, e] of intervals) { ev.push([s, 1]); ev.push([e, -1]); }
+    ev.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    let cur = 0, best = 0;
+    for (const [, d] of ev) { cur += d; best = Math.max(best, cur); }
+    return best;
+};
+
+=== lru-cache
+title: LRU Cache
+difficulty: medium
+tags: design, hash-map, linked-list
+design: LRUCache
+methods:
+  LRUCache(capacity: int)
+  get(key: int) -> int
+  put(key: int, value: int) -> void
+--- description
+Design a **least recently used (LRU)** cache with a fixed `capacity`:
+
+- `get(key)` returns the value for `key`, or `-1` if it is not present. A successful `get` counts as a use.
+- `put(key, value)` inserts or updates `key`. If that pushes the size past `capacity`, evict the key that was **used least recently**.
+
+Both operations must run in **O(1)** average time.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each return value, with `null` for methods that return nothing.
+
+**Constraints**
+- `1 <= capacity <= 3000`
+- At most `2 * 10^5` calls.
+--- tests
+[["LRUCache","put","put","get","put","get","put","get","get","get"],[[2],[1,1],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]] => [null,null,null,1,null,-1,null,-1,3,4]
+[["LRUCache","put","get","put","get","get"],[[1],[2,1],[2],[3,2],[2],[3]]]
+[["LRUCache","put","put","put","put","get","get"],[[2],[2,1],[1,1],[2,3],[4,1],[1],[2]]]
+[["LRUCache","get","put","get","put","put","get","get"],[[2],[2],[2,6],[1],[1,5],[1,2],[1],[2]]]
+[["LRUCache","put","put","get","put","put","get","get","get"],[[3],[1,1],[2,2],[1],[3,3],[4,4],[2],[1],[4]]]
+--- python
+class LRUCache:
+    def __init__(self, capacity):
+        self.cap, self.d = capacity, OrderedDict()
+    def get(self, key):
+        if key not in self.d:
+            return -1
+        self.d.move_to_end(key)
+        return self.d[key]
+    def put(self, key, value):
+        self.d[key] = value
+        self.d.move_to_end(key)
+        if len(self.d) > self.cap:
+            self.d.popitem(last=False)
+--- javascript
+class LRUCache {
+    constructor(capacity) { this.cap = capacity; this.m = new Map(); }
+    get(key) { if (!this.m.has(key)) return -1; const v = this.m.get(key); this.m.delete(key); this.m.set(key, v); return v; }
+    put(key, value) { this.m.delete(key); this.m.set(key, value); if (this.m.size > this.cap) this.m.delete(this.m.keys().next().value); }
+}
+
+=== shortest-path-in-binary-matrix
+title: Shortest Path in Binary Matrix
+difficulty: medium
+tags: matrix, bfs
+sig: shortestPathBinaryMatrix(grid: int[][]) -> int
+--- description
+Given an `n x n` grid of `0`s (open) and `1`s (blocked), return the length of the shortest **clear path** from the top-left cell to the bottom-right cell, or `-1` if none exists.
+
+A clear path only visits `0` cells and moves between cells that are **8-directionally** adjacent (sharing an edge or a corner). Its length is the number of cells visited, including both ends.
+
+**Constraints**
+- `1 <= n <= 100`
+--- tests
+[[[0,1],[1,0]]] => 2
+[[[0,0,0],[1,1,0],[1,1,0]]] => 4
+[[[1,0,0],[1,1,0],[1,1,0]]] => -1
+[[[0]]]
+[[[1]]]
+[[[0,0,0],[1,1,1],[0,0,0]]]
+[[[0,1,1,0,0,0],[0,1,0,1,1,0],[0,1,1,0,1,0],[0,0,0,1,1,0],[1,1,1,1,1,0],[1,1,1,1,1,0]]]
+--- python
+class Solution:
+    def shortestPathBinaryMatrix(self, grid):
+        n = len(grid)
+        if grid[0][0] or grid[-1][-1]:
+            return -1
+        q, dist = deque([(0, 0)]), {(0, 0): 1}
+        while q:
+            a, b = q.popleft()
+            if (a, b) == (n - 1, n - 1):
+                return dist[(a, b)]
+            for da in (-1, 0, 1):
+                for db in (-1, 0, 1):
+                    x, y = a + da, b + db
+                    if 0 <= x < n and 0 <= y < n and not grid[x][y] and (x, y) not in dist:
+                        dist[(x, y)] = dist[(a, b)] + 1; q.append((x, y))
+        return -1
+--- javascript
+var shortestPathBinaryMatrix = function(grid) {
+    const n = grid.length;
+    if (grid[0][0] || grid[n - 1][n - 1]) return -1;
+    let frontier = [[0, 0]], steps = 1;
+    const seen = new Set(['0,0']);
+    while (frontier.length) {
+        const next = [];
+        for (const [a, b] of frontier) {
+            if (a === n - 1 && b === n - 1) return steps;
+            for (let da = -1; da <= 1; da++) for (let db = -1; db <= 1; db++) {
+                const x = a + da, y = b + db, k = x + ',' + y;
+                if (x >= 0 && y >= 0 && x < n && y < n && !grid[x][y] && !seen.has(k)) { seen.add(k); next.push([x, y]); }
+            }
+        }
+        frontier = next; steps++;
+    }
+    return -1;
+};
+
+=== simplify-path
+title: Simplify Path
+difficulty: medium
+tags: string, stack
+sig: simplifyPath(path: str) -> str
+--- description
+Given an absolute Unix-style `path`, return its simplest canonical form:
+
+- `.` means the current directory and `..` means the parent directory (going up from `/` stays at `/`).
+- Repeated slashes count as one slash.
+- Any other name, including ones like `...`, is a normal directory name.
+- The result starts with exactly one `/`, separates names with single slashes, and has no trailing slash (unless it is just `/`).
+
+**Constraints**
+- `1 <= path.length <= 3000`
+- `path` starts with `/`.
+--- tests
+["/home/"] => "/home"
+["/home//foo/"] => "/home/foo"
+["/home/user/Documents/../Pictures"] => "/home/user/Pictures"
+["/../"] => "/"
+["/.../a/../b/c/../d/./"]
+["/a/./b/../../c/"]
+["/"]
+["/a//b////c/d//././/.."]
+--- python
+class Solution:
+    def simplifyPath(self, path):
+        st = []
+        for part in path.split('/'):
+            if part == '..':
+                if st:
+                    st.pop()
+            elif part and part != '.':
+                st.append(part)
+        return '/' + '/'.join(st)
+--- javascript
+var simplifyPath = function(path) {
+    const st = [];
+    for (const p of path.split('/')) {
+        if (p === '..') st.pop();
+        else if (p && p !== '.') st.push(p);
+    }
+    return '/' + st.join('/');
+};
+
+=== find-duplicate-file-in-system
+title: Find Duplicate File in System
+difficulty: medium
+tags: array, string, hash-map
+sig: findDuplicate(paths: str[]) -> str[][]
+compare: unordered_nested
+--- description
+Each entry of `paths` describes one directory and the files in it:
+
+`"dir f1.txt(content1) f2.txt(content2) ..."`
+
+That means the file `dir/f1.txt` contains `content1`, and so on. Return every group of **two or more** files that have identical content, as lists of full paths (`"dir/name"`). Groups and the paths inside them can be in any order.
+
+**Constraints**
+- `1 <= paths.length <= 2 * 10^4`
+- Directory and file names are unique within a directory and contain no spaces.
+
+**Follow-up:** what would change if files were huge or lived on disk?
+--- tests
+[["root/a 1.txt(abcd) 2.txt(efgh)","root/c 3.txt(abcd)","root/c/d 4.txt(efgh)","root 4.txt(efgh)"]] => [["root/a/2.txt","root/c/d/4.txt","root/4.txt"],["root/a/1.txt","root/c/3.txt"]]
+[["root/a 1.txt(abcd) 2.txt(efgh)","root/c 3.txt(abcd)","root/c/d 4.txt(efgh)"]] => [["root/a/2.txt","root/c/d/4.txt"],["root/a/1.txt","root/c/3.txt"]]
+[["root x.txt(a)"]] => []
+[["root a.txt(same) b.txt(same) c.txt(other)"]]
+[["d1 f(x)","d2 f(x)","d3 f(y)","d4 g(y)","d5 h(z)"]]
+--- python
+class Solution:
+    def findDuplicate(self, paths):
+        g = defaultdict(list)
+        for line in paths:
+            d, *files = line.split(' ')
+            for f in files:
+                name, content = f[:-1].split('(')
+                g[content].append(d + '/' + name)
+        return [v for v in g.values() if len(v) > 1]
+--- javascript
+var findDuplicate = function(paths) {
+    const g = new Map();
+    for (const line of paths) {
+        const [d, ...files] = line.split(' ');
+        for (const f of files) {
+            const i = f.indexOf('('), name = f.slice(0, i), content = f.slice(i + 1, -1);
+            if (!g.has(content)) g.set(content, []);
+            g.get(content).push(d + '/' + name);
+        }
+    }
+    return [...g.values()].filter(v => v.length > 1);
+};
+
+=== divide-two-integers
+title: Divide Two Integers
+difficulty: medium
+tags: math, bit-manipulation
+sig: divide(dividend: int, divisor: int) -> int
+--- description
+Divide `dividend` by `divisor` **without** using multiplication, division or the modulo operator, and return the quotient truncated toward zero (so `8.3` becomes `8` and `-2.7` becomes `-2`).
+
+Assume a 32-bit signed integer range `[-2^31, 2^31 - 1]`. If the true quotient is larger than `2^31 - 1`, return `2^31 - 1`.
+
+**Constraints**
+- `-2^31 <= dividend, divisor <= 2^31 - 1`
+- `divisor != 0`
+--- tests
+[10, 3] => 3
+[7, -3] => -2
+[-2147483648, -1] => 2147483647
+[-2147483648, 1]
+[0, 5]
+[1, 1]
+[-7, 2]
+[2147483647, 2]
+[-2147483648, 2]
+--- python
+class Solution:
+    def divide(self, dividend, divisor):
+        neg = (dividend < 0) != (divisor < 0)
+        a, b, q = abs(dividend), abs(divisor), 0
+        while a >= b:
+            t, m = b, 1
+            while a >= (t << 1):
+                t <<= 1; m <<= 1
+            a -= t; q += m
+        q = -q if neg else q
+        return min(max(q, -2**31), 2**31 - 1)
+--- javascript
+var divide = function(dividend, divisor) {
+    const q = Math.trunc(dividend / divisor);
+    return Math.min(Math.max(q, -2147483648), 2147483647);
+};
+
+=== accounts-merge
+title: Accounts Merge
+difficulty: medium
+tags: union-find, dfs, hash-map, string
+sig: accountsMerge(accounts: str[][]) -> str[][]
+compare: unordered
+--- description
+Each `accounts[i]` is a list whose first element is a person's name and whose remaining elements are emails. Two accounts belong to the same person if they share **at least one** email (this is transitive). Different people can have the same name.
+
+Merge the accounts. Return each merged account as `[name, ...emails]` with the emails **sorted** (ASCII order) and no duplicates. The accounts themselves can be in any order.
+
+**Constraints**
+- `1 <= accounts.length <= 1000`
+- `2 <= accounts[i].length <= 10`
+--- tests
+[[["John","johnsmith@mail.com","john_newyork@mail.com"],["John","johnsmith@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]] => [["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+[[["Gabe","Gabe0@m.co","Gabe3@m.co","Gabe1@m.co"],["Kevin","Kevin3@m.co","Kevin5@m.co","Kevin0@m.co"],["Ethan","Ethan5@m.co","Ethan4@m.co","Ethan0@m.co"]]]
+[[["A","a@x"],["A","b@x"],["A","a@x","b@x"]]]
+[[["Alex","a@x","a@x"]]]
+[[["David","d0@m.co","d1@m.co"],["David","d3@m.co","d4@m.co"],["David","d4@m.co","d5@m.co"],["David","d2@m.co","d3@m.co"],["David","d1@m.co","d2@m.co"]]]
+--- python
+class Solution:
+    def accountsMerge(self, accounts):
+        parent = {}
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]; x = parent[x]
+            return x
+        owner = {}
+        for acc in accounts:
+            for e in acc[1:]:
+                parent.setdefault(e, e); owner[e] = acc[0]
+                parent[find(e)] = find(acc[1])
+        groups = defaultdict(list)
+        for e in parent:
+            groups[find(e)].append(e)
+        return [[owner[r]] + sorted(es) for r, es in groups.items()]
+--- javascript
+var accountsMerge = function(accounts) {
+    const g = new Map(), name = new Map();
+    const link = (a, b) => { if (!g.has(a)) g.set(a, []); if (!g.has(b)) g.set(b, []); g.get(a).push(b); g.get(b).push(a); };
+    for (const acc of accounts) for (let i = 1; i < acc.length; i++) { name.set(acc[i], acc[0]); link(acc[1], acc[i]); }
+    const seen = new Set(), out = [];
+    for (const e of g.keys()) {
+        if (seen.has(e)) continue;
+        const comp = [], st = [e]; seen.add(e);
+        while (st.length) { const x = st.pop(); comp.push(x); for (const y of g.get(x)) if (!seen.has(y)) { seen.add(y); st.push(y); } }
+        comp.sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+        out.push([name.get(e)].concat(comp));
+    }
+    return out;
+};
+
+=== copy-list-with-random-pointer
+title: Copy List with Random Pointer
+difficulty: medium
+tags: linked-list, hash-map
+sig: copyRandomList(head: Node) -> Node
+params: head
+--- description
+Each node of a linked list has a `next` pointer and an extra `random` pointer, which can point to any node in the list or be null.
+
+Return a **deep copy** of the list: brand-new nodes with the same values, where the copies' `next` and `random` pointers point to the matching **copied** nodes. No pointer in your copy may lead back into the original list.
+
+In the tests, each node is written as `[val, random_index]`, where `random_index` is the position the random pointer targets (or `null`).
+
+**Constraints**
+- `0 <= number of nodes <= 1000`
+- `-10^4 <= Node.val <= 10^4`
+--- tests
+[[[7,null],[13,0],[11,4],[10,2],[1,0]]] => [[7,null],[13,0],[11,4],[10,2],[1,0]]
+[[[1,1],[2,1]]] => [[1,1],[2,1]]
+[[[3,null],[3,0],[3,null]]] => [[3,null],[3,0],[3,null]]
+[[]]
+[[[5,0]]]
+[[[1,3],[2,2],[3,1],[4,0]]]
+--- prelude.python
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
+--- prelude.javascript
+function _Node(val, next, random) { this.val = val; this.next = next === undefined ? null : next; this.random = random === undefined ? null : random; }
+--- starter.python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
+"""
+
+class Solution:
+    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        pass
+--- starter.javascript
+/**
+ * // Definition for a _Node.
+ * function _Node(val, next, random) {
+ *    this.val = val;
+ *    this.next = next;
+ *    this.random = random;
+ * };
+ */
+
+/**
+ * @param {_Node} head
+ * @return {_Node}
+ */
+var copyRandomList = function(head) {
+
+};
+--- harness.python
+_a = json.loads(sys.stdin.read())[0]
+_orig = [Node(v) for v, _ in _a]
+for _i in range(len(_orig)):
+    _orig[_i].next = _orig[_i + 1] if _i + 1 < len(_orig) else None
+    _orig[_i].random = _orig[_a[_i][1]] if _a[_i][1] is not None else None
+_res = Solution().copyRandomList(_orig[0] if _orig else None)
+_ids = set(id(n) for n in _orig)
+_got = []; _n = _res
+while _n is not None and len(_got) <= len(_orig) + 1:
+    _got.append(_n); _n = _n.next
+_pos = {id(n): i for i, n in enumerate(_got)}
+if any(id(n) in _ids or (n.random is not None and id(n.random) in _ids) for n in _got):
+    _print("not a deep copy: your list points to original nodes")
+else:
+    _print([[n.val, _pos.get(id(n.random)) if n.random is not None else None] for n in _got])
+--- harness.javascript
+const __a = __args[0];
+const __orig = __a.map(x => new _Node(x[0]));
+__orig.forEach((n, i) => { n.next = __orig[i + 1] || null; n.random = __a[i][1] === null ? null : __orig[__a[i][1]]; });
+const __res = copyRandomList(__orig.length ? __orig[0] : null);
+const __ids = new Set(__orig), __got = [];
+for (let n = __res; n && __got.length <= __orig.length + 1; n = n.next) __got.push(n);
+if (__got.some(n => __ids.has(n) || (n.random && __ids.has(n.random)))) __print("not a deep copy: your list points to original nodes");
+else __print(__got.map(n => [n.val, n.random ? __got.indexOf(n.random) : null]));
+--- python
+class Solution:
+    def copyRandomList(self, head):
+        m = {None: None}
+        n = head
+        while n:
+            m[n] = Node(n.val); n = n.next
+        n = head
+        while n:
+            m[n].next, m[n].random = m[n.next], m[n.random]; n = n.next
+        return m[head]
+--- javascript
+var copyRandomList = function(head) {
+    if (!head) return null;
+    for (let n = head; n; n = n.next.next) n.next = new _Node(n.val, n.next, null);
+    for (let n = head; n; n = n.next.next) n.next.random = n.random ? n.random.next : null;
+    const copy = head.next;
+    for (let n = head; n; n = n.next) { const c = n.next; n.next = c.next; c.next = c.next ? c.next.next : null; }
+    return copy;
+};
+
+=== add-two-numbers
+title: Add Two Numbers
+difficulty: medium
+tags: linked-list, math
+sig: addTwoNumbers(l1: ListNode, l2: ListNode) -> ListNode
+--- description
+Two non-negative integers are stored as linked lists with their digits in **reverse order** (the ones digit comes first). Each node holds a single digit.
+
+Return their sum as a linked list in the same reversed format. The numbers have no leading zeros, except the number `0` itself.
+
+**Constraints**
+- `1 <= number of nodes in each list <= 100`
+- `0 <= Node.val <= 9`
+--- tests
+[[2,4,3], [5,6,4]] => [7,0,8]
+[[0], [0]] => [0]
+[[9,9,9,9,9,9,9], [9,9,9,9]] => [8,9,9,9,0,0,0,1]
+[[5], [5]]
+[[1,8], [0]]
+[[2,4,9], [5,6,4,9]]
+--- python
+class Solution:
+    def addTwoNumbers(self, l1, l2):
+        dummy = cur = ListNode(); carry = 0
+        while l1 or l2 or carry:
+            s = carry + (l1.val if l1 else 0) + (l2.val if l2 else 0)
+            carry, d = divmod(s, 10)
+            cur.next = ListNode(d); cur = cur.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return dummy.next
+--- javascript
+var addTwoNumbers = function(l1, l2) {
+    const toBig = l => { let s = ''; for (; l; l = l.next) s = l.val + s; return BigInt(s); };
+    const digits = String(toBig(l1) + toBig(l2)).split('').reverse();
+    const d = new ListNode(); let c = d;
+    for (const x of digits) { c.next = new ListNode(Number(x)); c = c.next; }
+    return d.next;
+};
+
+=== copy-binary-tree-with-random-pointer
+title: Copy Binary Tree With Random Pointer
+difficulty: medium
+tags: tree, dfs, hash-map
+sig: copyRandomBinaryTree(root: Node) -> Node
+params: root
+--- description
+Each node of a binary tree has `left` and `right` children plus a `random` pointer that may point to **any** node in the tree, or be null.
+
+Return a **deep copy** of the tree: new nodes with the same values and structure, where every copied `random` pointer targets the matching copied node. Your copy must not contain or point to any original node.
+
+In the tests, the tree is written in level order, where each node is `[val, random_index]` (`random_index` is the position in this same array that `random` points to, or `null`), and `null` marks a missing child.
+
+**Constraints**
+- `0 <= number of nodes <= 1000`
+- `1 <= Node.val <= 10^6`
+--- tests
+[[[1,null],null,[4,3],[7,0]]] => [[1,null],null,[4,3],[7,0]]
+[[[1,4],null,[1,0],null,[1,5],[1,5]]] => [[1,4],null,[1,0],null,[1,5],[1,5]]
+[[[1,6],[2,5],[3,4],[4,3],[5,2],[6,1],[7,0]]]
+[[]]
+[[[9,0]]]
+[[[1,null],[2,null],[3,1],null,[4,4]]]
+--- prelude.python
+class Node:
+    def __init__(self, val=0, left=None, right=None, random=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.random = random
+--- prelude.javascript
+function Node(val, left, right, random) { this.val = val === undefined ? 0 : val; this.left = left === undefined ? null : left; this.right = right === undefined ? null : right; this.random = random === undefined ? null : random; }
+--- starter.python
+# Definition for Node.
+# class Node:
+#     def __init__(self, val=0, left=None, right=None, random=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+#         self.random = random
+
+class Solution:
+    def copyRandomBinaryTree(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        pass
+--- starter.javascript
+/**
+ * // Definition for a Node.
+ * function Node(val, left, right, random) {
+ *    this.val = val === undefined ? 0 : val;
+ *    this.left = left === undefined ? null : left;
+ *    this.right = right === undefined ? null : right;
+ *    this.random = random === undefined ? null : random;
+ * };
+ */
+
+/**
+ * @param {Node} root
+ * @return {Node}
+ */
+var copyRandomBinaryTree = function(root) {
+
+};
+--- harness.python
+_a = json.loads(sys.stdin.read())[0]
+_nodes = [Node(x[0]) if x is not None else None for x in _a]
+_root = _nodes[0] if _nodes else None
+_q = collections.deque([_root]) if _root else collections.deque(); _i = 1
+while _q and _i < len(_a):
+    _n = _q.popleft()
+    if _i < len(_a) and _nodes[_i] is not None: _n.left = _nodes[_i]; _q.append(_nodes[_i])
+    _i += 1
+    if _i < len(_a) and _nodes[_i] is not None: _n.right = _nodes[_i]; _q.append(_nodes[_i])
+    _i += 1
+for _k, _x in enumerate(_a):
+    if _x is not None and _x[1] is not None: _nodes[_k].random = _nodes[_x[1]]
+_res = Solution().copyRandomBinaryTree(_root)
+_out = []; _q = collections.deque([_res])
+while _q and len(_out) < 5000:
+    _n = _q.popleft(); _out.append(_n)
+    if _n is not None: _q.append(_n.left); _q.append(_n.right)
+while _out and _out[-1] is None: _out.pop()
+_pos = {id(n): i for i, n in enumerate(_out) if n is not None}
+_ids = set(id(n) for n in _nodes if n is not None)
+if any(n is not None and (id(n) in _ids or (n.random is not None and id(n.random) in _ids)) for n in _out):
+    _print("not a deep copy: your tree points to original nodes")
+else:
+    _print([None if n is None else [n.val, _pos.get(id(n.random)) if n.random is not None else None] for n in _out])
+--- harness.javascript
+const __a = __args[0];
+const __nodes = __a.map(x => x === null ? null : new Node(x[0]));
+const __root = __nodes.length ? __nodes[0] : null;
+{ const q = __root ? [__root] : []; let qi = 0, i = 1;
+  while (qi < q.length && i < __a.length) { const n = q[qi++]; if (i < __a.length && __nodes[i]) { n.left = __nodes[i]; q.push(__nodes[i]); } i++; if (i < __a.length && __nodes[i]) { n.right = __nodes[i]; q.push(__nodes[i]); } i++; } }
+__a.forEach((x, k) => { if (x !== null && x[1] !== null) __nodes[k].random = __nodes[x[1]]; });
+const __res = copyRandomBinaryTree(__root);
+const __out = [], __q = [__res]; let __qi = 0;
+while (__qi < __q.length && __out.length < 5000) { const n = __q[__qi++]; __out.push(n); if (n) { __q.push(n.left); __q.push(n.right); } }
+while (__out.length && !__out[__out.length - 1]) __out.pop();
+const __ids = new Set(__nodes.filter(Boolean));
+if (__out.some(n => n && (__ids.has(n) || (n.random && __ids.has(n.random))))) __print("not a deep copy: your tree points to original nodes");
+else __print(__out.map(n => n ? [n.val, n.random ? __out.indexOf(n.random) : null] : null));
+--- python
+class Solution:
+    def copyRandomBinaryTree(self, root):
+        m = {None: None}
+        def make(n):
+            if n is None:
+                return None
+            c = m[n] = Node(n.val)
+            c.left, c.right = make(n.left), make(n.right)
+            return c
+        res = make(root)
+        for o, c in m.items():
+            if o is not None:
+                c.random = m[o.random]
+        return res
+--- javascript
+var copyRandomBinaryTree = function(root) {
+    const m = new Map();
+    const make = n => { if (!n) return null; const c = new Node(n.val); m.set(n, c); c.left = make(n.left); c.right = make(n.right); return c; };
+    const res = make(root);
+    for (const [o, c] of m) c.random = o.random ? m.get(o.random) : null;
+    return res;
+};
+
+=== kth-largest-element-in-an-array
+title: Kth Largest Element in an Array
+difficulty: medium
+tags: array, heap, quickselect
+sig: findKthLargest(nums: int[], k: int) -> int
+--- description
+Given an integer array `nums` and an integer `k`, return the `k`-th largest element, meaning its position in sorted descending order, with duplicates counted.
+
+Can you do it without fully sorting the array?
+
+**Constraints**
+- `1 <= k <= nums.length <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+--- tests
+[[3,2,1,5,6,4], 2] => 5
+[[3,2,3,1,2,4,5,5,6], 4] => 4
+[[1], 1]
+[[2,1], 2]
+[[7,7,7,7], 3]
+[[-1,-5,3,9,0], 5]
+--- python
+class Solution:
+    def findKthLargest(self, nums, k):
+        return heapq.nlargest(k, nums)[-1]
+--- javascript
+var findKthLargest = function(nums, k) {
+    return nums.slice().sort((a, b) => b - a)[k - 1];
+};
+
+=== bst-average-less-than-k
+title: BST Average Less Than K
+difficulty: medium
+tags: tree, binary-search-tree, dfs
+sig: averageBelowK(root: TreeNode, k: int) -> float
+--- description
+*Beetcode original.*
+
+Given the `root` of a binary search tree and an integer `k`, return the **average** of all node values that are **strictly less than** `k`. If no value is less than `k`, return `0`.
+
+Answers within `10^-5` of the expected value are accepted.
+
+Use the BST ordering: whenever a node's value is `>= k`, its whole right subtree can be skipped.
+
+**Constraints**
+- `0 <= number of nodes <= 10^4`
+- `-10^5 <= Node.val, k <= 10^5`
+- All values are distinct.
+--- tests
+[[5,3,8,2,4,7,9], 6] => 3.5
+[[5,3,8,2,4,7,9], 2] => 0
+[[10], 11] => 10
+[[], 3]
+[[5,3,8,2,4,7,9], 100]
+[[20,10,30,5,15,25,35,1], 16]
+[[0,-10,10,-20,-5], 0]
+--- python
+class Solution:
+    def averageBelowK(self, root, k):
+        total = count = 0
+        st = [root]
+        while st:
+            n = st.pop()
+            if not n:
+                continue
+            if n.val < k:
+                total += n.val; count += 1
+                st.append(n.left); st.append(n.right)
+            else:
+                st.append(n.left)
+        return total / count if count else 0.0
+--- javascript
+var averageBelowK = function(root, k) {
+    const vals = [];
+    const walk = n => { if (!n) return; if (n.val < k) vals.push(n.val); walk(n.left); walk(n.right); };
+    walk(root);
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+};
+
+=== kth-largest-from-k-sorted-lists
+title: Kth Largest from K Sorted Lists
+difficulty: medium
+tags: heap, array, binary-search
+sig: kthLargest(lists: int[][], k: int) -> int
+--- description
+*Beetcode original.*
+
+You get several integer lists, each sorted in **ascending** order (some may be empty). Return the `k`-th largest value across all of them combined, with duplicates counted.
+
+Try to do better than merging everything: a heap seeded with the **last** element of each list lets you pull the largest values one at a time.
+
+**Constraints**
+- `1 <= lists.length <= 1000`
+- `0 <= lists[i].length <= 1000`
+- `1 <= k <=` total number of elements
+--- tests
+[[[1,4,9],[2,3,10],[5,6]], 3] => 6
+[[[1,2,3]], 1] => 3
+[[[5],[5],[5]], 2] => 5
+[[[], [1,3,5,7], []], 4]
+[[[-10,-5,0],[-7,-3],[2]], 5]
+[[[1,1,1,1],[2,2],[3]], 6]
+--- python
+class Solution:
+    def kthLargest(self, lists, k):
+        h = [(-l[-1], i, len(l) - 1) for i, l in enumerate(lists) if l]
+        heapq.heapify(h)
+        while True:
+            v, i, j = heapq.heappop(h)
+            k -= 1
+            if k == 0:
+                return -v
+            if j > 0:
+                heapq.heappush(h, (-lists[i][j - 1], i, j - 1))
+--- javascript
+var kthLargest = function(lists, k) {
+    return [].concat(...lists).sort((a, b) => b - a)[k - 1];
+};
+
+=== insert-into-a-sorted-circular-linked-list
+title: Insert into a Sorted Circular Linked List
+difficulty: medium
+tags: linked-list
+sig: insert(head: Node, insertVal: int) -> Node
+params: head, insertVal
+--- description
+You are given a node `head` from a **circular** linked list whose values are sorted in non-decreasing order when read around the circle. `head` can be any node, not necessarily the smallest.
+
+Insert a new node with value `insertVal` so the circle stays sorted, and return `head`. If the list is empty (`head` is null), create a one-node circle and return that node. When several positions are valid, any of them is accepted.
+
+In the tests, the list is written starting from `head`. The judge reads the circle in rotation-independent form, starting from its smallest value. You must return the original `head` when it is not null.
+
+**Constraints**
+- `0 <= number of nodes <= 5 * 10^4`
+- `-10^6 <= Node.val, insertVal <= 10^6`
+--- tests
+[[3,4,1], 2] => [1,2,3,4]
+[[], 1] => [1]
+[[1], 0] => [0,1]
+[[3,3,3], 4]
+[[3,3,3], 3]
+[[3,5,1], 6]
+[[3,5,1], 0]
+[[1,3,5], 4]
+[[2,2,3,3], 2]
+--- prelude.python
+class Node:
+    def __init__(self, val=None, next=None):
+        self.val = val
+        self.next = next
+--- prelude.javascript
+function _Node(val, next) { this.val = val; this.next = next === undefined ? null : next; }
+--- starter.python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, next=None):
+        self.val = val
+        self.next = next
+"""
+
+class Solution:
+    def insert(self, head: 'Optional[Node]', insertVal: int) -> 'Node':
+        pass
+--- starter.javascript
+/**
+ * // Definition for a _Node.
+ * function _Node(val, next) {
+ *     this.val = val;
+ *     this.next = next;
+ * };
+ */
+
+/**
+ * @param {_Node} head
+ * @param {number} insertVal
+ * @return {_Node}
+ */
+var insert = function(head, insertVal) {
+
+};
+--- harness.python
+_a, _v = json.loads(sys.stdin.read())
+_nodes = [Node(x) for x in _a]
+for _i in range(len(_nodes)): _nodes[_i].next = _nodes[(_i + 1) % len(_nodes)]
+_head = _nodes[0] if _nodes else None
+_res = Solution().insert(_head, _v)
+if _head is not None and _res is not _head:
+    _print("you must return the original head node")
+elif _res is None:
+    _print(None)
+else:
+    _vals = [_res.val]; _n = _res.next
+    while _n is not None and _n is not _res and len(_vals) <= len(_a) + 1:
+        _vals.append(_n.val); _n = _n.next
+    if _n is not _res or len(_vals) != len(_a) + 1:
+        _print("list is not a valid circle with exactly one new node")
+    else:
+        _print(min(_vals[i:] + _vals[:i] for i in range(len(_vals))))
+--- harness.javascript
+const __a = __args[0], __v = __args[1];
+const __nodes = __a.map(x => new _Node(x));
+__nodes.forEach((n, i) => { n.next = __nodes[(i + 1) % __nodes.length]; });
+const __head = __nodes.length ? __nodes[0] : null;
+const __res = insert(__head, __v);
+if (__head && __res !== __head) __print("you must return the original head node");
+else if (!__res) __print(null);
+else {
+    const vals = [__res.val]; let n = __res.next;
+    while (n && n !== __res && vals.length <= __a.length + 1) { vals.push(n.val); n = n.next; }
+    if (n !== __res || vals.length !== __a.length + 1) __print("list is not a valid circle with exactly one new node");
+    else {
+        let best = null;
+        for (let i = 0; i < vals.length; i++) {
+            const r = vals.slice(i).concat(vals.slice(0, i));
+            if (!best) { best = r; continue; }
+            for (let j = 0; j < r.length; j++) { if (r[j] !== best[j]) { if (r[j] < best[j]) best = r; break; } }
+        }
+        __print(best);
+    }
+}
+--- python
+class Solution:
+    def insert(self, head, insertVal):
+        node = Node(insertVal)
+        if head is None:
+            node.next = node
+            return node
+        cur = head
+        while True:
+            nxt = cur.next
+            if cur.val <= insertVal <= nxt.val:
+                break
+            if cur.val > nxt.val and (insertVal >= cur.val or insertVal <= nxt.val):
+                break
+            cur = nxt
+            if cur is head:
+                break
+        node.next = cur.next; cur.next = node
+        return head
+--- javascript
+var insert = function(head, insertVal) {
+    const node = new _Node(insertVal);
+    if (!head) { node.next = node; return node; }
+    let cur = head;
+    do {
+        const nx = cur.next;
+        if (cur.val <= insertVal && insertVal <= nx.val) break;
+        if (cur.val > nx.val && (insertVal >= cur.val || insertVal <= nx.val)) break;
+        cur = nx;
+    } while (cur !== head);
+    node.next = cur.next; cur.next = node;
+    return head;
+};
+
+=== random-pick-with-weight
+title: Random Pick with Weight
+difficulty: medium
+tags: array, binary-search, prefix-sum, design
+design: Solution
+methods:
+  Solution(w: int[])
+  pickIndex(target: int) -> int
+--- description
+You get positive weights `w`. Index `i` should be picked with probability `w[i] / sum(w)`.
+
+The standard trick is to lay the weights end to end on a number line: index 0 owns `1..w[0]`, index 1 owns the next `w[1]` numbers, and so on. Drawing a uniform random integer `target` in `[1, sum(w)]` then lands in exactly one index's range.
+
+To make the judge deterministic, **we draw the random number for you**. Implement:
+
+- `Solution(w)` does any preprocessing (hint: prefix sums).
+- `pickIndex(target)` returns the index whose range contains `target`. It must run in O(log n).
+
+In a real app you would generate `target = random.randint(1, total)` inside `pickIndex`.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each return value (`null` for the constructor).
+
+**Constraints**
+- `1 <= w.length <= 10^4`
+- `1 <= w[i] <= 10^5`
+--- tests
+[["Solution","pickIndex","pickIndex","pickIndex"],[[[1,3]],[1],[2],[4]]] => [null,0,1,1]
+[["Solution","pickIndex"],[[[1]],[1]]] => [null,0]
+[["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"],[[[2,5,3,4]],[1],[2],[3],[7],[14]]]
+[["Solution","pickIndex","pickIndex","pickIndex"],[[[100000,1,100000]],[100000],[100001],[100002]]]
+[["Solution","pickIndex","pickIndex","pickIndex","pickIndex"],[[[1,1,1,1,1]],[5],[1],[3],[4]]]
+--- python
+class Solution:
+    def __init__(self, w):
+        self.pre = list(accumulate(w))
+    def pickIndex(self, target):
+        return bisect_left(self.pre, target)
+--- javascript
+class Solution {
+    constructor(w) { this.w = w; }
+    pickIndex(target) { let s = 0; for (let i = 0; i < this.w.length; i++) { s += this.w[i]; if (target <= s) return i; } }
+}
+
+=== network-delay-time
+title: Network Delay Time
+difficulty: medium
+tags: graph, shortest-path, heap, dijkstra
+sig: networkDelayTime(times: int[][], n: int, k: int) -> int
+--- description
+A network has `n` nodes labeled `1` to `n`. `times[i] = [u, v, w]` means a signal takes `w` time units to travel the directed edge from `u` to `v`.
+
+A signal is sent from node `k`. Return how long it takes for **every** node to receive it, or `-1` if some node never does.
+
+**Constraints**
+- `1 <= k <= n <= 100`
+- `1 <= times.length <= 6000`
+- `0 <= w <= 100`, and all `(u, v)` pairs are distinct.
+--- tests
+[[[2,1,1],[2,3,1],[3,4,1]], 4, 2] => 2
+[[[1,2,1]], 2, 1] => 1
+[[[1,2,1]], 2, 2] => -1
+[[[1,2,1],[2,3,2],[1,3,4]], 3, 1]
+[[[1,2,1],[2,1,3]], 2, 2]
+[[[1,2,0],[1,3,5],[2,3,0]], 3, 1]
+[[[3,1,5],[3,2,2],[2,1,2],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,1,1]], 8, 3]
+--- python
+class Solution:
+    def networkDelayTime(self, times, n, k):
+        g = defaultdict(list)
+        for u, v, w in times:
+            g[u].append((v, w))
+        dist, h = {}, [(0, k)]
+        while h:
+            d, u = heapq.heappop(h)
+            if u in dist:
+                continue
+            dist[u] = d
+            for v, w in g[u]:
+                if v not in dist:
+                    heapq.heappush(h, (d + w, v))
+        return max(dist.values()) if len(dist) == n else -1
+--- javascript
+var networkDelayTime = function(times, n, k) {
+    const d = new Array(n + 1).fill(Infinity);
+    d[k] = 0;
+    for (let i = 1; i < n; i++) for (const [u, v, w] of times) if (d[u] + w < d[v]) d[v] = d[u] + w;
+    let best = 0;
+    for (let i = 1; i <= n; i++) best = Math.max(best, d[i]);
+    return best === Infinity ? -1 : best;
+};
+
+=== cheapest-flights-within-k-stops
+title: Cheapest Flights Within K Stops
+difficulty: medium
+tags: graph, shortest-path, bellman-ford, bfs
+sig: findCheapestPrice(n: int, flights: int[][], src: int, dst: int, k: int) -> int
+--- description
+There are `n` cities labeled `0` to `n - 1`. `flights[i] = [from, to, price]` is a one-way flight.
+
+Return the cheapest price from `src` to `dst` using **at most `k` stops** (that is, at most `k + 1` flights), or `-1` if no such route exists.
+
+**Constraints**
+- `1 <= n <= 100`
+- `0 <= flights.length <= n * (n - 1) / 2`
+- `1 <= price <= 10^4`
+- `0 <= k < n`, `src != dst`
+--- tests
+[4, [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], 0, 3, 1] => 700
+[3, [[0,1,100],[1,2,100],[0,2,500]], 0, 2, 1] => 200
+[3, [[0,1,100],[1,2,100],[0,2,500]], 0, 2, 0] => 500
+[3, [[0,1,100]], 0, 2, 1]
+[4, [[0,1,1],[0,2,5],[1,2,1],[2,3,1]], 0, 3, 1]
+[5, [[0,1,5],[1,2,5],[0,3,2],[3,1,2],[1,4,1],[4,2,1]], 0, 2, 2]
+--- python
+class Solution:
+    def findCheapestPrice(self, n, flights, src, dst, k):
+        cost = [float('inf')] * n; cost[src] = 0
+        for _ in range(k + 1):
+            nxt = cost[:]
+            for u, v, p in flights:
+                if cost[u] + p < nxt[v]:
+                    nxt[v] = cost[u] + p
+            cost = nxt
+        return -1 if cost[dst] == float('inf') else cost[dst]
+--- javascript
+var findCheapestPrice = function(n, flights, src, dst, k) {
+    const g = Array.from({ length: n }, () => []);
+    for (const [u, v, p] of flights) g[u].push([v, p]);
+    let best = Infinity;
+    const dfs = (u, cost, stops) => {
+        if (cost >= best) return;
+        if (u === dst) { best = cost; return; }
+        if (stops > k) return;
+        for (const [v, p] of g[u]) dfs(v, cost + p, stops + 1);
+    };
+    dfs(src, 0, 0);
+    return best === Infinity ? -1 : best;
+};
+
+=== sort-an-array
+title: Sort an Array (Quick Sort)
+difficulty: medium
+tags: array, sorting, divide-and-conquer
+sig: sortArray(nums: int[]) -> int[]
+--- description
+Sort `nums` in ascending order and return it, **without** calling any built-in sort.
+
+Implement **quicksort** (try a random pivot or three-way partitioning so arrays full of duplicates do not degrade to O(n²)). Aim for O(n log n) expected time.
+
+**Constraints**
+- `1 <= nums.length <= 5 * 10^4`
+- `-5 * 10^4 <= nums[i] <= 5 * 10^4`
+--- tests
+[[5,2,3,1]] => [1,2,3,5]
+[[5,1,1,2,0,0]] => [0,0,1,1,2,5]
+[[1]]
+[[2,2,2,2,2]]
+[[-4,0,7,4,9,-5,-1,0,-7,-1]]
+[[10,9,8,7,6,5,4,3,2,1]]
+--- python
+class Solution:
+    def sortArray(self, nums):
+        def qs(a):
+            if len(a) <= 1:
+                return a
+            p = a[random.randrange(len(a))]
+            return qs([x for x in a if x < p]) + [x for x in a if x == p] + qs([x for x in a if x > p])
+        return qs(nums)
+--- javascript
+var sortArray = function(nums) {
+    return nums.slice().sort((a, b) => a - b);
+};
+
+=== number-of-connected-components-in-an-undirected-graph
+title: Number of Connected Components in an Undirected Graph
+difficulty: medium
+tags: graph, union-find, dfs
+sig: countComponents(n: int, edges: int[][]) -> int
+--- description
+A graph has `n` nodes labeled `0` to `n - 1`, and `edges[i] = [a, b]` is an undirected edge. Return the number of connected components.
+
+**Constraints**
+- `1 <= n <= 2000`
+- `0 <= edges.length <= 5000`
+- No repeated edges.
+--- tests
+[5, [[0,1],[1,2],[3,4]]] => 2
+[5, [[0,1],[1,2],[2,3],[3,4]]] => 1
+[1, []] => 1
+[4, []]
+[6, [[0,1],[2,3],[4,5],[1,2]]]
+[3, [[0,1],[1,2],[2,0]]]
+--- python
+class Solution:
+    def countComponents(self, n, edges):
+        parent = list(range(n))
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]; x = parent[x]
+            return x
+        comps = n
+        for a, b in edges:
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[ra] = rb; comps -= 1
+        return comps
+--- javascript
+var countComponents = function(n, edges) {
+    const g = Array.from({ length: n }, () => []), seen = new Array(n).fill(false);
+    for (const [a, b] of edges) { g[a].push(b); g[b].push(a); }
+    let c = 0;
+    for (let i = 0; i < n; i++) {
+        if (seen[i]) continue;
+        c++; const st = [i]; seen[i] = true;
+        while (st.length) { const u = st.pop(); for (const v of g[u]) if (!seen[v]) { seen[v] = true; st.push(v); } }
+    }
+    return c;
+};

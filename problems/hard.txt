@@ -1,0 +1,860 @@
+=== minimum-window-substring
+title: Minimum Window Substring
+difficulty: hard
+tags: string, sliding-window, hash-map
+sig: minWindow(s: str, t: str) -> str
+--- description
+Given strings `s` and `t`, return the **shortest substring** of `s` that contains every character of `t`, counting duplicates (if `t` has two `a`s, the window needs at least two `a`s). If no such window exists, return `""`.
+
+The tests are built so the answer is unique.
+
+**Constraints**
+- `1 <= s.length, t.length <= 10^5`
+- upper- and lowercase English letters
+
+**Follow-up:** O(m + n) time?
+--- tests
+["ADOBECODEBANC", "ABC"] => "BANC"
+["a", "a"] => "a"
+["a", "aa"] => ""
+["ab", "b"]
+["bba", "ab"]
+["cabwefgewcwaefgcf", "cae"]
+["aaflslflsldkalskaaa", "aaa"]
+["xyz", "Z"]
+--- python
+class Solution:
+    def minWindow(self, s, t):
+        need, missing = Counter(t), len(t)
+        i = best_i = 0; best_j = None
+        for j, c in enumerate(s, 1):
+            if need[c] > 0:
+                missing -= 1
+            need[c] -= 1
+            if missing == 0:
+                while need[s[i]] < 0:
+                    need[s[i]] += 1; i += 1
+                if best_j is None or j - i < best_j - best_i:
+                    best_i, best_j = i, j
+                need[s[i]] += 1; missing += 1; i += 1
+        return "" if best_j is None else s[best_i:best_j]
+--- javascript
+var minWindow = function(s, t) {
+    const need = {};
+    for (const c of t) need[c] = (need[c] || 0) + 1;
+    let best = '';
+    for (let i = 0; i < s.length; i++) {
+        const have = {}; let ok = 0;
+        const kinds = Object.keys(need).length;
+        for (let j = i; j < s.length; j++) {
+            const c = s[j];
+            have[c] = (have[c] || 0) + 1;
+            if (need[c] && have[c] === need[c]) ok++;
+            if (ok === kinds) { if (!best || j - i + 1 < best.length) best = s.slice(i, j + 1); break; }
+        }
+    }
+    return best;
+};
+
+=== binary-tree-maximum-path-sum
+title: Binary Tree Maximum Path Sum
+difficulty: hard
+tags: tree, dfs, dynamic-programming
+sig: maxPathSum(root: TreeNode) -> int
+--- description
+A **path** is a sequence of nodes where each adjacent pair is connected by an edge, and no node appears twice. It can start and end anywhere and does not have to pass through the root. A path's sum is the total of its node values.
+
+Given a non-empty binary tree, return the maximum path sum.
+
+**Constraints**
+- `1 <= number of nodes <= 3 * 10^4`
+- `-1000 <= Node.val <= 1000`
+--- tests
+[[1,2,3]] => 6
+[[-10,9,20,null,null,15,7]] => 42
+[[-3]] => -3
+[[2,-1]]
+[[-2,-1,-3]]
+[[5,4,8,11,null,13,4,7,2,null,null,null,1]]
+[[1,-2,3,4,null,null,-6,2]]
+--- python
+class Solution:
+    def maxPathSum(self, root):
+        best = float('-inf')
+        def gain(n):
+            nonlocal best
+            if not n:
+                return 0
+            l, r = max(gain(n.left), 0), max(gain(n.right), 0)
+            best = max(best, n.val + l + r)
+            return n.val + max(l, r)
+        gain(root)
+        return best
+--- javascript
+var maxPathSum = function(root) {
+    let best = -Infinity;
+    const gain = n => { if (!n) return 0; const l = Math.max(gain(n.left), 0), r = Math.max(gain(n.right), 0); best = Math.max(best, n.val + l + r); return n.val + Math.max(l, r); };
+    gain(root);
+    return best;
+};
+
+=== word-search-ii
+title: Word Search II
+difficulty: hard
+tags: trie, backtracking, matrix
+sig: findWords(board: str[][], words: str[]) -> str[]
+compare: unordered
+--- description
+Given an `m x n` grid of letters and a list of `words`, return every word that can be spelled in the grid by moving between **horizontally or vertically** adjacent cells, using each cell at most once per word. Each found word appears once, and the result can be in any order.
+
+**Constraints**
+- `1 <= m, n <= 12`
+- `1 <= words.length <= 3 * 10^4`, `1 <= words[i].length <= 10`
+- All words are distinct lowercase strings.
+
+**Hint:** put the words in a trie so one DFS can match many words at once.
+--- tests
+[[["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], ["oath","pea","eat","rain"]] => ["eat","oath"]
+[[["a","b"],["c","d"]], ["abcb"]] => []
+[[["a"]], ["a","b"]] => ["a"]
+[[["a","b"],["c","d"]], ["ab","cb","ad","bd","ac","ca","da","bc","db","adcb","dabc","abb","acb"]]
+[[["a","a"]], ["aaa"]]
+[[["o","a","b","n"],["o","t","a","e"],["a","h","k","r"],["a","f","l","v"]], ["oa","oaa"]]
+--- python
+class Solution:
+    def findWords(self, board, words):
+        trie = {}
+        for w in words:
+            n = trie
+            for c in w:
+                n = n.setdefault(c, {})
+            n['$'] = w
+        m, k, out = len(board), len(board[0]), []
+        def dfs(i, j, parent):
+            c = board[i][j]; node = parent[c]
+            if '$' in node:
+                out.append(node.pop('$'))
+            board[i][j] = '#'
+            for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)):
+                if 0 <= x < m and 0 <= y < k and board[x][y] in node:
+                    dfs(x, y, node)
+            board[i][j] = c
+            if not node:
+                parent.pop(c)
+        for i in range(m):
+            for j in range(k):
+                if board[i][j] in trie:
+                    dfs(i, j, trie)
+        return out
+--- javascript
+var findWords = function(board, words) {
+    const m = board.length, n = board[0].length;
+    const exist = word => {
+        const used = new Set();
+        const go = (i, j, k) => {
+            if (k === word.length) return true;
+            if (i < 0 || j < 0 || i >= m || j >= n || used.has(i * n + j) || board[i][j] !== word[k]) return false;
+            used.add(i * n + j);
+            const ok = go(i + 1, j, k + 1) || go(i - 1, j, k + 1) || go(i, j + 1, k + 1) || go(i, j - 1, k + 1);
+            used.delete(i * n + j);
+            return ok;
+        };
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (go(i, j, 0)) return true;
+        return false;
+    };
+    return words.filter(exist);
+};
+
+=== sudoku-solver
+title: Sudoku Solver
+difficulty: hard
+tags: backtracking, matrix, hash-set
+sig: solveSudoku(board: str[][]) -> void @0
+--- description
+Fill in the empty cells (`"."`) of a 9x9 Sudoku board, **in place**, so that:
+
+- each row contains the digits `1`-`9` exactly once,
+- each column contains the digits `1`-`9` exactly once, and
+- each of the nine 3x3 boxes contains the digits `1`-`9` exactly once.
+
+Every puzzle has exactly one solution. The judge reads `board` after your function returns.
+
+**Constraints**
+- `board` is 9x9, with digits `"1"`-`"9"` or `"."`.
+--- tests
+[[["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]] => [["5","3","4","6","7","8","9","1","2"],["6","7","2","1","9","5","3","4","8"],["1","9","8","3","4","2","5","6","7"],["8","5","9","7","6","1","4","2","3"],["4","2","6","8","5","3","7","9","1"],["7","1","3","9","2","4","8","5","6"],["9","6","1","5","3","7","2","8","4"],["2","8","7","4","1","9","6","3","5"],["3","4","5","2","8","6","1","7","9"]]
+[[[".",".",".",".",".",".",".","1","4"],[".",".","8","4","1",".","5",".","."],["1","5",".","3",".","7","2",".","6"],[".",".","9",".",".",".",".",".","."],[".","2",".","1","9",".",".",".","8"],[".",".","5",".","7","2",".",".","9"],["4",".",".","7",".","1",".",".","5"],["6",".",".",".",".",".","4",".","1"],[".","7",".",".","4","6",".",".","."]]]
+[[["6",".",".",".",".",".","7","8","."],["7","4",".","6","3",".",".","2","."],["5",".",".",".",".","8",".",".","."],[".","9",".","3",".",".","4",".","."],["1",".",".",".","8",".",".",".","."],[".",".","4",".",".",".","5",".","3"],[".",".",".",".","7","1",".",".","."],[".",".","1","8","6","9",".",".","."],["9","7",".",".",".",".",".","4","."]]]
+--- python
+class Solution:
+    def solveSudoku(self, board):
+        rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]
+        empty = []
+        for r in range(9):
+            for c in range(9):
+                d = board[r][c]
+                if d == '.':
+                    empty.append((r, c))
+                else:
+                    rows[r].add(d); cols[c].add(d); boxes[r // 3 * 3 + c // 3].add(d)
+        def go(k):
+            if k == len(empty):
+                return True
+            r, c = empty[k]; b = r // 3 * 3 + c // 3
+            for d in '123456789':
+                if d not in rows[r] and d not in cols[c] and d not in boxes[b]:
+                    board[r][c] = d; rows[r].add(d); cols[c].add(d); boxes[b].add(d)
+                    if go(k + 1):
+                        return True
+                    rows[r].discard(d); cols[c].discard(d); boxes[b].discard(d)
+            board[r][c] = '.'
+            return False
+        go(0)
+--- javascript
+var solveSudoku = function(board) {
+    const ok = (r, c, d) => {
+        for (let k = 0; k < 9; k++) {
+            if (board[r][k] === d || board[k][c] === d) return false;
+            if (board[3 * Math.floor(r / 3) + Math.floor(k / 3)][3 * Math.floor(c / 3) + k % 3] === d) return false;
+        }
+        return true;
+    };
+    const go = () => {
+        for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+            if (board[r][c] !== '.') continue;
+            for (let d = 1; d <= 9; d++) {
+                const s = String(d);
+                if (ok(r, c, s)) { board[r][c] = s; if (go()) return true; board[r][c] = '.'; }
+            }
+            return false;
+        }
+        return true;
+    };
+    go();
+};
+
+=== trapping-rain-water
+title: Trapping Rain Water
+difficulty: hard
+tags: array, two-pointers, stack, dynamic-programming
+sig: trap(height: int[]) -> int
+--- description
+`height` describes an elevation map of bars, each 1 unit wide. Return how many units of rain water are trapped between the bars after it rains.
+
+**Constraints**
+- `1 <= height.length <= 2 * 10^4`
+- `0 <= height[i] <= 10^5`
+--- tests
+[[0,1,0,2,1,0,1,3,2,1,2,1]] => 6
+[[4,2,0,3,2,5]] => 9
+[[1]] => 0
+[[3,0,3]]
+[[1,2,3,4,5]]
+[[5,4,1,2]]
+[[0,0,0]]
+[[5,2,1,2,1,5]]
+--- python
+class Solution:
+    def trap(self, height):
+        i, j, lm, rm, water = 0, len(height) - 1, 0, 0, 0
+        while i < j:
+            if height[i] < height[j]:
+                lm = max(lm, height[i]); water += lm - height[i]; i += 1
+            else:
+                rm = max(rm, height[j]); water += rm - height[j]; j -= 1
+        return water
+--- javascript
+var trap = function(height) {
+    const n = height.length, L = new Array(n), R = new Array(n);
+    for (let i = 0; i < n; i++) L[i] = Math.max(height[i], i ? L[i - 1] : 0);
+    for (let i = n - 1; i >= 0; i--) R[i] = Math.max(height[i], i < n - 1 ? R[i + 1] : 0);
+    let w = 0;
+    for (let i = 0; i < n; i++) w += Math.min(L[i], R[i]) - height[i];
+    return w;
+};
+
+=== serialize-and-deserialize-binary-tree
+title: Serialize and Deserialize Binary Tree
+difficulty: hard
+tags: tree, design, bfs, dfs, string
+params: root
+--- description
+Design a way to turn a binary tree into a **string** and back again. Any format you like is fine, as long as `deserialize(serialize(root))` rebuilds a tree with exactly the original structure and values.
+
+The judge serializes the test tree with your code, deserializes that string with your code, and compares the rebuilt tree with the original. Do not use global or static variables to pass the tree along; the string must carry all the information.
+
+**Constraints**
+- `0 <= number of nodes <= 10^4`
+- `-1000 <= Node.val <= 1000`
+--- tests
+[[1,2,3,null,null,4,5]] => [1,2,3,null,null,4,5]
+[[]] => []
+[[1]]
+[[-1,-2,-3]]
+[[1,null,2,null,3,null,4]]
+[[5,4,7,3,null,2,null,-1,null,9]]
+[[1000,-1000,0,null,999]]
+--- starter.python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Codec:
+
+    def serialize(self, root: Optional[TreeNode]) -> str:
+        """Encodes a tree to a single string."""
+        pass
+
+    def deserialize(self, data: str) -> Optional[TreeNode]:
+        """Decodes your encoded data to tree."""
+        pass
+--- starter.javascript
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+
+/**
+ * Encodes a tree to a single string.
+ *
+ * @param {TreeNode} root
+ * @return {string}
+ */
+var serialize = function(root) {
+
+};
+
+/**
+ * Decodes your encoded data to tree.
+ *
+ * @param {string} data
+ * @return {TreeNode}
+ */
+var deserialize = function(data) {
+
+};
+--- harness.python
+_root = _to_tree(json.loads(sys.stdin.read())[0])
+_s = Codec().serialize(_root)
+if not isinstance(_s, str):
+    _print("serialize must return a string")
+else:
+    _print(_from_tree(Codec().deserialize(_s)))
+--- harness.javascript
+const __s = serialize(__toTree(__args[0]));
+if (typeof __s !== 'string') __print("serialize must return a string");
+else __print(__fromTree(deserialize(__s)));
+--- python
+class Codec:
+    def serialize(self, root):
+        out = []
+        def go(n):
+            if not n:
+                out.append('#'); return
+            out.append(str(n.val)); go(n.left); go(n.right)
+        go(root)
+        return ' '.join(out)
+    def deserialize(self, data):
+        it = iter(data.split())
+        def go():
+            v = next(it)
+            if v == '#':
+                return None
+            n = TreeNode(int(v)); n.left = go(); n.right = go()
+            return n
+        return go()
+--- javascript
+var serialize = function(root) {
+    const out = [], q = [root];
+    let qi = 0;
+    while (qi < q.length) { const n = q[qi++]; if (!n) { out.push('null'); continue; } out.push(n.val); q.push(n.left, n.right); }
+    return out.join(',');
+};
+var deserialize = function(data) {
+    const v = data.split(',').map(x => x === 'null' ? null : Number(x));
+    if (v[0] === null) return null;
+    const root = new TreeNode(v[0]), q = [root];
+    let qi = 0, i = 1;
+    while (qi < q.length) {
+        const n = q[qi++];
+        if (v[i] !== null) { n.left = new TreeNode(v[i]); q.push(n.left); } i++;
+        if (v[i] !== null) { n.right = new TreeNode(v[i]); q.push(n.right); } i++;
+    }
+    return root;
+};
+
+=== n-queens
+title: N-Queens
+difficulty: hard
+tags: backtracking
+sig: solveNQueens(n: int) -> str[][]
+compare: unordered
+--- description
+Place `n` queens on an `n x n` chessboard so that no two attack each other (no shared row, column or diagonal).
+
+Return **every** distinct solution, in any order. Each solution is a list of `n` strings, one per row, using `'Q'` for a queen and `'.'` for an empty square.
+
+**Constraints**
+- `1 <= n <= 9`
+--- tests
+[4] => [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+[1] => [["Q"]]
+[2] => []
+[3]
+[5]
+[6]
+--- python
+class Solution:
+    def solveNQueens(self, n):
+        out, cols = [], []
+        def go(r, used, d1, d2):
+            if r == n:
+                out.append(['.' * c + 'Q' + '.' * (n - c - 1) for c in cols]); return
+            for c in range(n):
+                if c not in used and r - c not in d1 and r + c not in d2:
+                    cols.append(c)
+                    go(r + 1, used | {c}, d1 | {r - c}, d2 | {r + c})
+                    cols.pop()
+        go(0, set(), set(), set())
+        return out
+--- javascript
+var solveNQueens = function(n) {
+    const out = [], q = [];
+    const safe = (r, c) => q.every((qc, qr) => qc !== c && Math.abs(qc - c) !== r - qr);
+    const go = r => {
+        if (r === n) { out.push(q.map(c => '.'.repeat(c) + 'Q' + '.'.repeat(n - c - 1))); return; }
+        for (let c = 0; c < n; c++) if (safe(r, c)) { q.push(c); go(r + 1); q.pop(); }
+    };
+    go(0);
+    return out;
+};
+
+=== alien-dictionary
+title: Alien Dictionary
+difficulty: hard
+tags: graph, topological-sort, string
+sig: alienOrder(words: str[]) -> str
+compare: alien
+--- description
+An alien language uses lowercase English letters in an unknown order. You get a list of `words` that is already **sorted** in that alien order.
+
+Return a string of the **unique letters that appear in `words`**, arranged in an order consistent with the sorting. If several orders work, any of them is accepted. If the list cannot be sorted under any order (for example, a word comes before its own prefix, like `"abc"` before `"ab"`), return `""`.
+
+**Constraints**
+- `1 <= words.length <= 100`
+- `1 <= words[i].length <= 100`
+--- tests
+[["wrt","wrf","er","ett","rftt"]] => "wertf"
+[["z","x"]] => "zx"
+[["z","x","z"]] => ""
+[["abc","ab"]] => ""
+[["z","z"]]
+[["ab","adc"]]
+[["ac","ab","zc","zb"]]
+[["a","b","ca","cc"]]
+[["x"]]
+--- python
+class Solution:
+    def alienOrder(self, words):
+        g = {c: set() for w in words for c in w}
+        indeg = {c: 0 for c in g}
+        for a, b in zip(words, words[1:]):
+            for x, y in zip(a, b):
+                if x != y:
+                    if y not in g[x]:
+                        g[x].add(y); indeg[y] += 1
+                    break
+            else:
+                if len(a) > len(b):
+                    return ""
+        q = deque(sorted(c for c in g if indeg[c] == 0)); out = []
+        while q:
+            c = q.popleft(); out.append(c)
+            for d in sorted(g[c]):
+                indeg[d] -= 1
+                if indeg[d] == 0:
+                    q.append(d)
+        return ''.join(out) if len(out) == len(g) else ""
+--- javascript
+var alienOrder = function(words) {
+    const g = new Map();
+    for (const w of words) for (const c of w) if (!g.has(c)) g.set(c, new Set());
+    for (let i = 0; i + 1 < words.length; i++) {
+        const a = words[i], b = words[i + 1];
+        let j = 0;
+        while (j < a.length && j < b.length && a[j] === b[j]) j++;
+        if (j < a.length && j < b.length) g.get(a[j]).add(b[j]);
+        else if (a.length > b.length) return '';
+    }
+    const state = new Map(), out = [];
+    const dfs = c => { if (state.get(c) === 1) return false; if (state.get(c) === 2) return true; state.set(c, 1); for (const d of g.get(c)) if (!dfs(d)) return false; state.set(c, 2); out.push(c); return true; };
+    for (const c of g.keys()) if (!dfs(c)) return '';
+    return out.reverse().join('');
+};
+
+=== shortest-distance-from-all-buildings
+title: Shortest Distance from All Buildings
+difficulty: hard
+tags: matrix, bfs
+sig: shortestDistance(grid: int[][]) -> int
+--- description
+In an `m x n` grid, `0` is empty land you can walk through, `1` is a building, and `2` is an obstacle. You want to build a house on an **empty** cell that minimizes the total travel distance to **all** buildings, moving only up, down, left and right. You cannot walk through buildings or obstacles.
+
+Return that minimum total distance, or `-1` if no empty cell can reach every building.
+
+**Constraints**
+- `1 <= m, n <= 50`
+- There is at least one building.
+--- tests
+[[[1,0,2,0,1],[0,0,0,0,0],[0,0,1,0,0]]] => 7
+[[[1,0]]] => 1
+[[[1]]] => -1
+[[[1,2,0]]]
+[[[1,0,1]]]
+[[[0,2,1],[1,0,2],[0,1,0]]]
+[[[1,1,1,1,1,0],[0,0,0,0,0,1],[0,1,1,0,0,1],[1,0,0,1,0,1],[1,0,1,0,0,1],[1,0,0,0,0,1],[0,1,1,1,1,0]]]
+--- python
+class Solution:
+    def shortestDistance(self, grid):
+        m, n = len(grid), len(grid[0])
+        total = [[0] * n for _ in range(m)]; reach = [[0] * n for _ in range(m)]
+        buildings = [(i, j) for i in range(m) for j in range(n) if grid[i][j] == 1]
+        for bi, bj in buildings:
+            seen = [[False] * n for _ in range(m)]; q = deque([(bi, bj, 0)]); seen[bi][bj] = True
+            while q:
+                a, b, d = q.popleft()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and not seen[x][y] and grid[x][y] == 0:
+                        seen[x][y] = True; total[x][y] += d + 1; reach[x][y] += 1; q.append((x, y, d + 1))
+        best = min((total[i][j] for i in range(m) for j in range(n) if grid[i][j] == 0 and reach[i][j] == len(buildings)), default=-1)
+        return best
+--- javascript
+var shortestDistance = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    const bfs = (si, sj) => {
+        const d = Array.from({ length: m }, () => new Array(n).fill(-1)), q = [[si, sj]];
+        d[si][sj] = 0;
+        for (let k = 0; k < q.length; k++) {
+            const [a, b] = q[k];
+            for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && d[x][y] < 0 && grid[x][y] !== 2) {
+                    d[x][y] = d[a][b] + 1;
+                    if (grid[x][y] === 0) q.push([x, y]);
+                }
+        }
+        return d;
+    };
+    let best = -1;
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+        if (grid[i][j] !== 0) continue;
+        const d = bfs(i, j);
+        let sum = 0, ok = true;
+        for (let a = 0; a < m && ok; a++) for (let b = 0; b < n; b++) if (grid[a][b] === 1) { if (d[a][b] < 0) { ok = false; break; } sum += d[a][b]; }
+        if (ok && (best < 0 || sum < best)) best = sum;
+    }
+    return best;
+};
+
+=== sliding-window-maximum
+title: Sliding Window Maximum
+difficulty: hard
+tags: array, sliding-window, monotonic-queue, heap
+sig: maxSlidingWindow(nums: int[], k: int) -> int[]
+--- description
+A window of size `k` slides over `nums` from left to right, one position at a time. Return the maximum value in each window position.
+
+Aim for O(n).
+
+**Constraints**
+- `1 <= k <= nums.length <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+--- tests
+[[1,3,-1,-3,5,3,6,7], 3] => [3,3,5,5,6,7]
+[[1], 1] => [1]
+[[1,-1], 1]
+[[9,11], 2]
+[[4,-2], 2]
+[[7,2,4], 2]
+[[1,3,1,2,0,5], 3]
+[[10,9,8,7,6,5,4], 4]
+--- python
+class Solution:
+    def maxSlidingWindow(self, nums, k):
+        dq, out = deque(), []
+        for i, x in enumerate(nums):
+            while dq and nums[dq[-1]] <= x:
+                dq.pop()
+            dq.append(i)
+            if dq[0] <= i - k:
+                dq.popleft()
+            if i >= k - 1:
+                out.append(nums[dq[0]])
+        return out
+--- javascript
+var maxSlidingWindow = function(nums, k) {
+    const out = [];
+    for (let i = 0; i + k <= nums.length; i++) out.push(Math.max(...nums.slice(i, i + k)));
+    return out;
+};
+
+=== merge-k-sorted-lists
+title: Merge k Sorted Lists
+difficulty: hard
+tags: linked-list, heap, divide-and-conquer
+sig: mergeKLists(lists: ListNode[]) -> ListNode
+--- description
+You get an array of `k` linked lists, each sorted in ascending order. Merge them all into one sorted linked list and return its head.
+
+In JavaScript, a `MinPriorityQueue` is available (`enqueue`, `dequeue`, `front`, `size`, `isEmpty`). You can pass it a priority function, like `new MinPriorityQueue(node => node.val)`.
+
+**Constraints**
+- `0 <= k <= 10^4`
+- `0 <= lists[i].length <= 500`
+- The total number of nodes is at most `10^4`.
+--- tests
+[[[1,4,5],[1,3,4],[2,6]]] => [1,1,2,3,4,4,5,6]
+[[]] => []
+[[[]]] => []
+[[[],[1]]]
+[[[5],[1],[3]]]
+[[[-2,-1,-1,-1],[]]]
+[[[1,2,3],[4,5,6],[0,7]]]
+--- python
+class Solution:
+    def mergeKLists(self, lists):
+        h = [(n.val, i, n) for i, n in enumerate(lists) if n]
+        heapq.heapify(h)
+        dummy = cur = ListNode()
+        while h:
+            v, i, n = heapq.heappop(h)
+            cur.next = n; cur = n
+            if n.next:
+                heapq.heappush(h, (n.next.val, i, n.next))
+        return dummy.next
+--- javascript
+var mergeKLists = function(lists) {
+    const pq = new MinPriorityQueue(n => n.val);
+    for (const n of lists) if (n) pq.enqueue(n);
+    const d = new ListNode(); let c = d;
+    while (!pq.isEmpty()) { const n = pq.dequeue(); c.next = n; c = n; if (n.next) pq.enqueue(n.next); }
+    c.next = null;
+    return d.next;
+};
+
+=== find-median-from-data-stream
+title: Find Median from Data Stream
+difficulty: hard
+tags: heap, design, data-stream
+design: MedianFinder
+methods:
+  MedianFinder()
+  addNum(num: int) -> void
+  findMedian() -> float
+--- description
+The **median** is the middle value of a sorted list; with an even count, it is the average of the two middle values.
+
+Implement `MedianFinder`:
+
+- `addNum(num)` adds an integer from the stream.
+- `findMedian()` returns the median of everything added so far. Answers within `10^-5` are accepted.
+
+`findMedian` is only called after at least one `addNum`.
+
+**How the tests work:** `operations` lists the method names called in order, and `arguments` gives each call's arguments. The expected output lists each return value, with `null` for methods that return nothing.
+
+**Constraints**
+- `-10^5 <= num <= 10^5`
+- At most `5 * 10^4` calls.
+
+**Follow-up:** what if every number were in `[0, 100]`?
+--- tests
+[["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"],[[],[1],[2],[],[3],[]]] => [null,null,null,1.5,null,2.0]
+[["MedianFinder","addNum","findMedian"],[[],[-5],[]]]
+[["MedianFinder","addNum","addNum","addNum","addNum","findMedian","addNum","findMedian"],[[],[6],[10],[2],[6],[],[5],[]]]
+[["MedianFinder","addNum","findMedian","addNum","findMedian","addNum","findMedian","addNum","findMedian","addNum","findMedian"],[[],[-1],[],[-2],[],[-3],[],[-4],[],[-5],[]]]
+[["MedianFinder","addNum","addNum","findMedian","addNum","addNum","findMedian"],[[],[100000],[-100000],[],[3],[3],[]]]
+--- python
+class MedianFinder:
+    def __init__(self):
+        self.lo, self.hi = [], []
+    def addNum(self, num):
+        heapq.heappush(self.lo, -num)
+        heapq.heappush(self.hi, -heapq.heappop(self.lo))
+        if len(self.hi) > len(self.lo):
+            heapq.heappush(self.lo, -heapq.heappop(self.hi))
+    def findMedian(self):
+        if len(self.lo) > len(self.hi):
+            return float(-self.lo[0])
+        return (-self.lo[0] + self.hi[0]) / 2
+--- javascript
+class MedianFinder {
+    constructor() { this.a = []; }
+    addNum(num) { let i = 0; while (i < this.a.length && this.a[i] < num) i++; this.a.splice(i, 0, num); }
+    findMedian() { const n = this.a.length; return n % 2 ? this.a[(n - 1) / 2] : (this.a[n / 2 - 1] + this.a[n / 2]) / 2; }
+}
+
+=== making-a-large-island
+title: Making A Large Island
+difficulty: hard
+tags: matrix, dfs, union-find
+sig: largestIsland(grid: int[][]) -> int
+--- description
+You get an `n x n` binary grid. You may change **at most one** `0` into a `1`.
+
+Return the size of the largest island possible afterwards. An island is a group of `1`s connected horizontally or vertically.
+
+**Constraints**
+- `1 <= n <= 500`
+--- tests
+[[[1,0],[0,1]]] => 3
+[[[1,1],[1,0]]] => 4
+[[[1,1],[1,1]]] => 4
+[[[0]]]
+[[[0,0],[0,0]]]
+[[[1,0,1],[0,0,0],[1,0,1]]]
+[[[1,1,0,1,1],[1,0,0,0,1],[0,0,1,0,0],[1,1,0,1,1]]]
+--- python
+class Solution:
+    def largestIsland(self, grid):
+        n = len(grid); label = 2; size = {}
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    st = [(i, j)]; grid[i][j] = label; s = 0
+                    while st:
+                        a, b = st.pop(); s += 1
+                        for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                            if 0 <= x < n and 0 <= y < n and grid[x][y] == 1:
+                                grid[x][y] = label; st.append((x, y))
+                    size[label] = s; label += 1
+        best = max(size.values(), default=0)
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 0:
+                    seen = {grid[x][y] for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)) if 0 <= x < n and 0 <= y < n and grid[x][y] > 1}
+                    best = max(best, 1 + sum(size[l] for l in seen))
+        return best
+--- javascript
+var largestIsland = function(grid) {
+    const n = grid.length;
+    const area = () => {
+        const seen = new Set(); let best = 0;
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+            if (grid[i][j] !== 1 || seen.has(i * n + j)) continue;
+            let s = 0; const st = [[i, j]]; seen.add(i * n + j);
+            while (st.length) { const [a, b] = st.pop(); s++; for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]]) if (x >= 0 && y >= 0 && x < n && y < n && grid[x][y] === 1 && !seen.has(x * n + y)) { seen.add(x * n + y); st.push([x, y]); } }
+            best = Math.max(best, s);
+        }
+        return best;
+    };
+    let best = area();
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (grid[i][j] === 0) { grid[i][j] = 1; best = Math.max(best, area()); grid[i][j] = 0; }
+    return best;
+};
+
+=== word-ladder
+title: Word Ladder
+difficulty: hard
+tags: graph, bfs, string, hash-set
+sig: ladderLength(beginWord: str, endWord: str, wordList: str[]) -> int
+--- description
+A **transformation sequence** goes from `beginWord` to `endWord`, changing exactly one letter per step, where every intermediate word and `endWord` must be in `wordList`. `beginWord` itself does not need to be in the list.
+
+Return the **number of words** in the shortest such sequence (counting `beginWord`), or `0` if none exists.
+
+**Constraints**
+- `1 <= beginWord.length <= 10`, and all words have the same length
+- `1 <= wordList.length <= 5000`
+- lowercase letters only, `beginWord != endWord`, and the words in `wordList` are unique
+--- tests
+["hit", "cog", ["hot","dot","dog","lot","log","cog"]] => 5
+["hit", "cog", ["hot","dot","dog","lot","log"]] => 0
+["a", "c", ["a","b","c"]] => 2
+["hot", "dog", ["hot","dog"]]
+["hot", "dog", ["hot","dog","dot"]]
+["lost", "cost", ["most","fist","lost","cost","fish"]]
+["red", "tax", ["ted","tex","red","tax","tad","den","rex","pee"]]
+--- python
+class Solution:
+    def ladderLength(self, beginWord, endWord, wordList):
+        words = set(wordList)
+        if endWord not in words:
+            return 0
+        q, seen = deque([(beginWord, 1)]), {beginWord}
+        while q:
+            w, d = q.popleft()
+            if w == endWord:
+                return d
+            for i in range(len(w)):
+                for c in string.ascii_lowercase:
+                    nw = w[:i] + c + w[i + 1:]
+                    if nw in words and nw not in seen:
+                        seen.add(nw); q.append((nw, d + 1))
+        return 0
+--- javascript
+var ladderLength = function(beginWord, endWord, wordList) {
+    const diff1 = (a, b) => { let d = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i] && ++d > 1) return false; return d === 1; };
+    let frontier = [beginWord], steps = 1;
+    const seen = new Set([beginWord]);
+    while (frontier.length) {
+        const next = [];
+        for (const w of frontier) {
+            if (w === endWord) return steps;
+            for (const v of wordList) if (!seen.has(v) && diff1(w, v)) { seen.add(v); next.push(v); }
+        }
+        frontier = next; steps++;
+    }
+    return 0;
+};
+
+=== median-of-two-sorted-arrays
+title: Median of Two Sorted Arrays
+difficulty: hard
+tags: array, binary-search, divide-and-conquer
+sig: findMedianSortedArrays(nums1: int[], nums2: int[]) -> float
+--- description
+Given two sorted arrays `nums1` and `nums2`, return the median of all their elements combined. Answers within `10^-5` are accepted.
+
+The target is **O(log (m + n))** time, so binary-search a partition instead of merging.
+
+**Constraints**
+- `0 <= m, n <= 1000`, `1 <= m + n <= 2000`
+- `-10^6 <= values <= 10^6`
+--- tests
+[[1,3], [2]] => 2.0
+[[1,2], [3,4]] => 2.5
+[[], [1]] => 1.0
+[[2], []]
+[[0,0], [0,0]]
+[[1,2,3,4,5], [6,7,8,9,10,11]]
+[[-5,3,6,12,15], [-12,-10,-6,-3,4,10]]
+[[1,1,1], [5,5,5,5]]
+--- python
+class Solution:
+    def findMedianSortedArrays(self, nums1, nums2):
+        a, b = (nums1, nums2) if len(nums1) <= len(nums2) else (nums2, nums1)
+        m, n = len(a), len(b); half = (m + n + 1) // 2
+        lo, hi = 0, m
+        while True:
+            i = (lo + hi) // 2; j = half - i
+            al = a[i - 1] if i else float('-inf'); ar = a[i] if i < m else float('inf')
+            bl = b[j - 1] if j else float('-inf'); br = b[j] if j < n else float('inf')
+            if al <= br and bl <= ar:
+                if (m + n) % 2:
+                    return float(max(al, bl))
+                return (max(al, bl) + min(ar, br)) / 2
+            if al > br:
+                hi = i - 1
+            else:
+                lo = i + 1
+--- javascript
+var findMedianSortedArrays = function(nums1, nums2) {
+    const a = nums1.concat(nums2).sort((x, y) => x - y), n = a.length;
+    return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2;
+};

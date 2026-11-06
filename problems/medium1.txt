@@ -1,0 +1,938 @@
+=== group-anagrams
+title: Group Anagrams
+difficulty: medium
+tags: array, string, hash-map
+sig: groupAnagrams(strs: str[]) -> str[][]
+compare: unordered_nested
+--- description
+Given an array of strings `strs`, group together the words that are anagrams of each other (same letters, same counts, any order). Return the groups in any order, and the words inside each group in any order.
+
+**Constraints**
+- `1 <= strs.length <= 10^4`
+- `0 <= strs[i].length <= 100`, lowercase English letters
+--- tests
+[["eat","tea","tan","ate","nat","bat"]] => [["bat"],["nat","tan"],["ate","eat","tea"]]
+[[""]] => [[""]]
+[["a"]] => [["a"]]
+[["",""]]
+[["abc","bca","cab","xyz","zyx","q"]]
+[["ab","ba","abc","ab"]]
+--- python
+class Solution:
+    def groupAnagrams(self, strs):
+        g = defaultdict(list)
+        for s in strs:
+            g[''.join(sorted(s))].append(s)
+        return list(g.values())
+--- javascript
+var groupAnagrams = function(strs) {
+    const g = new Map();
+    for (const s of strs) {
+        const k = s.split('').sort().join('');
+        if (!g.has(k)) g.set(k, []);
+        g.get(k).push(s);
+    }
+    return [...g.values()];
+};
+
+=== find-the-duplicate-number
+title: Find the Duplicate Number
+difficulty: medium
+tags: array, two-pointers, binary-search
+sig: findDuplicate(nums: int[]) -> int
+--- description
+`nums` holds `n + 1` integers, each in the range `[1, n]`. Exactly one value is repeated (possibly many times). Return that value.
+
+Do it **without modifying** `nums` and using only O(1) extra space.
+
+**Constraints**
+- `1 <= n <= 10^5`
+- `nums.length == n + 1`
+
+**Hint:** think of `i -> nums[i]` as a linked list.
+--- tests
+[[1,3,4,2,2]] => 2
+[[3,1,3,4,2]] => 3
+[[3,3,3,3,3]] => 3
+[[1,1]]
+[[2,5,9,6,9,3,8,9,7,1]]
+[[1,4,4,2,4]]
+--- python
+class Solution:
+    def findDuplicate(self, nums):
+        slow = fast = nums[0]
+        while True:
+            slow, fast = nums[slow], nums[nums[fast]]
+            if slow == fast:
+                break
+        slow = nums[0]
+        while slow != fast:
+            slow, fast = nums[slow], nums[fast]
+        return slow
+--- javascript
+var findDuplicate = function(nums) {
+    const seen = new Set();
+    for (const x of nums) { if (seen.has(x)) return x; seen.add(x); }
+};
+
+=== top-k-frequent-elements
+title: Top K Frequent Elements
+difficulty: medium
+tags: array, hash-map, heap, bucket-sort
+sig: topKFrequent(nums: int[], k: int) -> int[]
+compare: unordered
+--- description
+Given an integer array `nums` and an integer `k`, return the `k` values that occur most often. The answer is guaranteed to be unique, and it can be returned in any order.
+
+**Constraints**
+- `1 <= nums.length <= 10^5`
+- `1 <= k <=` number of distinct values
+
+**Follow-up:** better than O(n log n)?
+--- tests
+[[1,1,1,2,2,3], 2] => [1,2]
+[[1], 1] => [1]
+[[4,1,-1,2,-1,2,3], 2] => [-1,2]
+[[5,5,5,5,6,6,6,7,7,8], 3]
+[[3,0,1,0], 1]
+[[9,8,7,9,8,9], 3]
+--- python
+class Solution:
+    def topKFrequent(self, nums, k):
+        return [x for x, _ in Counter(nums).most_common(k)]
+--- javascript
+var topKFrequent = function(nums, k) {
+    const c = new Map();
+    for (const x of nums) c.set(x, (c.get(x) || 0) + 1);
+    return [...c.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(e => e[0]);
+};
+
+=== longest-substring-without-repeating-characters
+title: Longest Substring Without Repeating Characters
+difficulty: medium
+tags: string, sliding-window, hash-map
+sig: lengthOfLongestSubstring(s: str) -> int
+--- description
+Given a string `s`, return the length of the longest **contiguous** substring in which no character appears twice.
+
+**Constraints**
+- `0 <= s.length <= 5 * 10^4`
+- `s` may contain letters, digits, symbols and spaces.
+--- tests
+["abcabcbb"] => 3
+["bbbbb"] => 1
+["pwwkew"] => 3
+[""] => 0
+[" "]
+["dvdf"]
+["abba"]
+["tmmzuxt"]
+--- python
+class Solution:
+    def lengthOfLongestSubstring(self, s):
+        last, start, best = {}, 0, 0
+        for i, c in enumerate(s):
+            if last.get(c, -1) >= start:
+                start = last[c] + 1
+            last[c] = i
+            best = max(best, i - start + 1)
+        return best
+--- javascript
+var lengthOfLongestSubstring = function(s) {
+    const last = new Map();
+    let start = 0, best = 0;
+    for (let i = 0; i < s.length; i++) {
+        if (last.has(s[i]) && last.get(s[i]) >= start) start = last.get(s[i]) + 1;
+        last.set(s[i], i);
+        best = Math.max(best, i - start + 1);
+    }
+    return best;
+};
+
+=== find-all-anagrams-in-a-string
+title: Find All Anagrams in a String
+difficulty: medium
+tags: string, sliding-window, hash-map
+sig: findAnagrams(s: str, p: str) -> int[]
+compare: unordered
+--- description
+Given strings `s` and `p`, return every start index `i` such that the substring of `s` starting at `i` with length `p.length` is an anagram of `p`. Indices may be returned in any order.
+
+**Constraints**
+- `1 <= s.length, p.length <= 3 * 10^4`
+- lowercase English letters only
+--- tests
+["cbaebabacd", "abc"] => [0,6]
+["abab", "ab"] => [0,1,2]
+["a", "ab"] => []
+["aaaaa", "aa"]
+["baa", "aa"]
+["abcdefg", "gfe"]
+--- python
+class Solution:
+    def findAnagrams(self, s, p):
+        need, win, out = Counter(p), Counter(), []
+        for i, c in enumerate(s):
+            win[c] += 1
+            if i >= len(p):
+                o = s[i - len(p)]
+                win[o] -= 1
+                if win[o] == 0:
+                    del win[o]
+            if win == need:
+                out.append(i - len(p) + 1)
+        return out
+--- javascript
+var findAnagrams = function(s, p) {
+    const out = [];
+    const key = str => str.split('').sort().join('');
+    const kp = key(p);
+    for (let i = 0; i + p.length <= s.length; i++) if (key(s.substr(i, p.length)) === kp) out.push(i);
+    return out;
+};
+
+=== longest-consecutive-sequence
+title: Longest Consecutive Sequence
+difficulty: medium
+tags: array, hash-set
+sig: longestConsecutive(nums: int[]) -> int
+--- description
+Given an unsorted integer array `nums`, return the length of the longest run of consecutive integers (like `4, 5, 6, 7`) whose values all appear in `nums`. The order they appear in the array does not matter.
+
+Aim for O(n) time.
+
+**Constraints**
+- `0 <= nums.length <= 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+--- tests
+[[100,4,200,1,3,2]] => 4
+[[0,3,7,2,5,8,4,6,0,1]] => 9
+[[1,0,1,2]] => 3
+[[]] => 0
+[[5]]
+[[-1,-2,-3,10,11]]
+[[9,1,4,7,3,-1,0,5,8,-1,6]]
+--- python
+class Solution:
+    def longestConsecutive(self, nums):
+        s, best = set(nums), 0
+        for x in s:
+            if x - 1 not in s:
+                y = x
+                while y + 1 in s:
+                    y += 1
+                best = max(best, y - x + 1)
+        return best
+--- javascript
+var longestConsecutive = function(nums) {
+    if (!nums.length) return 0;
+    const a = [...new Set(nums)].sort((x, y) => x - y);
+    let best = 1, run = 1;
+    for (let i = 1; i < a.length; i++) { run = a[i] === a[i - 1] + 1 ? run + 1 : 1; best = Math.max(best, run); }
+    return best;
+};
+
+=== 3sum
+title: 3Sum
+difficulty: medium
+tags: array, two-pointers, sorting
+sig: threeSum(nums: int[]) -> int[][]
+compare: unordered_nested
+--- description
+Given an integer array `nums`, return every **distinct** triplet of values `[a, b, c]` taken from three different positions such that `a + b + c == 0`.
+
+No triplet may appear twice in the answer (as a set of values). The triplets, and the numbers inside each, can be in any order.
+
+**Constraints**
+- `3 <= nums.length <= 3000`
+- `-10^5 <= nums[i] <= 10^5`
+--- tests
+[[-1,0,1,2,-1,-4]] => [[-1,-1,2],[-1,0,1]]
+[[0,1,1]] => []
+[[0,0,0]] => [[0,0,0]]
+[[0,0,0,0]]
+[[-2,0,1,1,2]]
+[[3,0,-2,-1,1,2]]
+[[-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6]]
+--- python
+class Solution:
+    def threeSum(self, nums):
+        nums.sort(); out = []
+        for i in range(len(nums) - 2):
+            if i and nums[i] == nums[i - 1]:
+                continue
+            lo, hi = i + 1, len(nums) - 1
+            while lo < hi:
+                s = nums[i] + nums[lo] + nums[hi]
+                if s < 0:
+                    lo += 1
+                elif s > 0:
+                    hi -= 1
+                else:
+                    out.append([nums[i], nums[lo], nums[hi]])
+                    lo += 1
+                    while lo < hi and nums[lo] == nums[lo - 1]:
+                        lo += 1
+        return out
+--- javascript
+var threeSum = function(nums) {
+    const seen = new Set(), out = [];
+    for (let i = 0; i < nums.length; i++)
+        for (let j = i + 1; j < nums.length; j++)
+            for (let k = j + 1; k < nums.length; k++)
+                if (nums[i] + nums[j] + nums[k] === 0) {
+                    const t = [nums[i], nums[j], nums[k]].sort((a, b) => a - b), key = t.join(',');
+                    if (!seen.has(key)) { seen.add(key); out.push(t); }
+                }
+    return out;
+};
+
+=== longest-palindromic-substring
+title: Longest Palindromic Substring
+difficulty: medium
+tags: string, dynamic-programming, two-pointers
+sig: longestPalindrome(s: str) -> str
+compare: palindrome_substring
+--- description
+Given a string `s`, return its longest substring that reads the same forwards and backwards. If several have the maximum length, any of them is accepted.
+
+**Constraints**
+- `1 <= s.length <= 1000`
+- `s` contains only letters and digits.
+--- tests
+["babad"] => "bab"
+["cbbd"] => "bb"
+["a"] => "a"
+["ac"]
+["forgeeksskeegfor"]
+["abacdfgdcaba"]
+["aaaa"]
+--- python
+class Solution:
+    def longestPalindrome(self, s):
+        best = ""
+        for c in range(len(s)):
+            for l, r in ((c, c), (c, c + 1)):
+                while l >= 0 and r < len(s) and s[l] == s[r]:
+                    l -= 1; r += 1
+                if r - l - 1 > len(best):
+                    best = s[l + 1:r]
+        return best
+--- javascript
+var longestPalindrome = function(s) {
+    let best = '';
+    for (let i = 0; i < s.length; i++)
+        for (let j = s.length; j > i + best.length; j--) {
+            const t = s.slice(i, j);
+            if (t === t.split('').reverse().join('')) { best = t; break; }
+        }
+    return best;
+};
+
+=== linked-list-cycle-ii
+title: Linked List Cycle II
+difficulty: medium
+tags: linked-list, two-pointers
+sig: detectCycle(head: ListNode) -> ListNode
+params: head, pos
+--- description
+Given the `head` of a linked list, return the **node where the cycle begins**. If there is no cycle, return `null`/`None`. Do not modify the list.
+
+In the tests, `pos` is the index the tail's `next` points back to (`-1` means no cycle). The judge prints the **index** of the node you return, or `-1` if you return null.
+
+**Constraints**
+- `0 <= number of nodes <= 10^4`
+
+**Follow-up:** O(1) memory?
+--- tests
+[[3,2,0,-4], 1] => 1
+[[1,2], 0] => 0
+[[1], -1] => -1
+[[], -1]
+[[1,2,3,4,5,6], 3]
+[[1,2,3,4,5,6], 5]
+[[7,7,7,7], 2]
+--- harness.python
+_args = json.loads(sys.stdin.read())
+_nodes = [ListNode(v) for v in _args[0]]
+for _i in range(len(_nodes) - 1): _nodes[_i].next = _nodes[_i + 1]
+if _nodes and _args[1] >= 0: _nodes[-1].next = _nodes[_args[1]]
+_res = Solution().detectCycle(_nodes[0] if _nodes else None)
+_print(next((i for i, n in enumerate(_nodes) if n is _res), -1))
+--- harness.javascript
+const __nodes = __args[0].map(v => new ListNode(v));
+for (let i = 0; i + 1 < __nodes.length; i++) __nodes[i].next = __nodes[i + 1];
+if (__nodes.length && __args[1] >= 0) __nodes[__nodes.length - 1].next = __nodes[__args[1]];
+const __res = detectCycle(__nodes.length ? __nodes[0] : null);
+__print(__nodes.indexOf(__res));
+--- python
+class Solution:
+    def detectCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow is fast:
+                slow = head
+                while slow is not fast:
+                    slow, fast = slow.next, fast.next
+                return slow
+        return None
+--- javascript
+var detectCycle = function(head) {
+    const seen = new Set();
+    for (let n = head; n; n = n.next) { if (seen.has(n)) return n; seen.add(n); }
+    return null;
+};
+
+=== remove-nth-node-from-end-of-list
+title: Remove Nth Node From End of List
+difficulty: medium
+tags: linked-list, two-pointers
+sig: removeNthFromEnd(head: ListNode, n: int) -> ListNode
+--- description
+Given the `head` of a linked list, remove the `n`-th node counting from the **end** and return the head of the resulting list.
+
+**Constraints**
+- `1 <= number of nodes <= 30`
+- `1 <= n <=` number of nodes
+
+**Follow-up:** do it in one pass.
+--- tests
+[[1,2,3,4,5], 2] => [1,2,3,5]
+[[1], 1] => []
+[[1,2], 1] => [1]
+[[1,2], 2]
+[[1,2,3], 3]
+[[10,20,30,40], 4]
+--- python
+class Solution:
+    def removeNthFromEnd(self, head, n):
+        dummy = ListNode(0, head); fast = slow = dummy
+        for _ in range(n + 1):
+            fast = fast.next
+        while fast:
+            fast, slow = fast.next, slow.next
+        slow.next = slow.next.next
+        return dummy.next
+--- javascript
+var removeNthFromEnd = function(head, n) {
+    const nodes = [];
+    for (let x = head; x; x = x.next) nodes.push(x);
+    const i = nodes.length - n;
+    if (i === 0) return head.next;
+    nodes[i - 1].next = nodes[i].next;
+    return head;
+};
+
+=== binary-tree-level-order-traversal
+title: Binary Tree Level Order Traversal
+difficulty: medium
+tags: tree, bfs
+sig: levelOrder(root: TreeNode) -> int[][]
+--- description
+Given the `root` of a binary tree, return its values level by level: a list of levels from top to bottom, each listing its values from left to right.
+
+**Constraints**
+- `0 <= number of nodes <= 2000`
+- `-1000 <= Node.val <= 1000`
+--- tests
+[[3,9,20,null,null,15,7]] => [[3],[9,20],[15,7]]
+[[1]] => [[1]]
+[[]] => []
+[[1,2,3,4,null,null,5]]
+[[1,null,2,null,3]]
+[[0,-1,1,-2,null,null,2,-3]]
+--- python
+class Solution:
+    def levelOrder(self, root):
+        out, level = [], [root] if root else []
+        while level:
+            out.append([n.val for n in level])
+            level = [c for n in level for c in (n.left, n.right) if c]
+        return out
+--- javascript
+var levelOrder = function(root) {
+    const out = [];
+    const dfs = (n, d) => { if (!n) return; if (!out[d]) out[d] = []; out[d].push(n.val); dfs(n.left, d + 1); dfs(n.right, d + 1); };
+    dfs(root, 0);
+    return out;
+};
+
+=== binary-tree-right-side-view
+title: Binary Tree Right Side View
+difficulty: medium
+tags: tree, bfs, dfs
+sig: rightSideView(root: TreeNode) -> int[]
+--- description
+Imagine standing to the right of a binary tree. Return the values you can see, from top to bottom: for each level, the rightmost node.
+
+**Constraints**
+- `0 <= number of nodes <= 100`
+- `-100 <= Node.val <= 100`
+--- tests
+[[1,2,3,null,5,null,4]] => [1,3,4]
+[[1,2,3,4,null,null,null,5]] => [1,3,4,5]
+[[1,null,3]] => [1,3]
+[[]] => []
+[[1,2]]
+[[1,2,3,4,5,6,7,null,8]]
+--- python
+class Solution:
+    def rightSideView(self, root):
+        out, level = [], [root] if root else []
+        while level:
+            out.append(level[-1].val)
+            level = [c for n in level for c in (n.left, n.right) if c]
+        return out
+--- javascript
+var rightSideView = function(root) {
+    const out = [];
+    const dfs = (n, d) => { if (!n) return; if (out.length === d) out.push(n.val); dfs(n.right, d + 1); dfs(n.left, d + 1); };
+    dfs(root, 0);
+    return out;
+};
+
+=== path-sum-iii
+title: Path Sum III
+difficulty: medium
+tags: tree, dfs, prefix-sum
+sig: pathSum(root: TreeNode, targetSum: int) -> int
+--- description
+Given the `root` of a binary tree and an integer `targetSum`, count the downward paths whose node values add up to `targetSum`.
+
+A path can start and end at **any** nodes, but it must only travel downwards (from parent to child).
+
+**Constraints**
+- `0 <= number of nodes <= 1000`
+- `-10^9 <= Node.val <= 10^9`
+- `-1000 <= targetSum <= 1000`
+--- tests
+[[10,5,-3,3,2,null,11,3,-2,null,1], 8] => 3
+[[5,4,8,11,null,13,4,7,2,null,null,5,1], 22] => 3
+[[], 0] => 0
+[[1], 1]
+[[1,-2,-3,1,3,-2,null,-1], -1]
+[[0,1,1], 1]
+[[1000000000,1000000000,null,294967296,null,1000000000,null,1000000000,null,1000000000], 0]
+--- python
+class Solution:
+    def pathSum(self, root, targetSum):
+        seen = Counter({0: 1})
+        def dfs(n, acc):
+            if not n:
+                return 0
+            acc += n.val
+            r = seen[acc - targetSum]
+            seen[acc] += 1
+            r += dfs(n.left, acc) + dfs(n.right, acc)
+            seen[acc] -= 1
+            return r
+        return dfs(root, 0)
+--- javascript
+var pathSum = function(root, targetSum) {
+    const from = (n, rem) => n ? (n.val === rem ? 1 : 0) + from(n.left, rem - n.val) + from(n.right, rem - n.val) : 0;
+    const all = n => n ? from(n, targetSum) + all(n.left) + all(n.right) : 0;
+    return all(root);
+};
+
+=== kth-smallest-element-in-a-bst
+title: Kth Smallest Element in a BST
+difficulty: medium
+tags: tree, binary-search-tree, dfs
+sig: kthSmallest(root: TreeNode, k: int) -> int
+--- description
+Given the `root` of a binary search tree and an integer `k`, return the `k`-th smallest value in the tree (counting from 1).
+
+**Constraints**
+- `1 <= k <= number of nodes <= 10^4`
+
+**Follow-up:** if the tree changes often and you query k-th smallest frequently, how would you optimize?
+--- tests
+[[3,1,4,null,2], 1] => 1
+[[5,3,6,2,4,null,null,1], 3] => 3
+[[1], 1]
+[[5,3,6,2,4,null,null,1], 6]
+[[8,4,12,2,6,10,14], 5]
+[[2,1,3], 2]
+--- python
+class Solution:
+    def kthSmallest(self, root, k):
+        st = []
+        while True:
+            while root:
+                st.append(root); root = root.left
+            root = st.pop(); k -= 1
+            if k == 0:
+                return root.val
+            root = root.right
+--- javascript
+var kthSmallest = function(root, k) {
+    const vals = [];
+    const walk = n => { if (!n) return; walk(n.left); vals.push(n.val); walk(n.right); };
+    walk(root);
+    return vals[k - 1];
+};
+
+=== number-of-islands
+title: Number of Islands
+difficulty: medium
+tags: matrix, dfs, bfs, union-find
+sig: numIslands(grid: str[][]) -> int
+--- description
+You get an `m x n` grid of characters where `"1"` is land and `"0"` is water. An island is a group of land cells connected **horizontally or vertically**. Everything outside the grid is water.
+
+Return the number of islands.
+
+**Constraints**
+- `1 <= m, n <= 300`
+--- tests
+[[["1","1","1","1","0"],["1","1","0","1","0"],["1","1","0","0","0"],["0","0","0","0","0"]]] => 1
+[[["1","1","0","0","0"],["1","1","0","0","0"],["0","0","1","0","0"],["0","0","0","1","1"]]] => 3
+[[["0"]]] => 0
+[[["1"]]]
+[[["1","0","1","0","1"]]]
+[[["1","1","1"],["0","1","0"],["1","1","1"]]]
+[[["1","0","1"],["0","1","0"],["1","0","1"]]]
+--- python
+class Solution:
+    def numIslands(self, grid):
+        m, n, count = len(grid), len(grid[0]), 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "1":
+                    count += 1
+                    st = [(i, j)]; grid[i][j] = "0"
+                    while st:
+                        a, b = st.pop()
+                        for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                            if 0 <= x < m and 0 <= y < n and grid[x][y] == "1":
+                                grid[x][y] = "0"; st.append((x, y))
+        return count
+--- javascript
+var numIslands = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    const sink = (i, j) => { if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] !== '1') return; grid[i][j] = '0'; sink(i + 1, j); sink(i - 1, j); sink(i, j + 1); sink(i, j - 1); };
+    let c = 0;
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (grid[i][j] === '1') { c++; sink(i, j); }
+    return c;
+};
+
+=== clone-graph
+title: Clone Graph
+difficulty: medium
+tags: graph, dfs, bfs, hash-map
+sig: cloneGraph(node: Node) -> Node
+params: adjList
+--- description
+You are given a reference to one node of a connected, undirected graph. Each node has an integer `val` and a list of `neighbors`. Return a **deep copy** of the whole graph: brand-new nodes with the same values and the same connections. None of the original nodes may appear in your copy.
+
+In the tests, the graph is written as an adjacency list: node `i` (1-indexed) has value `i`, and `adjList[i-1]` lists its neighbors' values. You receive the node with value `1` (or null for an empty graph).
+
+**Constraints**
+- `0 <= number of nodes <= 100`
+- Values are unique, there are no repeated edges or self-loops, and the graph is connected.
+--- tests
+[[[2,4],[1,3],[2,4],[1,3]]] => [[2,4],[1,3],[2,4],[1,3]]
+[[[]]] => [[]]
+[[]] => []
+[[[2],[1]]]
+[[[2,3],[1,3],[1,2]]]
+[[[2,3,4,5],[1],[1],[1],[1]]]
+--- prelude.python
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+--- prelude.javascript
+function _Node(val, neighbors) { this.val = val === undefined ? 0 : val; this.neighbors = neighbors === undefined ? [] : neighbors; }
+--- starter.python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+"""
+
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        pass
+--- starter.javascript
+/**
+ * // Definition for a _Node.
+ * function _Node(val, neighbors) {
+ *    this.val = val === undefined ? 0 : val;
+ *    this.neighbors = neighbors === undefined ? [] : neighbors;
+ * };
+ */
+
+/**
+ * @param {_Node} node
+ * @return {_Node}
+ */
+var cloneGraph = function(node) {
+
+};
+--- harness.python
+_adj = json.loads(sys.stdin.read())[0]
+_orig = [Node(i + 1) for i in range(len(_adj))]
+for _i, _nb in enumerate(_adj): _orig[_i].neighbors = [_orig[j - 1] for j in _nb]
+_res = Solution().cloneGraph(_orig[0] if _orig else None)
+_ids = set(id(n) for n in _orig)
+_seen = {}; _st = [_res] if _res is not None else []
+while _st:
+    _n = _st.pop()
+    if id(_n) in _seen: continue
+    _seen[id(_n)] = _n
+    _st.extend(_n.neighbors)
+if any(k in _ids for k in _seen):
+    _print("not a deep copy: your graph reuses original nodes")
+else:
+    _out = [None] * len(_seen)
+    for _n in _seen.values():
+        _out[_n.val - 1] = [x.val for x in _n.neighbors]
+    _print(_out)
+--- harness.javascript
+const __adj = __args[0];
+const __orig = __adj.map((_, i) => new _Node(i + 1));
+__adj.forEach((nb, i) => { __orig[i].neighbors = nb.map(j => __orig[j - 1]); });
+const __res = cloneGraph(__orig.length ? __orig[0] : null);
+const __origSet = new Set(__orig), __seen = new Set(), __st = __res ? [__res] : [];
+while (__st.length) { const n = __st.pop(); if (__seen.has(n)) continue; __seen.add(n); for (const x of n.neighbors) __st.push(x); }
+if ([...__seen].some(n => __origSet.has(n))) __print("not a deep copy: your graph reuses original nodes");
+else { const out = new Array(__seen.size).fill(null); for (const n of __seen) out[n.val - 1] = n.neighbors.map(x => x.val); __print(out); }
+--- python
+class Solution:
+    def cloneGraph(self, node):
+        if not node:
+            return None
+        copies = {}
+        def dfs(n):
+            if n in copies:
+                return copies[n]
+            c = copies[n] = Node(n.val)
+            c.neighbors = [dfs(x) for x in n.neighbors]
+            return c
+        return dfs(node)
+--- javascript
+var cloneGraph = function(node) {
+    if (!node) return null;
+    const copies = new Map(), q = [node];
+    copies.set(node, new _Node(node.val));
+    while (q.length) {
+        const n = q.shift();
+        for (const x of n.neighbors) {
+            if (!copies.has(x)) { copies.set(x, new _Node(x.val)); q.push(x); }
+            copies.get(n).neighbors.push(copies.get(x));
+        }
+    }
+    return copies.get(node);
+};
+
+=== rotting-oranges
+title: Rotting Oranges
+difficulty: medium
+tags: matrix, bfs
+sig: orangesRotting(grid: int[][]) -> int
+--- description
+Each cell of an `m x n` grid is `0` (empty), `1` (fresh orange) or `2` (rotten orange). Every minute, any fresh orange next to a rotten one (up, down, left or right) becomes rotten.
+
+Return the number of minutes until no fresh orange remains, or `-1` if some orange can never rot.
+
+**Constraints**
+- `1 <= m, n <= 10`
+--- tests
+[[[2,1,1],[1,1,0],[0,1,1]]] => 4
+[[[2,1,1],[0,1,1],[1,0,1]]] => -1
+[[[0,2]]] => 0
+[[[0]]]
+[[[1]]]
+[[[2,2],[1,1],[0,0],[2,0]]]
+[[[2,1,1],[1,1,1],[0,1,2]]]
+--- python
+class Solution:
+    def orangesRotting(self, grid):
+        m, n = len(grid), len(grid[0])
+        q = deque((i, j) for i in range(m) for j in range(n) if grid[i][j] == 2)
+        fresh = sum(row.count(1) for row in grid)
+        t = 0
+        while q and fresh:
+            t += 1
+            for _ in range(len(q)):
+                a, b = q.popleft()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and grid[x][y] == 1:
+                        grid[x][y] = 2; fresh -= 1; q.append((x, y))
+        return -1 if fresh else t
+--- javascript
+var orangesRotting = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    let t = 0;
+    for (;;) {
+        const next = [];
+        let fresh = 0;
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+            if (grid[i][j] !== 1) continue;
+            fresh++;
+            for (const [x, y] of [[i+1,j],[i-1,j],[i,j+1],[i,j-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && grid[x][y] === 2) { next.push([i, j]); break; }
+        }
+        if (!fresh) return t;
+        if (!next.length) return -1;
+        for (const [i, j] of next) grid[i][j] = 2;
+        t++;
+    }
+};
+
+=== course-schedule
+title: Course Schedule
+difficulty: medium
+tags: graph, topological-sort, dfs, bfs
+sig: canFinish(numCourses: int, prerequisites: int[][]) -> bool
+--- description
+There are `numCourses` courses labeled `0` to `numCourses - 1`. Each pair `prerequisites[i] = [a, b]` means you must finish course `b` before taking course `a`.
+
+Return `true` if it is possible to finish every course.
+
+**Constraints**
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= 5000`
+- All pairs are distinct.
+--- tests
+[2, [[1,0]]] => true
+[2, [[1,0],[0,1]]] => false
+[1, []] => true
+[3, [[1,0],[2,1],[0,2]]]
+[5, [[1,4],[2,4],[3,1],[3,2]]]
+[4, [[1,0],[2,1],[3,2],[1,3]]]
+[3, [[0,1],[0,2],[1,2]]]
+--- python
+class Solution:
+    def canFinish(self, numCourses, prerequisites):
+        g = [[] for _ in range(numCourses)]; indeg = [0] * numCourses
+        for a, b in prerequisites:
+            g[b].append(a); indeg[a] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0); done = 0
+        while q:
+            u = q.popleft(); done += 1
+            for v in g[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return done == numCourses
+--- javascript
+var canFinish = function(numCourses, prerequisites) {
+    const g = Array.from({ length: numCourses }, () => []), state = new Array(numCourses).fill(0);
+    for (const [a, b] of prerequisites) g[a].push(b);
+    const cyc = u => { if (state[u] === 1) return true; if (state[u] === 2) return false; state[u] = 1; for (const v of g[u]) if (cyc(v)) return true; state[u] = 2; return false; };
+    for (let i = 0; i < numCourses; i++) if (cyc(i)) return false;
+    return true;
+};
+
+=== pacific-atlantic-water-flow
+title: Pacific Atlantic Water Flow
+difficulty: medium
+tags: matrix, dfs, bfs
+sig: pacificAtlantic(heights: int[][]) -> int[][]
+compare: unordered
+--- description
+An `m x n` island has the **Pacific** ocean along its top and left edges and the **Atlantic** along its bottom and right edges. `heights[r][c]` is the height of each cell.
+
+Rain water flows from a cell to a neighbor (up, down, left, right) whose height is **less than or equal** to the current one. Cells on an edge drain directly into the ocean on that side.
+
+Return the coordinates `[r, c]` of every cell from which water can reach **both** oceans, in any order.
+
+**Constraints**
+- `1 <= m, n <= 200`
+- `0 <= heights[r][c] <= 10^5`
+--- tests
+[[[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]] => [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]
+[[[1]]] => [[0,0]]
+[[[1,1],[1,1]]]
+[[[3,3,3],[3,1,3],[0,2,4]]]
+[[[1,2,3],[8,9,4],[7,6,5]]]
+[[[10,10,10],[10,1,10],[10,10,10]]]
+--- python
+class Solution:
+    def pacificAtlantic(self, heights):
+        m, n = len(heights), len(heights[0])
+        def reach(starts):
+            seen = set(starts); st = list(starts)
+            while st:
+                a, b = st.pop()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and (x, y) not in seen and heights[x][y] >= heights[a][b]:
+                        seen.add((x, y)); st.append((x, y))
+            return seen
+        p = reach([(0, j) for j in range(n)] + [(i, 0) for i in range(m)])
+        a = reach([(m - 1, j) for j in range(n)] + [(i, n - 1) for i in range(m)])
+        return [list(c) for c in sorted(p & a)]
+--- javascript
+var pacificAtlantic = function(heights) {
+    const m = heights.length, n = heights[0].length, out = [];
+    const flows = (r, c) => {
+        const seen = new Set([r * n + c]), st = [[r, c]];
+        let pac = false, atl = false;
+        while (st.length) {
+            const [a, b] = st.pop();
+            if (a === 0 || b === 0) pac = true;
+            if (a === m - 1 || b === n - 1) atl = true;
+            for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && !seen.has(x * n + y) && heights[x][y] <= heights[a][b]) { seen.add(x * n + y); st.push([x, y]); }
+        }
+        return pac && atl;
+    };
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (flows(i, j)) out.push([i, j]);
+    return out;
+};
+
+=== word-search
+title: Word Search
+difficulty: medium
+tags: matrix, backtracking
+sig: exist(board: str[][], word: str) -> bool
+--- description
+Given an `m x n` grid of letters `board` and a string `word`, return `true` if `word` can be spelled by moving between **horizontally or vertically adjacent** cells. Each cell may be used at most once in a single word.
+
+**Constraints**
+- `1 <= m, n <= 6`
+- `1 <= word.length <= 15`
+- Letters are upper- and lowercase English.
+
+**Follow-up:** how would you prune the search to handle bigger boards?
+--- tests
+[[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED"] => true
+[[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE"] => true
+[[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB"] => false
+[[["a"]], "a"]
+[[["a","b"],["c","d"]], "abdc"]
+[[["a","b"],["c","d"]], "abcd"]
+[[["a","a","a"],["a","a","a"]], "aaaaaaa"]
+--- python
+class Solution:
+    def exist(self, board, word):
+        m, n = len(board), len(board[0])
+        def go(i, j, k):
+            if k == len(word):
+                return True
+            if not (0 <= i < m and 0 <= j < n) or board[i][j] != word[k]:
+                return False
+            board[i][j] = '#'
+            ok = go(i+1, j, k+1) or go(i-1, j, k+1) or go(i, j+1, k+1) or go(i, j-1, k+1)
+            board[i][j] = word[k]
+            return ok
+        return any(go(i, j, 0) for i in range(m) for j in range(n))
+--- javascript
+var exist = function(board, word) {
+    const m = board.length, n = board[0].length, used = new Set();
+    const go = (i, j, k) => {
+        if (k === word.length) return true;
+        if (i < 0 || j < 0 || i >= m || j >= n || used.has(i * n + j) || board[i][j] !== word[k]) return false;
+        used.add(i * n + j);
+        const ok = go(i + 1, j, k + 1) || go(i - 1, j, k + 1) || go(i, j + 1, k + 1) || go(i, j - 1, k + 1);
+        used.delete(i * n + j);
+        return ok;
+    };
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (go(i, j, 0)) return true;
+    return false;
+};
