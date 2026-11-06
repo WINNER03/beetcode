@@ -1,26 +1,12 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+
+.prose-beet h1, .prose-beet h2, .prose-beet h3 { font-weight: 600; margin: 1rem 0 0.5rem; }
+.prose-beet p { margin: 0.6rem 0; line-height: 1.65; }
+.prose-beet code { background: #27272a; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+.prose-beet pre { background: #18181b; border: 1px solid #27272a; padding: 0.75rem; border-radius: 8px; overflow-x: auto; margin: 0.75rem 0; }
+.prose-beet pre code { background: none; padding: 0; }
+.prose-beet strong { color: #fafafa; }
