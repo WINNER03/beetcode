@@ -11,6 +11,7 @@ export type ProblemRow = {
   tags: string[];
   order_index: number;
   status: string | null;
+  acceptance: number | null;
 };
 
 const DIFFS = [
@@ -77,6 +78,10 @@ export default function ProblemList({ problems, signedIn }: { problems: ProblemR
         />
       </div>
 
+      <div className="flex items-center gap-3 px-4 pb-1.5 text-xs text-zinc-500">
+        <span className="w-5" /><span className="w-8">#</span><span className="flex-1">Title</span>
+        <span className="hidden w-14 text-right sm:inline">Acceptance</span><span className="w-16 text-right">Difficulty</span>
+      </div>
       <ul className="divide-y divide-zinc-800 rounded-lg border border-zinc-800">
         {shown.map((p) => {
           const d = DIFFS.find((x) => x.id === p.difficulty)!;
@@ -88,7 +93,10 @@ export default function ProblemList({ problems, signedIn }: { problems: ProblemR
                 </span>
                 <span className="w-8 text-sm text-zinc-500">{p.order_index}.</span>
                 <span className="flex-1">{p.title}</span>
-                <span className="hidden max-w-[40%] truncate text-xs text-zinc-500 md:inline">{p.tags.join(" · ")}</span>
+                <span className="hidden max-w-[35%] truncate text-xs text-zinc-500 md:inline">{p.tags.join(" · ")}</span>
+                <span className="hidden w-14 text-right text-sm text-zinc-400 sm:inline" title="Acceptance rate">
+                  {p.acceptance == null ? "–" : `${p.acceptance.toFixed(1)}%`}
+                </span>
                 <span className={`w-16 text-right text-sm ${d.text}`}>{d.label}</span>
               </Link>
             </li>

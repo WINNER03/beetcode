@@ -20,8 +20,15 @@ export default async function Home() {
         .order("last_opened_at", { ascending: false })
     : { data: [] };
 
+  // Acceptance rate across everyone's submissions (aggregated server-side, no individual rows exposed)
+  const { data: stats } = await supabase.rpc("problem_stats");
+  const rateById = new Map(((stats ?? []) as { problem_id: number; submissions: number; accepted: number }[])
+    .map((s) => [s.problem_id, s.submissions ? (100 * s.accepted) / s.submissions : null]));
+
   const statusById = new Map((progress ?? []).map((p) => [p.problem_id, p.status as string]));
-  const rows: ProblemRow[] = (problems ?? []).map((p) => ({ ...p, status: statusById.get(p.id) ?? null }));
+  const rows: ProblemRow[] = (problems ?? []).map((p) => ({
+    ...p, status: statusById.get(p.id) ?? null, acceptance: rateById.get(p.id) ?? null,
+  }));
   const last = progress?.[0];
   const lastProblem = last && problems?.find((p) => p.id === last.problem_id);
 

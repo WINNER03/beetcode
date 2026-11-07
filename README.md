@@ -14,6 +14,18 @@ Browser (Next.js + Monaco)
                                           └──────────────┘
 ```
 
+## Exactly like LeetCode, with our own design
+
+Beetcode follows LeetCode's behaviour so nothing surprises you, but the look is ours (beet rose on zinc). See `CLAUDE.md` for the rule.
+
+- **Problem page:** Description / Submissions tabs on the left, code editor on the right, and a console below the editor with **Testcase** and **Test Result** tabs. All panels can be resized by dragging.
+- **Testcase tab:** each parameter gets its own editable field (`nums =`, `target =`). Add up to 8 cases with **+** or remove them. **Run** checks your code against these cases, and the expected output is computed by the hidden reference solution, so your own custom cases work too.
+- **Debug output:** anything you `print()` / `console.log()` shows up as **Stdout**, separate from your returned answer.
+- **Submit:** runs every hidden test. You see **Accepted** with runtime and memory, or e.g. **Wrong Answer · 41 / 58 testcases passed** with the failing input, your output and the expected output.
+- **Submissions tab:** your history with status, language, runtime and memory. Open one to view its code or load it back into the editor.
+- **Shortcuts:** `Ctrl/Cmd + '` runs, `Ctrl/Cmd + Enter` submits.
+- **Problem list:** acceptance rate, difficulty, status, filters and search.
+
 ## How solving works
 
 Like LeetCode, you only write the function or class, for example `def twoSum(self, nums, target)`. The `run-code` edge function wraps your code in a hidden **harness** that:
@@ -77,7 +89,8 @@ supabase/
 2. In **SQL Editor**, run these files in order:
    1. `supabase/migrations/20261105000000_init.sql`
    2. `supabase/migrations/20261106000000_harness.sql`
-   3. `supabase/seed.sql`, which is safe to re-run whenever problems change
+   3. `supabase/migrations/20261107000000_leetcode_parity.sql`
+   4. `supabase/seed.sql`, which is safe to re-run whenever problems change
 
    Or use the CLI: `npx supabase link`, then `npx supabase db push`, then run the seed.
 3. Optional: enable GitHub sign-in under **Authentication → Providers**, and add `http://localhost:3000/auth/callback` to the redirect URLs.
@@ -115,7 +128,8 @@ Expected outputs are **computed** from the Python reference and must agree with 
 
 ## Security model
 - RLS is on for every table, and users can only read and write their own drafts, submissions, and progress.
-- Hidden tests and harnesses (`problem_runtime`) have **no** client policies, so only the edge function (service role) can read them.
+- Hidden tests, harnesses and reference solutions (`problem_runtime`) have **no** client policies, so only the edge function (service role) can read them.
+- Acceptance rates come from a `security definer` function that returns only per-problem totals, never anyone's submissions.
 - Only the edge function can mark a problem `solved`, and a trigger blocks clients from setting it themselves.
 - Submissions are rate-limited to 5 per minute per user.
 - ⚠️ This repo contains the reference solutions and hidden tests (`problems/`). Make the repo **private** if you don't want them public.

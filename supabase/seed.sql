@@ -24,19 +24,31 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'two-sum'), $b$[[0,4,3,0], 0]$b$, $b$[0, 3]$b$, true, 5),
   ((select id from public.problems where slug = 'two-sum'), $b$[[1,5,9,13,2], 15]$b$, $b$[3, 4]$b$, true, 6),
   ((select id from public.problems where slug = 'two-sum'), $b$[[1000000000,-999999993,5], 7]$b$, $b$[0, 1]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'two-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'two-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().twoSum(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'two-sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def twoSum(self, nums, target):
+        seen = {}
+        for i, x in enumerate(nums):
+            if target - x in seen:
+                return [seen[target - x], i]
+            seen[x] = i$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'two-sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = twoSum(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var twoSum = function(nums, target) {
+    const seen = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        if (seen.has(target - nums[i])) return [seen.get(target - nums[i]), i];
+        seen.set(nums[i], i);
+    }
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 2. Contains Duplicate
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$contains-duplicate$b$, $b$Contains Duplicate$b$, 'easy', $b$Given an integer array `nums`, return `true` if any value shows up **two or more times**, and `false` if every value is distinct.
@@ -54,17 +66,21 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'contains-duplicate'), $b$[[-5,5]]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'contains-duplicate'), $b$[[0,0]]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'contains-duplicate'), $b$[[2,14,18,22,22]]$b$, $b$true$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'contains-duplicate'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'contains-duplicate'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().containsDuplicate(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'contains-duplicate'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def containsDuplicate(self, nums):
+        return len(set(nums)) != len(nums)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'contains-duplicate'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = containsDuplicate(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var containsDuplicate = function(nums) {
+    return new Set(nums).size !== nums.length;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 3. Valid Anagram
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-anagram$b$, $b$Valid Anagram$b$, 'easy', $b$Given two strings `s` and `t`, return `true` if `t` uses exactly the same letters as `s` with the same counts (just rearranged), otherwise return `false`.
@@ -84,19 +100,23 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-anagram'), $b$["listen", "silent"]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'valid-anagram'), $b$["abc", "abc"]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'valid-anagram'), $b$["aabbcc", "abcabd"]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-anagram'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-anagram'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().isAnagram(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-anagram'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isAnagram(self, s, t):
+        return Counter(s) == Counter(t)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-anagram'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = isAnagram(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isAnagram = function(s, t) {
+    return s.split('').sort().join('') === t.split('').sort().join('');
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 4. Valid Palindrome
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-palindrome$b$, $b$Valid Palindrome$b$, 'easy', $b$A phrase counts as a palindrome if, after lowercasing everything and throwing away every character that is not a letter or digit, it reads the same forwards and backwards.
@@ -117,17 +137,23 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-palindrome'), $b$["No 'x' in Nixon"]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'valid-palindrome'), $b$[".,"]$b$, $b$true$b$, true, 7),
   ((select id from public.problems where slug = 'valid-palindrome'), $b$["12321"]$b$, $b$true$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-palindrome'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-palindrome'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().isPalindrome(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-palindrome'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isPalindrome(self, s):
+        t = [c.lower() for c in s if c.isalnum()]
+        return t == t[::-1]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-palindrome'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = isPalindrome(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isPalindrome = function(s) {
+    const t = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return t === t.split('').reverse().join('');
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 5. Valid Palindrome II
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-palindrome-ii$b$, $b$Valid Palindrome II$b$, 'easy', $b$Given a string `s`, return `true` if it is already a palindrome or can become one by deleting **at most one** character. Otherwise return `false`.
@@ -147,17 +173,38 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-palindrome-ii'), $b$["cbbcc"]$b$, $b$true$b$, true, 7),
   ((select id from public.problems where slug = 'valid-palindrome-ii'), $b$["abcdba"]$b$, $b$true$b$, true, 8),
   ((select id from public.problems where slug = 'valid-palindrome-ii'), $b$["abccbxa"]$b$, $b$true$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-palindrome-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-palindrome-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().validPalindrome(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-palindrome-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def validPalindrome(self, s):
+        def pal(i, j):
+            while i < j:
+                if s[i] != s[j]:
+                    return False
+                i += 1; j -= 1
+            return True
+        i, j = 0, len(s) - 1
+        while i < j:
+            if s[i] != s[j]:
+                return pal(i + 1, j) or pal(i, j - 1)
+            i += 1; j -= 1
+        return True$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-palindrome-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = validPalindrome(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var validPalindrome = function(s) {
+    const pal = (i, j) => { while (i < j) { if (s[i] !== s[j]) return false; i++; j--; } return true; };
+    let i = 0, j = s.length - 1;
+    while (i < j) {
+        if (s[i] !== s[j]) return pal(i + 1, j) || pal(i, j - 1);
+        i++; j--;
+    }
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 6. Remove Duplicates from Sorted Array
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$remove-duplicates-from-sorted-array$b$, $b$Remove Duplicates from Sorted Array$b$, 'easy', $b$You get an integer array `nums` sorted in non-decreasing order. Remove the repeated values **in place** so each distinct value appears once, keeping their original relative order. Return `k`, the number of distinct values.
@@ -178,17 +225,27 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), $b$[[1,2,3]]$b$, $b$[1, 2, 3]$b$, true, 4),
   ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), $b$[[-3,-3,-3]]$b$, $b$[-3]$b$, true, 5),
   ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), $b$[[-1,0,0,0,0,3,3]]$b$, $b$[-1, 0, 3]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().removeDuplicates(_a0)
 _print(_a0[:_res])
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def removeDuplicates(self, nums):
+        k = 1
+        for i in range(1, len(nums)):
+            if nums[i] != nums[k - 1]:
+                nums[k] = nums[i]; k += 1
+        return k$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'remove-duplicates-from-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = removeDuplicates(_a0);
 __print(_a0.slice(0, __res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var removeDuplicates = function(nums) {
+    let k = 1;
+    for (let i = 1; i < nums.length; i++) if (nums[i] !== nums[k - 1]) nums[k++] = nums[i];
+    return k;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 7. Linked List Cycle
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$linked-list-cycle$b$, $b$Linked List Cycle$b$, 'easy', $b$Given the `head` of a singly linked list, return `true` if following `next` pointers ever brings you back to a node you already visited (a cycle), otherwise `false`.
@@ -210,19 +267,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'linked-list-cycle'), $b$[[1,2,3,4,5], -1]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'linked-list-cycle'), $b$[[1,2,3,4,5], 4]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'linked-list-cycle'), $b$[[1,1,1], -1]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'linked-list-cycle'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'linked-list-cycle'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _nodes = [ListNode(v) for v in _args[0]]
 for _i in range(len(_nodes) - 1): _nodes[_i].next = _nodes[_i + 1]
 if _nodes and _args[1] >= 0: _nodes[-1].next = _nodes[_args[1]]
 _print(Solution().hasCycle(_nodes[0] if _nodes else None))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'linked-list-cycle'), 'javascript', $b$$b$, $b$const __nodes = __args[0].map(v => new ListNode(v));
+$b$, $b$class Solution:
+    def hasCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow is fast:
+                return True
+        return False$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'linked-list-cycle'), 'javascript', $b$$b$, $b$const __nodes = __args[0].map(v => new ListNode(v));
 for (let i = 0; i + 1 < __nodes.length; i++) __nodes[i].next = __nodes[i + 1];
 if (__nodes.length && __args[1] >= 0) __nodes[__nodes.length - 1].next = __nodes[__args[1]];
 __print(hasCycle(__nodes.length ? __nodes[0] : null));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var hasCycle = function(head) {
+    let slow = head, fast = head;
+    while (fast && fast.next) {
+        slow = slow.next; fast = fast.next.next;
+        if (slow === fast) return true;
+    }
+    return false;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 8. Palindrome Linked List
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$palindrome-linked-list$b$, $b$Palindrome Linked List$b$, 'easy', $b$Given the `head` of a singly linked list, return `true` if the sequence of values reads the same from front to back as from back to front.
@@ -242,17 +313,27 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'palindrome-linked-list'), $b$[[1,2,3,2,2]]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'palindrome-linked-list'), $b$[[9,9,9,9]]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'palindrome-linked-list'), $b$[[1,0,0]]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'palindrome-linked-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'palindrome-linked-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_list(_args[0])
 _res = Solution().isPalindrome(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'palindrome-linked-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
+$b$, $b$class Solution:
+    def isPalindrome(self, head):
+        vals = []
+        while head:
+            vals.append(head.val); head = head.next
+        return vals == vals[::-1]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'palindrome-linked-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
 const __res = isPalindrome(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isPalindrome = function(head) {
+    const v = [];
+    for (let n = head; n; n = n.next) v.push(n.val);
+    for (let i = 0, j = v.length - 1; i < j; i++, j--) if (v[i] !== v[j]) return false;
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 9. Reverse Linked List
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$reverse-linked-list$b$, $b$Reverse Linked List$b$, 'easy', $b$Given the `head` of a singly linked list, reverse the direction of every link and return the new head.
@@ -271,17 +352,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'reverse-linked-list'), $b$[[7]]$b$, $b$[7]$b$, true, 4),
   ((select id from public.problems where slug = 'reverse-linked-list'), $b$[[3,3,1]]$b$, $b$[1, 3, 3]$b$, true, 5),
   ((select id from public.problems where slug = 'reverse-linked-list'), $b$[[-1,0,1,2]]$b$, $b$[2, 1, 0, -1]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'reverse-linked-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'reverse-linked-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_list(_args[0])
 _res = Solution().reverseList(_a0)
 _print(_from_list(_res))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'reverse-linked-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
+$b$, $b$class Solution:
+    def reverseList(self, head):
+        prev = None
+        while head:
+            head.next, prev, head = prev, head, head.next
+        return prev$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'reverse-linked-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
 const __res = reverseList(_a0);
 __print(__fromList(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var reverseList = function(head) {
+    let prev = null;
+    while (head) { const nx = head.next; head.next = prev; prev = head; head = nx; }
+    return prev;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 10. Invert Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$invert-binary-tree$b$, $b$Invert Binary Tree$b$, 'easy', $b$Given the `root` of a binary tree, mirror it: swap the left and right child of **every** node. Return the root.
@@ -301,17 +391,27 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'invert-binary-tree'), $b$[[1,2]]$b$, $b$[1, null, 2]$b$, true, 5),
   ((select id from public.problems where slug = 'invert-binary-tree'), $b$[[1,null,2,null,3]]$b$, $b$[1, 2, null, 3]$b$, true, 6),
   ((select id from public.problems where slug = 'invert-binary-tree'), $b$[[5,3,8,1,4,null,9,0]]$b$, $b$[5, 8, 3, 9, null, 4, 1, null, null, null, null, null, 0]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'invert-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'invert-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().invertTree(_a0)
 _print(_from_tree(_res))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'invert-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def invertTree(self, root):
+        if root:
+            root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+        return root$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'invert-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = invertTree(_a0);
 __print(__fromTree(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var invertTree = function(root) {
+    if (!root) return null;
+    const l = invertTree(root.left);
+    root.left = invertTree(root.right);
+    root.right = l;
+    return root;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 11. Maximum Depth of Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$maximum-depth-of-binary-tree$b$, $b$Maximum Depth of Binary Tree$b$, 'easy', $b$Given the `root` of a binary tree, return its depth: the number of nodes on the longest path from the root down to a leaf. An empty tree has depth `0`.
@@ -328,17 +428,21 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), $b$[[0]]$b$, $b$1$b$, true, 4),
   ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), $b$[[1,2,3,4,null,null,5,6]]$b$, $b$4$b$, true, 5),
   ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), $b$[[1,2,null,3,null,4,null,5]]$b$, $b$5$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().maxDepth(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def maxDepth(self, root):
+        return 0 if not root else 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'maximum-depth-of-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = maxDepth(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var maxDepth = function(root) {
+    return root ? 1 + Math.max(maxDepth(root.left), maxDepth(root.right)) : 0;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 12. Diameter of Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$diameter-of-binary-tree$b$, $b$Diameter of Binary Tree$b$, 'easy', $b$The diameter of a binary tree is the number of **edges** on the longest path between any two nodes. That path does not have to pass through the root.
@@ -357,17 +461,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'diameter-of-binary-tree'), $b$[[4,-7,-3,null,null,-9,-3,9,-7,-4,null,6,null,-6,-6,null,null,0,6,5,null,9,null,null,-1,-4,null,null,null,-2]]$b$, $b$8$b$, true, 4),
   ((select id from public.problems where slug = 'diameter-of-binary-tree'), $b$[[1,2,null,3,4,5,null,null,6]]$b$, $b$4$b$, true, 5),
   ((select id from public.problems where slug = 'diameter-of-binary-tree'), $b$[[1,null,2,null,3,null,4]]$b$, $b$3$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'diameter-of-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'diameter-of-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().diameterOfBinaryTree(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'diameter-of-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def diameterOfBinaryTree(self, root):
+        best = 0
+        def h(n):
+            nonlocal best
+            if not n:
+                return 0
+            l, r = h(n.left), h(n.right)
+            best = max(best, l + r)
+            return 1 + max(l, r)
+        h(root)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'diameter-of-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = diameterOfBinaryTree(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var diameterOfBinaryTree = function(root) {
+    let best = 0;
+    const h = n => { if (!n) return 0; const l = h(n.left), r = h(n.right); best = Math.max(best, l + r); return 1 + Math.max(l, r); };
+    h(root);
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 13. Balanced Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$balanced-binary-tree$b$, $b$Balanced Binary Tree$b$, 'easy', $b$A binary tree is **height-balanced** when, at every node, the heights of the left and right subtrees differ by at most 1.
@@ -387,17 +507,29 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'balanced-binary-tree'), $b$[[1,null,2]]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'balanced-binary-tree'), $b$[[1,null,2,null,3]]$b$, $b$false$b$, true, 6),
   ((select id from public.problems where slug = 'balanced-binary-tree'), $b$[[1,2,3,4,5,6,null,8]]$b$, $b$true$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'balanced-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'balanced-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().isBalanced(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'balanced-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def isBalanced(self, root):
+        def h(n):
+            if not n:
+                return 0
+            l, r = h(n.left), h(n.right)
+            if l < 0 or r < 0 or abs(l - r) > 1:
+                return -1
+            return 1 + max(l, r)
+        return h(root) >= 0$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'balanced-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = isBalanced(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isBalanced = function(root) {
+    const h = n => { if (!n) return 0; const l = h(n.left), r = h(n.right); if (l < 0 || r < 0 || Math.abs(l - r) > 1) return -1; return 1 + Math.max(l, r); };
+    return h(root) >= 0;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 14. Same Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$same-tree$b$, $b$Same Tree$b$, 'easy', $b$Given the roots `p` and `q` of two binary trees, return `true` if they have exactly the same shape and every matching node has the same value.
@@ -414,19 +546,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'same-tree'), $b$[[], []]$b$, $b$true$b$, true, 4),
   ((select id from public.problems where slug = 'same-tree'), $b$[[1], []]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'same-tree'), $b$[[5,4,8,11,null,13,4], [5,4,8,11,null,13,4]]$b$, $b$true$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'same-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'same-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _to_tree(_args[1])
 _res = Solution().isSameTree(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'same-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def isSameTree(self, p, q):
+        if not p or not q:
+            return p is q
+        return p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'same-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __toTree(__args[1]);
 const __res = isSameTree(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isSameTree = function(p, q) {
+    if (!p || !q) return p === q;
+    return p.val === q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 15. Subtree of Another Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$subtree-of-another-tree$b$, $b$Subtree of Another Tree$b$, 'easy', $b$Given the roots of two binary trees `root` and `subRoot`, return `true` if some node in `root` has a subtree that is **identical** to `subRoot` (same shape and values, all the way down to the leaves).
@@ -447,19 +586,31 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'subtree-of-another-tree'), $b$[[12], [2]]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'subtree-of-another-tree'), $b$[[3,4,5,1,null,2], [3,1,2]]$b$, $b$false$b$, true, 6),
   ((select id from public.problems where slug = 'subtree-of-another-tree'), $b$[[1,2,3], [1,2]]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'subtree-of-another-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'subtree-of-another-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _to_tree(_args[1])
 _res = Solution().isSubtree(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'subtree-of-another-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def isSubtree(self, root, subRoot):
+        def same(a, b):
+            if not a or not b:
+                return a is b
+            return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)
+        if not root:
+            return False
+        return same(root, subRoot) or self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'subtree-of-another-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __toTree(__args[1]);
 const __res = isSubtree(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isSubtree = function(root, subRoot) {
+    const same = (a, b) => (!a || !b) ? a === b : a.val === b.val && same(a.left, b.left) && same(a.right, b.right);
+    if (!root) return false;
+    return same(root, subRoot) || isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 16. Symmetric Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$symmetric-tree$b$, $b$Symmetric Tree$b$, 'easy', $b$Given the `root` of a binary tree, return `true` if the tree is a mirror image of itself around its center.
@@ -478,17 +629,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'symmetric-tree'), $b$[[1,2,2,2,null,2]]$b$, $b$false$b$, true, 4),
   ((select id from public.problems where slug = 'symmetric-tree'), $b$[[2,3,3,4,5,5,4,null,null,8,9,9,8]]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'symmetric-tree'), $b$[[1,2,3]]$b$, $b$false$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'symmetric-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'symmetric-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().isSymmetric(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'symmetric-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def isSymmetric(self, root):
+        def m(a, b):
+            if not a or not b:
+                return a is b
+            return a.val == b.val and m(a.left, b.right) and m(a.right, b.left)
+        return m(root.left, root.right)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'symmetric-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = isSymmetric(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isSymmetric = function(root) {
+    const m = (a, b) => (!a || !b) ? a === b : a.val === b.val && m(a.left, b.right) && m(a.right, b.left);
+    return m(root.left, root.right);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 17. Binary Search
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$binary-search$b$, $b$Binary Search$b$, 'easy', $b$Given a strictly increasing integer array `nums` and a `target`, return the index of `target`, or `-1` if it is not present.
@@ -508,19 +668,38 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'binary-search'), $b$[[1,3,5,7,9,11], 1]$b$, $b$0$b$, true, 5),
   ((select id from public.problems where slug = 'binary-search'), $b$[[1,3,5,7,9,11], 11]$b$, $b$5$b$, true, 6),
   ((select id from public.problems where slug = 'binary-search'), $b$[[1,3,5,7,9,11], 12]$b$, $b$-1$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-search'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-search'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().search(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-search'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def search(self, nums, target):
+        lo, hi = 0, len(nums) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[mid] < target:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return -1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-search'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = search(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var search = function(nums, target) {
+    let lo = 0, hi = nums.length - 1;
+    while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (nums[mid] === target) return mid;
+        if (nums[mid] < target) lo = mid + 1; else hi = mid - 1;
+    }
+    return -1;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 18. Valid Parentheses
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-parentheses$b$, $b$Valid Parentheses$b$, 'easy', $b$Given a string `s` made only of the characters `( ) [ ] { }`, return `true` if it is well formed:
@@ -543,17 +722,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-parentheses'), $b$["("]$b$, $b$false$b$, true, 7),
   ((select id from public.problems where slug = 'valid-parentheses'), $b$["]"]$b$, $b$false$b$, true, 8),
   ((select id from public.problems where slug = 'valid-parentheses'), $b$["(((())))[]{}"]$b$, $b$true$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-parentheses'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-parentheses'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().isValid(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-parentheses'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isValid(self, s):
+        pairs = {')': '(', ']': '[', '}': '{'}
+        st = []
+        for c in s:
+            if c in pairs:
+                if not st or st.pop() != pairs[c]:
+                    return False
+            else:
+                st.append(c)
+        return not st$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-parentheses'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = isValid(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isValid = function(s) {
+    const pairs = { ')': '(', ']': '[', '}': '{' }, st = [];
+    for (const c of s) {
+        if (pairs[c]) { if (st.pop() !== pairs[c]) return false; }
+        else st.push(c);
+    }
+    return st.length === 0;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 19. Valid Word Abbreviation
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-word-abbreviation$b$, $b$Valid Word Abbreviation$b$, 'easy', $b$A word can be abbreviated by replacing any number of **non-adjacent, non-empty** runs of letters with their lengths. For example, `"substitution"` can become `"s10n"`, `"sub4u4"`, `"12"` or `"substitution"`. The replaced runs must not touch, and the numbers must not have leading zeros (so `"s010n"` and `"s0ubstitution"` are invalid).
@@ -577,19 +773,48 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-word-abbreviation'), $b$["hi", "1i"]$b$, $b$true$b$, true, 8),
   ((select id from public.problems where slug = 'valid-word-abbreviation'), $b$["word", "w2d"]$b$, $b$true$b$, true, 9),
   ((select id from public.problems where slug = 'valid-word-abbreviation'), $b$["word", "3d"]$b$, $b$true$b$, true, 10);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-word-abbreviation'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-word-abbreviation'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().validWordAbbreviation(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-word-abbreviation'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def validWordAbbreviation(self, word, abbr):
+        i = j = 0
+        while i < len(word) and j < len(abbr):
+            if abbr[j].isdigit():
+                if abbr[j] == '0':
+                    return False
+                n = 0
+                while j < len(abbr) and abbr[j].isdigit():
+                    n = n * 10 + int(abbr[j]); j += 1
+                i += n
+            else:
+                if word[i] != abbr[j]:
+                    return False
+                i += 1; j += 1
+        return i == len(word) and j == len(abbr)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-word-abbreviation'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = validWordAbbreviation(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var validWordAbbreviation = function(word, abbr) {
+    let i = 0, j = 0;
+    while (i < word.length && j < abbr.length) {
+        if (abbr[j] >= '0' && abbr[j] <= '9') {
+            if (abbr[j] === '0') return false;
+            let n = 0;
+            while (j < abbr.length && abbr[j] >= '0' && abbr[j] <= '9') n = n * 10 + Number(abbr[j++]);
+            i += n;
+        } else {
+            if (word[i] !== abbr[j]) return false;
+            i++; j++;
+        }
+    }
+    return i === word.length && j === abbr.length;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 20. Meeting Rooms
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$meeting-rooms$b$, $b$Meeting Rooms$b$, 'easy', $b$You are given a list of meetings `intervals[i] = [start, end]`. Return `true` if one person could attend **all** of them, meaning no two meetings overlap.
@@ -609,17 +834,24 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'meeting-rooms'), $b$[[[1,5],[4,10]]]$b$, $b$false$b$, true, 5),
   ((select id from public.problems where slug = 'meeting-rooms'), $b$[[[13,15],[1,13]]]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'meeting-rooms'), $b$[[[9,10],[4,9],[4,17]]]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'meeting-rooms'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'meeting-rooms'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().canAttendMeetings(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'meeting-rooms'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def canAttendMeetings(self, intervals):
+        intervals.sort()
+        return all(intervals[i][0] >= intervals[i - 1][1] for i in range(1, len(intervals)))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'meeting-rooms'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = canAttendMeetings(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var canAttendMeetings = function(intervals) {
+    intervals.sort((a, b) => a[0] - b[0]);
+    for (let i = 1; i < intervals.length; i++) if (intervals[i][0] < intervals[i - 1][1]) return false;
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 21. Implement Stack using Queues
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$implement-stack-using-queues$b$, $b$Implement Stack using Queues$b$, 'easy', $b$Build a last-in-first-out **stack** using only queue operations: add to the back, look at or remove from the front, size, and is-empty. In Python, treat `collections.deque` as a queue (only `append`, `popleft`, `[0]`, `len`). In JavaScript, use arrays only with `push` and `shift`.
@@ -642,20 +874,38 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'implement-stack-using-queues'), $b$[["MyStack","push","pop","empty"],[[],[5],[],[]]]$b$, $b$[null, null, 5, true]$b$, false, 2),
   ((select id from public.problems where slug = 'implement-stack-using-queues'), $b$[["MyStack","push","push","push","pop","top","pop","pop","empty"],[[],[1],[2],[3],[],[],[],[],[]]]$b$, $b$[null, null, null, null, 3, 2, 2, 1, true]$b$, true, 3),
   ((select id from public.problems where slug = 'implement-stack-using-queues'), $b$[["MyStack","empty","push","top","push","top","pop","top"],[[],[],[9],[],[4],[],[],[]]]$b$, $b$[null, true, null, 9, null, 4, 4, 9]$b$, true, 4);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-stack-using-queues'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-stack-using-queues'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = MyStack(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-stack-using-queues'), 'javascript', $b$$b$, $b$const __obj = new MyStack(...__args[1][0]);
+$b$, $b$class MyStack:
+    def __init__(self):
+        self.q = deque()
+    def push(self, x):
+        self.q.append(x)
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+    def pop(self):
+        return self.q.popleft()
+    def top(self):
+        return self.q[0]
+    def empty(self):
+        return not self.q$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-stack-using-queues'), 'javascript', $b$$b$, $b$const __obj = new MyStack(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class MyStack {
+    constructor() { this.q = []; }
+    push(x) { this.q.push(x); for (let i = 0; i < this.q.length - 1; i++) this.q.push(this.q.shift()); }
+    pop() { return this.q.shift(); }
+    top() { return this.q[0]; }
+    empty() { return this.q.length === 0; }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 22. Implement Queue using Stacks
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$implement-queue-using-stacks$b$, $b$Implement Queue using Stacks$b$, 'easy', $b$Build a first-in-first-out **queue** using only stack operations: push to the top, look at or pop from the top, size, and is-empty. Use Python lists or JavaScript arrays only with `append`/`push` and `pop`.
@@ -678,20 +928,41 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'implement-queue-using-stacks'), $b$[["MyQueue","push","pop","empty"],[[],[3],[],[]]]$b$, $b$[null, null, 3, true]$b$, false, 2),
   ((select id from public.problems where slug = 'implement-queue-using-stacks'), $b$[["MyQueue","push","push","pop","push","peek","pop","pop","empty"],[[],[1],[2],[],[3],[],[],[],[]]]$b$, $b$[null, null, null, 1, null, 2, 2, 3, true]$b$, true, 3),
   ((select id from public.problems where slug = 'implement-queue-using-stacks'), $b$[["MyQueue","empty","push","push","push","peek","pop","peek"],[[],[],[7],[8],[9],[],[],[]]]$b$, $b$[null, true, null, null, null, 7, 7, 8]$b$, true, 4);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-queue-using-stacks'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-queue-using-stacks'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = MyQueue(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-queue-using-stacks'), 'javascript', $b$$b$, $b$const __obj = new MyQueue(...__args[1][0]);
+$b$, $b$class MyQueue:
+    def __init__(self):
+        self.inn, self.out = [], []
+    def push(self, x):
+        self.inn.append(x)
+    def _move(self):
+        if not self.out:
+            while self.inn:
+                self.out.append(self.inn.pop())
+    def pop(self):
+        self._move(); return self.out.pop()
+    def peek(self):
+        self._move(); return self.out[-1]
+    def empty(self):
+        return not self.inn and not self.out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-queue-using-stacks'), 'javascript', $b$$b$, $b$const __obj = new MyQueue(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class MyQueue {
+    constructor() { this.a = []; this.b = []; }
+    push(x) { this.a.push(x); }
+    move() { if (!this.b.length) while (this.a.length) this.b.push(this.a.pop()); }
+    pop() { this.move(); return this.b.pop(); }
+    peek() { this.move(); return this.b[this.b.length - 1]; }
+    empty() { return !this.a.length && !this.b.length; }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 23. Valid Word
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$valid-word$b$, $b$Valid Word$b$, 'easy', $b$A word is **valid** if all of these hold:
@@ -718,17 +989,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'valid-word'), $b$["UuE6"]$b$, $b$false$b$, true, 7),
   ((select id from public.problems where slug = 'valid-word'), $b$["aya"]$b$, $b$true$b$, true, 8),
   ((select id from public.problems where slug = 'valid-word'), $b$["3a@b"]$b$, $b$false$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-word'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-word'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().isValid(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'valid-word'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isValid(self, word):
+        if len(word) < 3 or not word.isalnum() or not word.isascii():
+            return False
+        v = any(c in 'aeiouAEIOU' for c in word)
+        c = any(ch.isalpha() and ch not in 'aeiouAEIOU' for ch in word)
+        return v and c$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'valid-word'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = isValid(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isValid = function(word) {
+    if (word.length < 3 || !/^[A-Za-z0-9]+$/.test(word)) return false;
+    return /[aeiouAEIOU]/.test(word) && /[b-df-hj-np-tv-zB-DF-HJ-NP-TV-Z]/.test(word);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 24. Merge Sorted Array
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$merge-sorted-array$b$, $b$Merge Sorted Array$b$, 'easy', $b$You get two arrays sorted in non-decreasing order: `nums1` with `m` real values followed by `n` placeholder zeros, and `nums2` with `n` values.
@@ -750,23 +1030,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'merge-sorted-array'), $b$[[4,5,6,0,0,0], 3, [1,2,3], 3]$b$, $b$[1, 2, 3, 4, 5, 6]$b$, true, 4),
   ((select id from public.problems where slug = 'merge-sorted-array'), $b$[[2,0], 1, [1], 1]$b$, $b$[1, 2]$b$, true, 5),
   ((select id from public.problems where slug = 'merge-sorted-array'), $b$[[-1,0,0,3,3,3,0,0,0], 6, [1,2,2], 3]$b$, $b$[-1, 0, 0, 1, 2, 2, 3, 3, 3]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _a2 = _args[2]
 _a3 = _args[3]
 _res = Solution().merge(_a0, _a1, _a2, _a3)
 _print(_a0)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def merge(self, nums1, m, nums2, n):
+        i, j, k = m - 1, n - 1, m + n - 1
+        while j >= 0:
+            if i >= 0 and nums1[i] > nums2[j]:
+                nums1[k] = nums1[i]; i -= 1
+            else:
+                nums1[k] = nums2[j]; j -= 1
+            k -= 1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const _a2 = __args[2];
 const _a3 = __args[3];
 const __res = merge(_a0, _a1, _a2, _a3);
 __print(_a0);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var merge = function(nums1, m, nums2, n) {
+    let i = m - 1, j = n - 1, k = m + n - 1;
+    while (j >= 0) nums1[k--] = (i >= 0 && nums1[i] > nums2[j]) ? nums1[i--] : nums2[j--];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 25. Closest Binary Search Tree Value
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$closest-binary-search-tree-value$b$, $b$Closest Binary Search Tree Value$b$, 'easy', $b$Given the `root` of a binary search tree and a (possibly fractional) `target`, return the node value closest to `target`. If two values are equally close, return the **smaller** one.
@@ -787,19 +1078,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'closest-binary-search-tree-value'), $b$[[10,5,15,2,7,null,20], 17.5]$b$, $b$15$b$, true, 5),
   ((select id from public.problems where slug = 'closest-binary-search-tree-value'), $b$[[10,5,15,2,7,null,20], -3]$b$, $b$2$b$, true, 6),
   ((select id from public.problems where slug = 'closest-binary-search-tree-value'), $b$[[8,3,10,1,6,null,14,null,null,4,7,13], 12.4]$b$, $b$13$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'closest-binary-search-tree-value'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'closest-binary-search-tree-value'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _args[1]
 _res = Solution().closestValue(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'closest-binary-search-tree-value'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def closestValue(self, root, target):
+        best = root.val
+        while root:
+            if abs(root.val - target) < abs(best - target) or (abs(root.val - target) == abs(best - target) and root.val < best):
+                best = root.val
+            root = root.left if target < root.val else root.right
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'closest-binary-search-tree-value'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __args[1];
 const __res = closestValue(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var closestValue = function(root, target) {
+    let best = root.val;
+    while (root) {
+        const d = Math.abs(root.val - target), bd = Math.abs(best - target);
+        if (d < bd || (d === bd && root.val < best)) best = root.val;
+        root = target < root.val ? root.left : root.right;
+    }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 26. Verifying an Alien Dictionary
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$verifying-an-alien-dictionary$b$, $b$Verifying an Alien Dictionary$b$, 'easy', $b$An alien language uses the same lowercase letters as English but in a different order. `order` is a permutation of the 26 letters giving that alphabet.
@@ -820,19 +1126,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), $b$[["kuvp","q"], "ngxlkthsjuoqcpavbfdermiywz"]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), $b$[["a"], "zyxwvutsrqponmlkjihgfedcba"]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), $b$[["zz","za","b"], "zyxwvutsrqponmlkjihgfedcba"]$b$, $b$true$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().isAlienSorted(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isAlienSorted(self, words, order):
+        rank = {c: i for i, c in enumerate(order)}
+        keys = [[rank[c] for c in w] for w in words]
+        return all(keys[i] <= keys[i + 1] for i in range(len(keys) - 1))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'verifying-an-alien-dictionary'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = isAlienSorted(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isAlienSorted = function(words, order) {
+    const rank = {};
+    for (let i = 0; i < 26; i++) rank[order[i]] = i;
+    for (let i = 0; i + 1 < words.length; i++) {
+        const a = words[i], b = words[i + 1];
+        let j = 0;
+        while (j < a.length && j < b.length && a[j] === b[j]) j++;
+        if (j === b.length && j < a.length) return false;
+        if (j < a.length && rank[a[j]] > rank[b[j]]) return false;
+    }
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 27. Group Anagrams
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$group-anagrams$b$, $b$Group Anagrams$b$, 'medium', $b$Given an array of strings `strs`, group together the words that are anagrams of each other (same letters, same counts, any order). Return the groups in any order, and the words inside each group in any order.
@@ -849,17 +1170,30 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'group-anagrams'), $b$[["",""]]$b$, $b$[["", ""]]$b$, true, 4),
   ((select id from public.problems where slug = 'group-anagrams'), $b$[["abc","bca","cab","xyz","zyx","q"]]$b$, $b$[["abc", "bca", "cab"], ["xyz", "zyx"], ["q"]]$b$, true, 5),
   ((select id from public.problems where slug = 'group-anagrams'), $b$[["ab","ba","abc","ab"]]$b$, $b$[["ab", "ba", "ab"], ["abc"]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'group-anagrams'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'group-anagrams'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().groupAnagrams(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'group-anagrams'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def groupAnagrams(self, strs):
+        g = defaultdict(list)
+        for s in strs:
+            g[''.join(sorted(s))].append(s)
+        return list(g.values())$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'group-anagrams'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = groupAnagrams(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var groupAnagrams = function(strs) {
+    const g = new Map();
+    for (const s of strs) {
+        const k = s.split('').sort().join('');
+        if (!g.has(k)) g.set(k, []);
+        g.get(k).push(s);
+    }
+    return [...g.values()];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 28. Find the Duplicate Number
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$find-the-duplicate-number$b$, $b$Find the Duplicate Number$b$, 'medium', $b$`nums` holds `n + 1` integers, each in the range `[1, n]`. Exactly one value is repeated (possibly many times). Return that value.
@@ -880,17 +1214,30 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'find-the-duplicate-number'), $b$[[1,1]]$b$, $b$1$b$, true, 4),
   ((select id from public.problems where slug = 'find-the-duplicate-number'), $b$[[2,5,9,6,9,3,8,9,7,1]]$b$, $b$9$b$, true, 5),
   ((select id from public.problems where slug = 'find-the-duplicate-number'), $b$[[1,4,4,2,4]]$b$, $b$4$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-the-duplicate-number'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-the-duplicate-number'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().findDuplicate(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-the-duplicate-number'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findDuplicate(self, nums):
+        slow = fast = nums[0]
+        while True:
+            slow, fast = nums[slow], nums[nums[fast]]
+            if slow == fast:
+                break
+        slow = nums[0]
+        while slow != fast:
+            slow, fast = nums[slow], nums[fast]
+        return slow$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-the-duplicate-number'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = findDuplicate(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findDuplicate = function(nums) {
+    const seen = new Set();
+    for (const x of nums) { if (seen.has(x)) return x; seen.add(x); }
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 29. Top K Frequent Elements
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$top-k-frequent-elements$b$, $b$Top K Frequent Elements$b$, 'medium', $b$Given an integer array `nums` and an integer `k`, return the `k` values that occur most often. The answer is guaranteed to be unique, and it can be returned in any order.
@@ -909,19 +1256,25 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'top-k-frequent-elements'), $b$[[5,5,5,5,6,6,6,7,7,8], 3]$b$, $b$[5, 6, 7]$b$, true, 4),
   ((select id from public.problems where slug = 'top-k-frequent-elements'), $b$[[3,0,1,0], 1]$b$, $b$[0]$b$, true, 5),
   ((select id from public.problems where slug = 'top-k-frequent-elements'), $b$[[9,8,7,9,8,9], 3]$b$, $b$[9, 8, 7]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'top-k-frequent-elements'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'top-k-frequent-elements'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().topKFrequent(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'top-k-frequent-elements'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def topKFrequent(self, nums, k):
+        return [x for x, _ in Counter(nums).most_common(k)]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'top-k-frequent-elements'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = topKFrequent(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var topKFrequent = function(nums, k) {
+    const c = new Map();
+    for (const x of nums) c.set(x, (c.get(x) || 0) + 1);
+    return [...c.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(e => e[0]);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 30. Longest Substring Without Repeating Characters
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$longest-substring-without-repeating-characters$b$, $b$Longest Substring Without Repeating Characters$b$, 'medium', $b$Given a string `s`, return the length of the longest **contiguous** substring in which no character appears twice.
@@ -940,17 +1293,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), $b$["dvdf"]$b$, $b$3$b$, true, 6),
   ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), $b$["abba"]$b$, $b$2$b$, true, 7),
   ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), $b$["tmmzuxt"]$b$, $b$5$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().lengthOfLongestSubstring(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def lengthOfLongestSubstring(self, s):
+        last, start, best = {}, 0, 0
+        for i, c in enumerate(s):
+            if last.get(c, -1) >= start:
+                start = last[c] + 1
+            last[c] = i
+            best = max(best, i - start + 1)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-substring-without-repeating-characters'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = lengthOfLongestSubstring(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var lengthOfLongestSubstring = function(s) {
+    const last = new Map();
+    let start = 0, best = 0;
+    for (let i = 0; i < s.length; i++) {
+        if (last.has(s[i]) && last.get(s[i]) >= start) start = last.get(s[i]) + 1;
+        last.set(s[i], i);
+        best = Math.max(best, i - start + 1);
+    }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 31. Find All Anagrams in a String
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$find-all-anagrams-in-a-string$b$, $b$Find All Anagrams in a String$b$, 'medium', $b$Given strings `s` and `p`, return every start index `i` such that the substring of `s` starting at `i` with length `p.length` is an anagram of `p`. Indices may be returned in any order.
@@ -967,19 +1337,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), $b$["aaaaa", "aa"]$b$, $b$[0, 1, 2, 3]$b$, true, 4),
   ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), $b$["baa", "aa"]$b$, $b$[1]$b$, true, 5),
   ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), $b$["abcdefg", "gfe"]$b$, $b$[4]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().findAnagrams(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findAnagrams(self, s, p):
+        need, win, out = Counter(p), Counter(), []
+        for i, c in enumerate(s):
+            win[c] += 1
+            if i >= len(p):
+                o = s[i - len(p)]
+                win[o] -= 1
+                if win[o] == 0:
+                    del win[o]
+            if win == need:
+                out.append(i - len(p) + 1)
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-all-anagrams-in-a-string'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = findAnagrams(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findAnagrams = function(s, p) {
+    const out = [];
+    const key = str => str.split('').sort().join('');
+    const kp = key(p);
+    for (let i = 0; i + p.length <= s.length; i++) if (key(s.substr(i, p.length)) === kp) out.push(i);
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 32. Longest Consecutive Sequence
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$longest-consecutive-sequence$b$, $b$Longest Consecutive Sequence$b$, 'medium', $b$Given an unsorted integer array `nums`, return the length of the longest run of consecutive integers (like `4, 5, 6, 7`) whose values all appear in `nums`. The order they appear in the array does not matter.
@@ -999,17 +1387,32 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'longest-consecutive-sequence'), $b$[[5]]$b$, $b$1$b$, true, 5),
   ((select id from public.problems where slug = 'longest-consecutive-sequence'), $b$[[-1,-2,-3,10,11]]$b$, $b$3$b$, true, 6),
   ((select id from public.problems where slug = 'longest-consecutive-sequence'), $b$[[9,1,4,7,3,-1,0,5,8,-1,6]]$b$, $b$7$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-consecutive-sequence'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-consecutive-sequence'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().longestConsecutive(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-consecutive-sequence'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def longestConsecutive(self, nums):
+        s, best = set(nums), 0
+        for x in s:
+            if x - 1 not in s:
+                y = x
+                while y + 1 in s:
+                    y += 1
+                best = max(best, y - x + 1)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-consecutive-sequence'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = longestConsecutive(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var longestConsecutive = function(nums) {
+    if (!nums.length) return 0;
+    const a = [...new Set(nums)].sort((x, y) => x - y);
+    let best = 1, run = 1;
+    for (let i = 1; i < a.length; i++) { run = a[i] === a[i - 1] + 1 ? run + 1 : 1; best = Math.max(best, run); }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 33. 3Sum
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$3sum$b$, $b$3Sum$b$, 'medium', $b$Given an integer array `nums`, return every **distinct** triplet of values `[a, b, c]` taken from three different positions such that `a + b + c == 0`.
@@ -1029,17 +1432,45 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = '3sum'), $b$[[-2,0,1,1,2]]$b$, $b$[[-2, 0, 2], [-2, 1, 1]]$b$, true, 5),
   ((select id from public.problems where slug = '3sum'), $b$[[3,0,-2,-1,1,2]]$b$, $b$[[-2, -1, 3], [-2, 0, 2], [-1, 0, 1]]$b$, true, 6),
   ((select id from public.problems where slug = '3sum'), $b$[[-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6]]$b$, $b$[[-4, -2, 6], [-4, 0, 4], [-4, 1, 3], [-4, 2, 2], [-2, -2, 4], [-2, 0, 2]]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = '3sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = '3sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().threeSum(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = '3sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def threeSum(self, nums):
+        nums.sort(); out = []
+        for i in range(len(nums) - 2):
+            if i and nums[i] == nums[i - 1]:
+                continue
+            lo, hi = i + 1, len(nums) - 1
+            while lo < hi:
+                s = nums[i] + nums[lo] + nums[hi]
+                if s < 0:
+                    lo += 1
+                elif s > 0:
+                    hi -= 1
+                else:
+                    out.append([nums[i], nums[lo], nums[hi]])
+                    lo += 1
+                    while lo < hi and nums[lo] == nums[lo - 1]:
+                        lo += 1
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = '3sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = threeSum(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var threeSum = function(nums) {
+    const seen = new Set(), out = [];
+    for (let i = 0; i < nums.length; i++)
+        for (let j = i + 1; j < nums.length; j++)
+            for (let k = j + 1; k < nums.length; k++)
+                if (nums[i] + nums[j] + nums[k] === 0) {
+                    const t = [nums[i], nums[j], nums[k]].sort((a, b) => a - b), key = t.join(',');
+                    if (!seen.has(key)) { seen.add(key); out.push(t); }
+                }
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 34. Longest Palindromic Substring
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$longest-palindromic-substring$b$, $b$Longest Palindromic Substring$b$, 'medium', $b$Given a string `s`, return its longest substring that reads the same forwards and backwards. If several have the maximum length, any of them is accepted.
@@ -1057,17 +1488,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'longest-palindromic-substring'), $b$["forgeeksskeegfor"]$b$, $b$"geeksskeeg"$b$, true, 5),
   ((select id from public.problems where slug = 'longest-palindromic-substring'), $b$["abacdfgdcaba"]$b$, $b$"aba"$b$, true, 6),
   ((select id from public.problems where slug = 'longest-palindromic-substring'), $b$["aaaa"]$b$, $b$"aaaa"$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-palindromic-substring'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-palindromic-substring'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().longestPalindrome(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-palindromic-substring'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def longestPalindrome(self, s):
+        best = ""
+        for c in range(len(s)):
+            for l, r in ((c, c), (c, c + 1)):
+                while l >= 0 and r < len(s) and s[l] == s[r]:
+                    l -= 1; r += 1
+                if r - l - 1 > len(best):
+                    best = s[l + 1:r]
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-palindromic-substring'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = longestPalindrome(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var longestPalindrome = function(s) {
+    let best = '';
+    for (let i = 0; i < s.length; i++)
+        for (let j = s.length; j > i + best.length; j--) {
+            const t = s.slice(i, j);
+            if (t === t.split('').reverse().join('')) { best = t; break; }
+        }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 35. Linked List Cycle II
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$linked-list-cycle-ii$b$, $b$Linked List Cycle II$b$, 'medium', $b$Given the `head` of a linked list, return the **node where the cycle begins**. If there is no cycle, return `null`/`None`. Do not modify the list.
@@ -1088,21 +1536,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'linked-list-cycle-ii'), $b$[[1,2,3,4,5,6], 3]$b$, $b$3$b$, true, 5),
   ((select id from public.problems where slug = 'linked-list-cycle-ii'), $b$[[1,2,3,4,5,6], 5]$b$, $b$5$b$, true, 6),
   ((select id from public.problems where slug = 'linked-list-cycle-ii'), $b$[[7,7,7,7], 2]$b$, $b$2$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'linked-list-cycle-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'linked-list-cycle-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _nodes = [ListNode(v) for v in _args[0]]
 for _i in range(len(_nodes) - 1): _nodes[_i].next = _nodes[_i + 1]
 if _nodes and _args[1] >= 0: _nodes[-1].next = _nodes[_args[1]]
 _res = Solution().detectCycle(_nodes[0] if _nodes else None)
 _print(next((i for i, n in enumerate(_nodes) if n is _res), -1))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'linked-list-cycle-ii'), 'javascript', $b$$b$, $b$const __nodes = __args[0].map(v => new ListNode(v));
+$b$, $b$class Solution:
+    def detectCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow is fast:
+                slow = head
+                while slow is not fast:
+                    slow, fast = slow.next, fast.next
+                return slow
+        return None$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'linked-list-cycle-ii'), 'javascript', $b$$b$, $b$const __nodes = __args[0].map(v => new ListNode(v));
 for (let i = 0; i + 1 < __nodes.length; i++) __nodes[i].next = __nodes[i + 1];
 if (__nodes.length && __args[1] >= 0) __nodes[__nodes.length - 1].next = __nodes[__args[1]];
 const __res = detectCycle(__nodes.length ? __nodes[0] : null);
 __print(__nodes.indexOf(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var detectCycle = function(head) {
+    const seen = new Set();
+    for (let n = head; n; n = n.next) { if (seen.has(n)) return n; seen.add(n); }
+    return null;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 36. Remove Nth Node From End of List
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$remove-nth-node-from-end-of-list$b$, $b$Remove Nth Node From End of List$b$, 'medium', $b$Given the `head` of a linked list, remove the `n`-th node counting from the **end** and return the head of the resulting list.
@@ -1121,19 +1583,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), $b$[[1,2], 2]$b$, $b$[2]$b$, true, 4),
   ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), $b$[[1,2,3], 3]$b$, $b$[2, 3]$b$, true, 5),
   ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), $b$[[10,20,30,40], 4]$b$, $b$[20, 30, 40]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_list(_args[0])
 _a1 = _args[1]
 _res = Solution().removeNthFromEnd(_a0, _a1)
 _print(_from_list(_res))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
+$b$, $b$class Solution:
+    def removeNthFromEnd(self, head, n):
+        dummy = ListNode(0, head); fast = slow = dummy
+        for _ in range(n + 1):
+            fast = fast.next
+        while fast:
+            fast, slow = fast.next, slow.next
+        slow.next = slow.next.next
+        return dummy.next$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'remove-nth-node-from-end-of-list'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
 const _a1 = __args[1];
 const __res = removeNthFromEnd(_a0, _a1);
 __print(__fromList(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var removeNthFromEnd = function(head, n) {
+    const nodes = [];
+    for (let x = head; x; x = x.next) nodes.push(x);
+    const i = nodes.length - n;
+    if (i === 0) return head.next;
+    nodes[i - 1].next = nodes[i].next;
+    return head;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 37. Binary Tree Level Order Traversal
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$binary-tree-level-order-traversal$b$, $b$Binary Tree Level Order Traversal$b$, 'medium', $b$Given the `root` of a binary tree, return its values level by level: a list of levels from top to bottom, each listing its values from left to right.
@@ -1150,17 +1627,28 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), $b$[[1,2,3,4,null,null,5]]$b$, $b$[[1], [2, 3], [4, 5]]$b$, true, 4),
   ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), $b$[[1,null,2,null,3]]$b$, $b$[[1], [2], [3]]$b$, true, 5),
   ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), $b$[[0,-1,1,-2,null,null,2,-3]]$b$, $b$[[0], [-1, 1], [-2, 2], [-3]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().levelOrder(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def levelOrder(self, root):
+        out, level = [], [root] if root else []
+        while level:
+            out.append([n.val for n in level])
+            level = [c for n in level for c in (n.left, n.right) if c]
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-level-order-traversal'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = levelOrder(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var levelOrder = function(root) {
+    const out = [];
+    const dfs = (n, d) => { if (!n) return; if (!out[d]) out[d] = []; out[d].push(n.val); dfs(n.left, d + 1); dfs(n.right, d + 1); };
+    dfs(root, 0);
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 38. Binary Tree Right Side View
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$binary-tree-right-side-view$b$, $b$Binary Tree Right Side View$b$, 'medium', $b$Imagine standing to the right of a binary tree. Return the values you can see, from top to bottom: for each level, the rightmost node.
@@ -1177,17 +1665,28 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'binary-tree-right-side-view'), $b$[[]]$b$, $b$[]$b$, true, 4),
   ((select id from public.problems where slug = 'binary-tree-right-side-view'), $b$[[1,2]]$b$, $b$[1, 2]$b$, true, 5),
   ((select id from public.problems where slug = 'binary-tree-right-side-view'), $b$[[1,2,3,4,5,6,7,null,8]]$b$, $b$[1, 3, 7, 8]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-right-side-view'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-right-side-view'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().rightSideView(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-right-side-view'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def rightSideView(self, root):
+        out, level = [], [root] if root else []
+        while level:
+            out.append(level[-1].val)
+            level = [c for n in level for c in (n.left, n.right) if c]
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-right-side-view'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = rightSideView(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var rightSideView = function(root) {
+    const out = [];
+    const dfs = (n, d) => { if (!n) return; if (out.length === d) out.push(n.val); dfs(n.right, d + 1); dfs(n.left, d + 1); };
+    dfs(root, 0);
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 39. Path Sum III
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$path-sum-iii$b$, $b$Path Sum III$b$, 'medium', $b$Given the `root` of a binary tree and an integer `targetSum`, count the downward paths whose node values add up to `targetSum`.
@@ -1208,19 +1707,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'path-sum-iii'), $b$[[1,-2,-3,1,3,-2,null,-1], -1]$b$, $b$4$b$, true, 5),
   ((select id from public.problems where slug = 'path-sum-iii'), $b$[[0,1,1], 1]$b$, $b$4$b$, true, 6),
   ((select id from public.problems where slug = 'path-sum-iii'), $b$[[1000000000,1000000000,null,294967296,null,1000000000,null,1000000000,null,1000000000], 0]$b$, $b$0$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'path-sum-iii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'path-sum-iii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _args[1]
 _res = Solution().pathSum(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'path-sum-iii'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def pathSum(self, root, targetSum):
+        seen = Counter({0: 1})
+        def dfs(n, acc):
+            if not n:
+                return 0
+            acc += n.val
+            r = seen[acc - targetSum]
+            seen[acc] += 1
+            r += dfs(n.left, acc) + dfs(n.right, acc)
+            seen[acc] -= 1
+            return r
+        return dfs(root, 0)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'path-sum-iii'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __args[1];
 const __res = pathSum(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var pathSum = function(root, targetSum) {
+    const from = (n, rem) => n ? (n.val === rem ? 1 : 0) + from(n.left, rem - n.val) + from(n.right, rem - n.val) : 0;
+    const all = n => n ? from(n, targetSum) + all(n.left) + all(n.right) : 0;
+    return all(root);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 40. Kth Smallest Element in a BST
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$kth-smallest-element-in-a-bst$b$, $b$Kth Smallest Element in a BST$b$, 'medium', $b$Given the `root` of a binary search tree and an integer `k`, return the `k`-th smallest value in the tree (counting from 1).
@@ -1238,19 +1753,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), $b$[[5,3,6,2,4,null,null,1], 6]$b$, $b$6$b$, true, 4),
   ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), $b$[[8,4,12,2,6,10,14], 5]$b$, $b$10$b$, true, 5),
   ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), $b$[[2,1,3], 2]$b$, $b$2$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _args[1]
 _res = Solution().kthSmallest(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def kthSmallest(self, root, k):
+        st = []
+        while True:
+            while root:
+                st.append(root); root = root.left
+            root = st.pop(); k -= 1
+            if k == 0:
+                return root.val
+            root = root.right$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-smallest-element-in-a-bst'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __args[1];
 const __res = kthSmallest(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var kthSmallest = function(root, k) {
+    const vals = [];
+    const walk = n => { if (!n) return; walk(n.left); vals.push(n.val); walk(n.right); };
+    walk(root);
+    return vals[k - 1];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 41. Number of Islands
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$number-of-islands$b$, $b$Number of Islands$b$, 'medium', $b$You get an `m x n` grid of characters where `"1"` is land and `"0"` is water. An island is a group of land cells connected **horizontally or vertically**. Everything outside the grid is water.
@@ -1269,17 +1798,36 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'number-of-islands'), $b$[[["1","0","1","0","1"]]]$b$, $b$3$b$, true, 5),
   ((select id from public.problems where slug = 'number-of-islands'), $b$[[["1","1","1"],["0","1","0"],["1","1","1"]]]$b$, $b$1$b$, true, 6),
   ((select id from public.problems where slug = 'number-of-islands'), $b$[[["1","0","1"],["0","1","0"],["1","0","1"]]]$b$, $b$5$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'number-of-islands'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'number-of-islands'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().numIslands(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'number-of-islands'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def numIslands(self, grid):
+        m, n, count = len(grid), len(grid[0]), 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "1":
+                    count += 1
+                    st = [(i, j)]; grid[i][j] = "0"
+                    while st:
+                        a, b = st.pop()
+                        for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                            if 0 <= x < m and 0 <= y < n and grid[x][y] == "1":
+                                grid[x][y] = "0"; st.append((x, y))
+        return count$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'number-of-islands'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = numIslands(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var numIslands = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    const sink = (i, j) => { if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] !== '1') return; grid[i][j] = '0'; sink(i + 1, j); sink(i - 1, j); sink(i, j + 1); sink(i, j - 1); };
+    let c = 0;
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (grid[i][j] === '1') { c++; sink(i, j); }
+    return c;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 42. Clone Graph
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$clone-graph$b$, $b$Clone Graph$b$, 'medium', $b$You are given a reference to one node of a connected, undirected graph. Each node has an integer `val` and a list of `neighbors`. Return a **deep copy** of the whole graph: brand-new nodes with the same values and the same connections. None of the original nodes may appear in your copy.
@@ -1298,7 +1846,7 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'clone-graph'), $b$[[[2],[1]]]$b$, $b$[[2], [1]]$b$, true, 4),
   ((select id from public.problems where slug = 'clone-graph'), $b$[[[2,3],[1,3],[1,2]]]$b$, $b$[[2, 3], [1, 3], [1, 2]]$b$, true, 5),
   ((select id from public.problems where slug = 'clone-graph'), $b$[[[2,3,4,5],[1],[1],[1],[1]]]$b$, $b$[[2, 3, 4, 5], [1], [1], [1], [1]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'clone-graph'), 'python', $b$class Node:
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'clone-graph'), 'python', $b$class Node:
     def __init__(self, val = 0, neighbors = None):
         self.val = val
         self.neighbors = neighbors if neighbors is not None else []$b$, $b$_adj = json.loads(sys.stdin.read())[0]
@@ -1319,9 +1867,20 @@ else:
     for _n in _seen.values():
         _out[_n.val - 1] = [x.val for x in _n.neighbors]
     _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'clone-graph'), 'javascript', $b$function _Node(val, neighbors) { this.val = val === undefined ? 0 : val; this.neighbors = neighbors === undefined ? [] : neighbors; }$b$, $b$const __adj = __args[0];
+$b$, $b$class Solution:
+    def cloneGraph(self, node):
+        if not node:
+            return None
+        copies = {}
+        def dfs(n):
+            if n in copies:
+                return copies[n]
+            c = copies[n] = Node(n.val)
+            c.neighbors = [dfs(x) for x in n.neighbors]
+            return c
+        return dfs(node)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'clone-graph'), 'javascript', $b$function _Node(val, neighbors) { this.val = val === undefined ? 0 : val; this.neighbors = neighbors === undefined ? [] : neighbors; }$b$, $b$const __adj = __args[0];
 const __orig = __adj.map((_, i) => new _Node(i + 1));
 __adj.forEach((nb, i) => { __orig[i].neighbors = nb.map(j => __orig[j - 1]); });
 const __res = cloneGraph(__orig.length ? __orig[0] : null);
@@ -1329,8 +1888,20 @@ const __origSet = new Set(__orig), __seen = new Set(), __st = __res ? [__res] : 
 while (__st.length) { const n = __st.pop(); if (__seen.has(n)) continue; __seen.add(n); for (const x of n.neighbors) __st.push(x); }
 if ([...__seen].some(n => __origSet.has(n))) __print("not a deep copy: your graph reuses original nodes");
 else { const out = new Array(__seen.size).fill(null); for (const n of __seen) out[n.val - 1] = n.neighbors.map(x => x.val); __print(out); }
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var cloneGraph = function(node) {
+    if (!node) return null;
+    const copies = new Map(), q = [node];
+    copies.set(node, new _Node(node.val));
+    while (q.length) {
+        const n = q.shift();
+        for (const x of n.neighbors) {
+            if (!copies.has(x)) { copies.set(x, new _Node(x.val)); q.push(x); }
+            copies.get(n).neighbors.push(copies.get(x));
+        }
+    }
+    return copies.get(node);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 43. Rotting Oranges
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$rotting-oranges$b$, $b$Rotting Oranges$b$, 'medium', $b$Each cell of an `m x n` grid is `0` (empty), `1` (fresh orange) or `2` (rotten orange). Every minute, any fresh orange next to a rotten one (up, down, left or right) becomes rotten.
@@ -1349,17 +1920,47 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'rotting-oranges'), $b$[[[1]]]$b$, $b$-1$b$, true, 5),
   ((select id from public.problems where slug = 'rotting-oranges'), $b$[[[2,2],[1,1],[0,0],[2,0]]]$b$, $b$1$b$, true, 6),
   ((select id from public.problems where slug = 'rotting-oranges'), $b$[[[2,1,1],[1,1,1],[0,1,2]]]$b$, $b$2$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'rotting-oranges'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'rotting-oranges'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().orangesRotting(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'rotting-oranges'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def orangesRotting(self, grid):
+        m, n = len(grid), len(grid[0])
+        q = deque((i, j) for i in range(m) for j in range(n) if grid[i][j] == 2)
+        fresh = sum(row.count(1) for row in grid)
+        t = 0
+        while q and fresh:
+            t += 1
+            for _ in range(len(q)):
+                a, b = q.popleft()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and grid[x][y] == 1:
+                        grid[x][y] = 2; fresh -= 1; q.append((x, y))
+        return -1 if fresh else t$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'rotting-oranges'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = orangesRotting(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var orangesRotting = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    let t = 0;
+    for (;;) {
+        const next = [];
+        let fresh = 0;
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+            if (grid[i][j] !== 1) continue;
+            fresh++;
+            for (const [x, y] of [[i+1,j],[i-1,j],[i,j+1],[i,j-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && grid[x][y] === 2) { next.push([i, j]); break; }
+        }
+        if (!fresh) return t;
+        if (!next.length) return -1;
+        for (const [i, j] of next) grid[i][j] = 2;
+        t++;
+    }
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 44. Course Schedule
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$course-schedule$b$, $b$Course Schedule$b$, 'medium', $b$There are `numCourses` courses labeled `0` to `numCourses - 1`. Each pair `prerequisites[i] = [a, b]` means you must finish course `b` before taking course `a`.
@@ -1380,19 +1981,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'course-schedule'), $b$[5, [[1,4],[2,4],[3,1],[3,2]]]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'course-schedule'), $b$[4, [[1,0],[2,1],[3,2],[1,3]]]$b$, $b$false$b$, true, 6),
   ((select id from public.problems where slug = 'course-schedule'), $b$[3, [[0,1],[0,2],[1,2]]]$b$, $b$true$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'course-schedule'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'course-schedule'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().canFinish(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'course-schedule'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def canFinish(self, numCourses, prerequisites):
+        g = [[] for _ in range(numCourses)]; indeg = [0] * numCourses
+        for a, b in prerequisites:
+            g[b].append(a); indeg[a] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0); done = 0
+        while q:
+            u = q.popleft(); done += 1
+            for v in g[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return done == numCourses$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'course-schedule'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = canFinish(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var canFinish = function(numCourses, prerequisites) {
+    const g = Array.from({ length: numCourses }, () => []), state = new Array(numCourses).fill(0);
+    for (const [a, b] of prerequisites) g[a].push(b);
+    const cyc = u => { if (state[u] === 1) return true; if (state[u] === 2) return false; state[u] = 1; for (const v of g[u]) if (cyc(v)) return true; state[u] = 2; return false; };
+    for (let i = 0; i < numCourses; i++) if (cyc(i)) return false;
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 45. Pacific Atlantic Water Flow
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$pacific-atlantic-water-flow$b$, $b$Pacific Atlantic Water Flow$b$, 'medium', $b$An `m x n` island has the **Pacific** ocean along its top and left edges and the **Atlantic** along its bottom and right edges. `heights[r][c]` is the height of each cell.
@@ -1413,17 +2032,46 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), $b$[[[3,3,3],[3,1,3],[0,2,4]]]$b$, $b$[[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 1], [2, 2]]$b$, true, 4),
   ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), $b$[[[1,2,3],[8,9,4],[7,6,5]]]$b$, $b$[[0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]$b$, true, 5),
   ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), $b$[[[10,10,10],[10,1,10],[10,10,10]]]$b$, $b$[[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 1], [2, 2]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().pacificAtlantic(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def pacificAtlantic(self, heights):
+        m, n = len(heights), len(heights[0])
+        def reach(starts):
+            seen = set(starts); st = list(starts)
+            while st:
+                a, b = st.pop()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and (x, y) not in seen and heights[x][y] >= heights[a][b]:
+                        seen.add((x, y)); st.append((x, y))
+            return seen
+        p = reach([(0, j) for j in range(n)] + [(i, 0) for i in range(m)])
+        a = reach([(m - 1, j) for j in range(n)] + [(i, n - 1) for i in range(m)])
+        return [list(c) for c in sorted(p & a)]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'pacific-atlantic-water-flow'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = pacificAtlantic(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var pacificAtlantic = function(heights) {
+    const m = heights.length, n = heights[0].length, out = [];
+    const flows = (r, c) => {
+        const seen = new Set([r * n + c]), st = [[r, c]];
+        let pac = false, atl = false;
+        while (st.length) {
+            const [a, b] = st.pop();
+            if (a === 0 || b === 0) pac = true;
+            if (a === m - 1 || b === n - 1) atl = true;
+            for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && !seen.has(x * n + y) && heights[x][y] <= heights[a][b]) { seen.add(x * n + y); st.push([x, y]); }
+        }
+        return pac && atl;
+    };
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (flows(i, j)) out.push([i, j]);
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 46. Word Search
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$word-search$b$, $b$Word Search$b$, 'medium', $b$Given an `m x n` grid of letters `board` and a string `word`, return `true` if `word` can be spelled by moving between **horizontally or vertically adjacent** cells. Each cell may be used at most once in a single word.
@@ -1444,19 +2092,43 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'word-search'), $b$[[["a","b"],["c","d"]], "abdc"]$b$, $b$true$b$, true, 5),
   ((select id from public.problems where slug = 'word-search'), $b$[[["a","b"],["c","d"]], "abcd"]$b$, $b$false$b$, true, 6),
   ((select id from public.problems where slug = 'word-search'), $b$[[["a","a","a"],["a","a","a"]], "aaaaaaa"]$b$, $b$false$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-search'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-search'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().exist(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-search'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def exist(self, board, word):
+        m, n = len(board), len(board[0])
+        def go(i, j, k):
+            if k == len(word):
+                return True
+            if not (0 <= i < m and 0 <= j < n) or board[i][j] != word[k]:
+                return False
+            board[i][j] = '#'
+            ok = go(i+1, j, k+1) or go(i-1, j, k+1) or go(i, j+1, k+1) or go(i, j-1, k+1)
+            board[i][j] = word[k]
+            return ok
+        return any(go(i, j, 0) for i in range(m) for j in range(n))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-search'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = exist(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var exist = function(board, word) {
+    const m = board.length, n = board[0].length, used = new Set();
+    const go = (i, j, k) => {
+        if (k === word.length) return true;
+        if (i < 0 || j < 0 || i >= m || j >= n || used.has(i * n + j) || board[i][j] !== word[k]) return false;
+        used.add(i * n + j);
+        const ok = go(i + 1, j, k + 1) || go(i - 1, j, k + 1) || go(i, j + 1, k + 1) || go(i, j - 1, k + 1);
+        used.delete(i * n + j);
+        return ok;
+    };
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (go(i, j, 0)) return true;
+    return false;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 47. Course Schedule II
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$course-schedule-ii$b$, $b$Course Schedule II$b$, 'medium', $b$There are `numCourses` courses labeled `0` to `numCourses - 1`. Each pair `prerequisites[i] = [a, b]` means course `b` must be taken before course `a`.
@@ -1478,19 +2150,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'course-schedule-ii'), $b$[6, [[5,4],[4,3],[3,2],[2,1],[1,0]]]$b$, $b$[0, 1, 2, 3, 4, 5]$b$, true, 6),
   ((select id from public.problems where slug = 'course-schedule-ii'), $b$[3, [[0,1],[1,2],[2,0]]]$b$, $b$[]$b$, true, 7),
   ((select id from public.problems where slug = 'course-schedule-ii'), $b$[5, [[1,0],[2,0],[3,1],[4,3],[4,2]]]$b$, $b$[0, 1, 2, 3, 4]$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'course-schedule-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'course-schedule-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().findOrder(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'course-schedule-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findOrder(self, numCourses, prerequisites):
+        g = [[] for _ in range(numCourses)]; indeg = [0] * numCourses
+        for a, b in prerequisites:
+            g[b].append(a); indeg[a] += 1
+        q = deque(i for i in range(numCourses) if indeg[i] == 0); out = []
+        while q:
+            u = q.popleft(); out.append(u)
+            for v in g[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+        return out if len(out) == numCourses else []$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'course-schedule-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = findOrder(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findOrder = function(numCourses, prerequisites) {
+    const g = Array.from({ length: numCourses }, () => []), state = new Array(numCourses).fill(0), out = [];
+    for (const [a, b] of prerequisites) g[a].push(b);
+    const dfs = u => { if (state[u] === 1) return false; if (state[u] === 2) return true; state[u] = 1; for (const v of g[u]) if (!dfs(v)) return false; state[u] = 2; out.push(u); return true; };
+    for (let i = numCourses - 1; i >= 0; i--) if (!dfs(i)) return [];
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 48. Search in Rotated Sorted Array
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$search-in-rotated-sorted-array$b$, $b$Search in Rotated Sorted Array$b$, 'medium', $b$An ascending array of **distinct** integers has been rotated at some unknown pivot, so `[0,1,2,4,5,6,7]` might become `[4,5,6,7,0,1,2]`.
@@ -1511,19 +2201,38 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), $b$[[5,1,3], 5]$b$, $b$0$b$, true, 6),
   ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), $b$[[6,7,8,1,2,3,4,5], 8]$b$, $b$2$b$, true, 7),
   ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), $b$[[1,2,3,4,5,6], 4]$b$, $b$3$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().search(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def search(self, nums, target):
+        lo, hi = 0, len(nums) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[lo] <= nums[mid]:
+                if nums[lo] <= target < nums[mid]:
+                    hi = mid - 1
+                else:
+                    lo = mid + 1
+            else:
+                if nums[mid] < target <= nums[hi]:
+                    lo = mid + 1
+                else:
+                    hi = mid - 1
+        return -1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'search-in-rotated-sorted-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = search(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var search = function(nums, target) {
+    return nums.indexOf(target);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 49. House Robber
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$house-robber$b$, $b$House Robber$b$, 'medium', $b$Houses along a street hold `nums[i]` dollars each. You cannot rob two **adjacent** houses on the same night because that would trigger the alarms.
@@ -1543,17 +2252,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'house-robber'), $b$[[0,0,0]]$b$, $b$0$b$, true, 5),
   ((select id from public.problems where slug = 'house-robber'), $b$[[1,3,1,3,100]]$b$, $b$103$b$, true, 6),
   ((select id from public.problems where slug = 'house-robber'), $b$[[400,1,1,400,1,1,400]]$b$, $b$1200$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'house-robber'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'house-robber'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().rob(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'house-robber'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def rob(self, nums):
+        a = b = 0
+        for x in nums:
+            a, b = b, max(b, a + x)
+        return b$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'house-robber'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = rob(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var rob = function(nums) {
+    const dp = [];
+    for (let i = 0; i < nums.length; i++) dp[i] = Math.max(i >= 1 ? dp[i - 1] : 0, (i >= 2 ? dp[i - 2] : 0) + nums[i]);
+    return dp[nums.length - 1];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 50. Maximum Product Subarray
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$maximum-product-subarray$b$, $b$Maximum Product Subarray$b$, 'medium', $b$Given an integer array `nums`, return the largest product of any non-empty **contiguous** subarray.
@@ -1573,17 +2291,27 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'maximum-product-subarray'), $b$[[-1,-2,-3,0]]$b$, $b$6$b$, true, 6),
   ((select id from public.problems where slug = 'maximum-product-subarray'), $b$[[2,-5,-2,-4,3]]$b$, $b$24$b$, true, 7),
   ((select id from public.problems where slug = 'maximum-product-subarray'), $b$[[-2,-3,7,-2,0,-1,9]]$b$, $b$42$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'maximum-product-subarray'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'maximum-product-subarray'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().maxProduct(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'maximum-product-subarray'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def maxProduct(self, nums):
+        best = hi = lo = nums[0]
+        for x in nums[1:]:
+            hi, lo = max(x, hi * x, lo * x), min(x, hi * x, lo * x)
+            best = max(best, hi)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'maximum-product-subarray'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = maxProduct(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var maxProduct = function(nums) {
+    let best = -Infinity;
+    for (let i = 0; i < nums.length; i++) { let p = 1; for (let j = i; j < nums.length; j++) { p *= nums[j]; best = Math.max(best, p); } }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 51. Longest Subarray of 1's After Deleting One Element
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$longest-subarray-of-1s-after-deleting-one-element$b$, $b$Longest Subarray of 1's After Deleting One Element$b$, 'medium', $b$Given a binary array `nums`, you **must** delete exactly one element. Return the length of the longest run of consecutive `1`s you can end up with (it may be `0`).
@@ -1601,17 +2329,32 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), $b$[[1]]$b$, $b$0$b$, true, 5),
   ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), $b$[[0,0,0]]$b$, $b$0$b$, true, 6),
   ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), $b$[[1,0,0,1,1,0,1,1,1]]$b$, $b$5$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().longestSubarray(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def longestSubarray(self, nums):
+        left = zeros = best = 0
+        for right, x in enumerate(nums):
+            zeros += x == 0
+            while zeros > 1:
+                zeros -= nums[left] == 0; left += 1
+            best = max(best, right - left)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'longest-subarray-of-1s-after-deleting-one-element'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = longestSubarray(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var longestSubarray = function(nums) {
+    let best = 0;
+    for (let d = 0; d < nums.length; d++) {
+        let run = 0;
+        for (let i = 0; i < nums.length; i++) { if (i === d) continue; run = nums[i] ? run + 1 : 0; best = Math.max(best, run); }
+    }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 52. Minimum Remove to Make Valid Parentheses
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$minimum-remove-to-make-valid-parentheses$b$, $b$Minimum Remove to Make Valid Parentheses$b$, 'medium', $b$`s` contains lowercase letters plus `'('` and `')'`. Delete the **fewest** parentheses possible so that the remaining string has balanced parentheses, and return it. Letters must never be deleted.
@@ -1630,17 +2373,36 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), $b$["abc"]$b$, $b$"abc"$b$, true, 5),
   ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), $b$["())()((("]$b$, $b$"()()"$b$, true, 6),
   ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), $b$[")(a)("]$b$, $b$"(a)"$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().minRemoveToMakeValid(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def minRemoveToMakeValid(self, s):
+        s = list(s); st = []
+        for i, c in enumerate(s):
+            if c == '(':
+                st.append(i)
+            elif c == ')':
+                if st:
+                    st.pop()
+                else:
+                    s[i] = ''
+        for i in st:
+            s[i] = ''
+        return ''.join(s)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'minimum-remove-to-make-valid-parentheses'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = minRemoveToMakeValid(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var minRemoveToMakeValid = function(s) {
+    let out = [], open = 0;
+    for (const c of s) { if (c === ')') { if (!open) continue; open--; } else if (c === '(') open++; out.push(c); }
+    const res = [];
+    for (let i = out.length - 1; i >= 0; i--) { if (out[i] === '(' && open > 0) { open--; continue; } res.push(out[i]); }
+    return res.reverse().join('');
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 53. 132 Pattern
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$132-pattern$b$, $b$132 Pattern$b$, 'medium', $b$A **132 pattern** is three positions `i < j < k` with `nums[i] < nums[k] < nums[j]`: small, then big, then middle.
@@ -1661,17 +2423,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = '132-pattern'), $b$[[1]]$b$, $b$false$b$, true, 6),
   ((select id from public.problems where slug = '132-pattern'), $b$[[1,4,0,-1,-2,-3,-1,-2]]$b$, $b$true$b$, true, 7),
   ((select id from public.problems where slug = '132-pattern'), $b$[[6,12,3,4,6,11,20]]$b$, $b$true$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = '132-pattern'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = '132-pattern'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().find132pattern(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = '132-pattern'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def find132pattern(self, nums):
+        st, third = [], float('-inf')
+        for x in reversed(nums):
+            if x < third:
+                return True
+            while st and st[-1] < x:
+                third = st.pop()
+            st.append(x)
+        return False$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = '132-pattern'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = find132pattern(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var find132pattern = function(nums) {
+    let mn = Infinity;
+    for (let j = 0; j < nums.length; j++) {
+        mn = Math.min(mn, nums[j]);
+        for (let k = j + 1; k < nums.length; k++) if (mn < nums[k] && nums[k] < nums[j]) return true;
+    }
+    return false;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 54. Merge Intervals
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$merge-intervals$b$, $b$Merge Intervals$b$, 'medium', $b$Given a list of intervals `[start, end]`, merge every group of overlapping intervals and return the resulting non-overlapping intervals. Intervals that only touch, like `[1,4]` and `[4,5]`, count as overlapping.
@@ -1691,17 +2469,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'merge-intervals'), $b$[[[1,4],[2,3]]]$b$, $b$[[1, 4]]$b$, true, 5),
   ((select id from public.problems where slug = 'merge-intervals'), $b$[[[1,10],[2,3],[4,5],[11,12]]]$b$, $b$[[1, 10], [11, 12]]$b$, true, 6),
   ((select id from public.problems where slug = 'merge-intervals'), $b$[[[5,5]]]$b$, $b$[[5, 5]]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-intervals'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-intervals'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().merge(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-intervals'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def merge(self, intervals):
+        out = []
+        for s, e in sorted(intervals):
+            if out and s <= out[-1][1]:
+                out[-1][1] = max(out[-1][1], e)
+            else:
+                out.append([s, e])
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-intervals'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = merge(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var merge = function(intervals) {
+    intervals.sort((a, b) => a[0] - b[0]);
+    const out = [];
+    for (const [s, e] of intervals) {
+        if (out.length && s <= out[out.length - 1][1]) out[out.length - 1][1] = Math.max(out[out.length - 1][1], e);
+        else out.push([s, e]);
+    }
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 55. Insert Interval
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$insert-interval$b$, $b$Insert Interval$b$, 'medium', $b$`intervals` is a list of non-overlapping intervals sorted by start. Insert `newInterval`, merging wherever it overlaps, and return the list. It must still be sorted and non-overlapping.
@@ -1720,19 +2514,36 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'insert-interval'), $b$[[[3,5]], [0,1]]$b$, $b$[[0, 1], [3, 5]]$b$, true, 6),
   ((select id from public.problems where slug = 'insert-interval'), $b$[[[1,5]], [0,0]]$b$, $b$[[0, 0], [1, 5]]$b$, true, 7),
   ((select id from public.problems where slug = 'insert-interval'), $b$[[[2,5],[6,7],[8,9]], [0,10]]$b$, $b$[[0, 10]]$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'insert-interval'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'insert-interval'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().insert(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'insert-interval'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def insert(self, intervals, newInterval):
+        s, e = newInterval; left, right = [], []
+        for a, b in intervals:
+            if b < s:
+                left.append([a, b])
+            elif a > e:
+                right.append([a, b])
+            else:
+                s, e = min(s, a), max(e, b)
+        return left + [[s, e]] + right$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'insert-interval'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = insert(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var insert = function(intervals, newInterval) {
+    const all = intervals.concat([newInterval]).sort((a, b) => a[0] - b[0]), out = [];
+    for (const [s, e] of all) {
+        if (out.length && s <= out[out.length - 1][1]) out[out.length - 1][1] = Math.max(out[out.length - 1][1], e);
+        else out.push([s, e]);
+    }
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 56. Implement Trie (Prefix Tree)
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$implement-trie-prefix-tree$b$, $b$Implement Trie (Prefix Tree)$b$, 'medium', $b$A **trie** stores strings so that prefix lookups are fast. Implement the `Trie` class:
@@ -1753,20 +2564,44 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'implement-trie-prefix-tree'), $b$[["Trie","search","startsWith","insert","startsWith","search"],[[],["a"],["a"],["a"],["a"],["a"]]]$b$, $b$[null, false, false, null, true, true]$b$, false, 2),
   ((select id from public.problems where slug = 'implement-trie-prefix-tree'), $b$[["Trie","insert","insert","search","search","startsWith","startsWith","search"],[[],["car"],["card"],["ca"],["card"],["care"],["card"],["cards"]]]$b$, $b$[null, null, null, false, true, false, true, false]$b$, true, 3),
   ((select id from public.problems where slug = 'implement-trie-prefix-tree'), $b$[["Trie","insert","insert","startsWith","search","startsWith"],[[],["hello"],["help"],["hel"],["hell"],["hello"]]]$b$, $b$[null, null, null, true, false, true]$b$, true, 4);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-trie-prefix-tree'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-trie-prefix-tree'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = Trie(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'implement-trie-prefix-tree'), 'javascript', $b$$b$, $b$const __obj = new Trie(...__args[1][0]);
+$b$, $b$class Trie:
+    def __init__(self):
+        self.root = {}
+    def insert(self, word):
+        n = self.root
+        for c in word:
+            n = n.setdefault(c, {})
+        n['$'] = True
+    def _walk(self, s):
+        n = self.root
+        for c in s:
+            if c not in n:
+                return None
+            n = n[c]
+        return n
+    def search(self, word):
+        n = self._walk(word)
+        return n is not None and '$' in n
+    def startsWith(self, prefix):
+        return self._walk(prefix) is not None$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'implement-trie-prefix-tree'), 'javascript', $b$$b$, $b$const __obj = new Trie(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class Trie {
+    constructor() { this.words = new Set(); }
+    insert(word) { this.words.add(word); }
+    search(word) { return this.words.has(word); }
+    startsWith(prefix) { for (const w of this.words) if (w.startsWith(prefix)) return true; return false; }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 57. Spiral Matrix
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$spiral-matrix$b$, $b$Spiral Matrix$b$, 'medium', $b$Given an `m x n` matrix, return all of its elements in **clockwise spiral** order, starting at the top-left corner.
@@ -1782,17 +2617,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'spiral-matrix'), $b$[[[1,2,3]]]$b$, $b$[1, 2, 3]$b$, true, 4),
   ((select id from public.problems where slug = 'spiral-matrix'), $b$[[[1],[2],[3]]]$b$, $b$[1, 2, 3]$b$, true, 5),
   ((select id from public.problems where slug = 'spiral-matrix'), $b$[[[1,2],[3,4],[5,6],[7,8]]]$b$, $b$[1, 2, 4, 6, 8, 7, 5, 3]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'spiral-matrix'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'spiral-matrix'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().spiralOrder(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'spiral-matrix'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def spiralOrder(self, matrix):
+        out = []
+        while matrix:
+            out += matrix.pop(0)
+            matrix = [list(r) for r in zip(*matrix)][::-1]
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'spiral-matrix'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = spiralOrder(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var spiralOrder = function(matrix) {
+    const out = [];
+    let top = 0, bot = matrix.length - 1, l = 0, r = matrix[0].length - 1;
+    while (top <= bot && l <= r) {
+        for (let j = l; j <= r; j++) out.push(matrix[top][j]);
+        top++;
+        for (let i = top; i <= bot; i++) out.push(matrix[i][r]);
+        r--;
+        if (top <= bot) { for (let j = r; j >= l; j--) out.push(matrix[bot][j]); bot--; }
+        if (l <= r) { for (let i = bot; i >= top; i--) out.push(matrix[i][l]); l++; }
+    }
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 58. Rotate Image
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$rotate-image$b$, $b$Rotate Image$b$, 'medium', $b$Rotate the `n x n` image `matrix` by 90 degrees **clockwise**, in place. Do not allocate another matrix. The judge reads `matrix` after your function returns.
@@ -1808,17 +2661,25 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'rotate-image'), $b$[[[1]]]$b$, $b$[[1]]$b$, true, 3),
   ((select id from public.problems where slug = 'rotate-image'), $b$[[[1,2],[3,4]]]$b$, $b$[[3, 1], [4, 2]]$b$, true, 4),
   ((select id from public.problems where slug = 'rotate-image'), $b$[[[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17,18,19,20],[21,22,23,24,25]]]$b$, $b$[[21, 16, 11, 6, 1], [22, 17, 12, 7, 2], [23, 18, 13, 8, 3], [24, 19, 14, 9, 4], [25, 20, 15, 10, 5]]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'rotate-image'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'rotate-image'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().rotate(_a0)
 _print(_a0)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'rotate-image'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def rotate(self, matrix):
+        matrix.reverse()
+        for i in range(len(matrix)):
+            for j in range(i):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'rotate-image'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = rotate(_a0);
 __print(_a0);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var rotate = function(matrix) {
+    const n = matrix.length, copy = matrix.map(r => r.slice());
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) matrix[j][n - 1 - i] = copy[i][j];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 59. Letter Combinations of a Phone Number
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$letter-combinations-of-a-phone-number$b$, $b$Letter Combinations of a Phone Number$b$, 'medium', $b$On a phone keypad, digits map to letters: `2: abc, 3: def, 4: ghi, 5: jkl, 6: mno, 7: pqrs, 8: tuv, 9: wxyz`.
@@ -1836,17 +2697,28 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), $b$["79"]$b$, $b$["pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"]$b$, true, 4),
   ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), $b$["234"]$b$, $b$["adg", "adh", "adi", "aeg", "aeh", "aei", "afg", "afh", "afi", "bdg", "bdh", "bdi", "beg", "beh", "bei", "bfg", "bfh", "bfi", "cdg", "cdh", "cdi", "ceg", "ceh", "cei", "cfg", "cfh", "cfi"]$b$, true, 5),
   ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), $b$["7777"]$b$, $b$["pppp", "pppq", "pppr", "ppps", "ppqp", "ppqq", "ppqr", "ppqs", "pprp", "pprq", "pprr", "pprs", "ppsp", "ppsq", "ppsr", "ppss", "pqpp", "pqpq", "pqpr", "pqps", "pqqp", "pqqq", "pqqr", "pqqs", "pqrp", "pqrq", "pqrr", "pqrs", "pqsp", "pqsq", "pqsr", "pqss", "prpp", "prpq", "prpr", "prps", "prqp", "prqq", "prqr", "prqs", "prrp", "prrq", "prrr", "prrs", "prsp", "prsq", "prsr", "prss", "pspp", "pspq", "pspr", "psps", "psqp", "psqq", "psqr", "psqs", "psrp", "psrq", "psrr", "psrs", "pssp", "pssq", "pssr", "psss", "qppp", "qppq", "qppr", "qpps", "qpqp", "qpqq", "qpqr", "qpqs", "qprp", "qprq", "qprr", "qprs", "qpsp", "qpsq", "qpsr", "qpss", "qqpp", "qqpq", "qqpr", "qqps", "qqqp", "qqqq", "qqqr", "qqqs", "qqrp", "qqrq", "qqrr", "qqrs", "qqsp", "qqsq", "qqsr", "qqss", "qrpp", "qrpq", "qrpr", "qrps", "qrqp", "qrqq", "qrqr", "qrqs", "qrrp", "qrrq", "qrrr", "qrrs", "qrsp", "qrsq", "qrsr", "qrss", "qspp", "qspq", "qspr", "qsps", "qsqp", "qsqq", "qsqr", "qsqs", "qsrp", "qsrq", "qsrr", "qsrs", "qssp", "qssq", "qssr", "qsss", "rppp", "rppq", "rppr", "rpps", "rpqp", "rpqq", "rpqr", "rpqs", "rprp", "rprq", "rprr", "rprs", "rpsp", "rpsq", "rpsr", "rpss", "rqpp", "rqpq", "rqpr", "rqps", "rqqp", "rqqq", "rqqr", "rqqs", "rqrp", "rqrq", "rqrr", "rqrs", "rqsp", "rqsq", "rqsr", "rqss", "rrpp", "rrpq", "rrpr", "rrps", "rrqp", "rrqq", "rrqr", "rrqs", "rrrp", "rrrq", "rrrr", "rrrs", "rrsp", "rrsq", "rrsr", "rrss", "rspp", "rspq", "rspr", "rsps", "rsqp", "rsqq", "rsqr", "rsqs", "rsrp", "rsrq", "rsrr", "rsrs", "rssp", "rssq", "rssr", "rsss", "sppp", "sppq", "sppr", "spps", "spqp", "spqq", "spqr", "spqs", "sprp", "sprq", "sprr", "sprs", "spsp", "spsq", "spsr", "spss", "sqpp", "sqpq", "sqpr", "sqps", "sqqp", "sqqq", "sqqr", "sqqs", "sqrp", "sqrq", "sqrr", "sqrs", "sqsp", "sqsq", "sqsr", "sqss", "srpp", "srpq", "srpr", "srps", "srqp", "srqq", "srqr", "srqs", "srrp", "srrq", "srrr", "srrs", "srsp", "srsq", "srsr", "srss", "sspp", "sspq", "sspr", "ssps", "ssqp", "ssqq", "ssqr", "ssqs", "ssrp", "ssrq", "ssrr", "ssrs", "sssp", "sssq", "sssr", "ssss"]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().letterCombinations(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def letterCombinations(self, digits):
+        if not digits:
+            return []
+        keys = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}
+        return [''.join(p) for p in product(*(keys[d] for d in digits))]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'letter-combinations-of-a-phone-number'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = letterCombinations(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var letterCombinations = function(digits) {
+    if (!digits) return [];
+    const keys = { 2: 'abc', 3: 'def', 4: 'ghi', 5: 'jkl', 6: 'mno', 7: 'pqrs', 8: 'tuv', 9: 'wxyz' };
+    let out = [''];
+    for (const d of digits) out = out.flatMap(p => keys[d].split('').map(c => p + c));
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 60. One Edit Distance
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$one-edit-distance$b$, $b$One Edit Distance$b$, 'medium', $b$Given strings `s` and `t`, return `true` if they are **exactly one edit** apart. One edit means inserting one character, deleting one character, or replacing one character with a different one.
@@ -1868,19 +2740,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'one-edit-distance'), $b$["teacher", "detacher"]$b$, $b$false$b$, true, 7),
   ((select id from public.problems where slug = 'one-edit-distance'), $b$["a", "A"]$b$, $b$true$b$, true, 8),
   ((select id from public.problems where slug = 'one-edit-distance'), $b$["abcd", "abdc"]$b$, $b$false$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'one-edit-distance'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'one-edit-distance'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().isOneEditDistance(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'one-edit-distance'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def isOneEditDistance(self, s, t):
+        if len(s) > len(t):
+            s, t = t, s
+        if len(t) - len(s) > 1:
+            return False
+        for i in range(len(s)):
+            if s[i] != t[i]:
+                return s[i + 1:] == t[i + 1:] if len(s) == len(t) else s[i:] == t[i + 1:]
+        return len(t) - len(s) == 1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'one-edit-distance'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = isOneEditDistance(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isOneEditDistance = function(s, t) {
+    const m = s.length, n = t.length;
+    if (Math.abs(m - n) > 1) return false;
+    const dp = Array.from({ length: m + 1 }, (_, i) => Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+        dp[i][j] = s[i - 1] === t[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+    return dp[m][n] === 1;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 61. Container With Most Water
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$container-with-most-water$b$, $b$Container With Most Water$b$, 'medium', $b$You get `n` vertical lines, where line `i` stands at position `i` with height `height[i]`. Pick two lines that, together with the x-axis, hold the most water.
@@ -1899,17 +2787,30 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'container-with-most-water'), $b$[[1,2,1]]$b$, $b$2$b$, true, 4),
   ((select id from public.problems where slug = 'container-with-most-water'), $b$[[0,0]]$b$, $b$0$b$, true, 5),
   ((select id from public.problems where slug = 'container-with-most-water'), $b$[[2,3,10,5,7,8,9]]$b$, $b$36$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'container-with-most-water'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'container-with-most-water'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().maxArea(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'container-with-most-water'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def maxArea(self, height):
+        i, j, best = 0, len(height) - 1, 0
+        while i < j:
+            best = max(best, (j - i) * min(height[i], height[j]))
+            if height[i] < height[j]:
+                i += 1
+            else:
+                j -= 1
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'container-with-most-water'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = maxArea(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var maxArea = function(height) {
+    let best = 0;
+    for (let i = 0; i < height.length; i++) for (let j = i + 1; j < height.length; j++) best = Math.max(best, (j - i) * Math.min(height[i], height[j]));
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 62. Combination Sum
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$combination-sum$b$, $b$Combination Sum$b$, 'medium', $b$Given an array of **distinct** positive integers `candidates` and a `target`, return every unique combination of candidates that adds up to `target`. Each candidate may be used **any number of times**.
@@ -1929,19 +2830,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'combination-sum'), $b$[[7,3,2], 18]$b$, $b$[[7, 7, 2, 2], [7, 3, 3, 3, 2], [7, 3, 2, 2, 2, 2], [3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 2, 2, 2], [3, 3, 2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2, 2, 2, 2]]$b$, true, 4),
   ((select id from public.problems where slug = 'combination-sum'), $b$[[8,7,4,3], 11]$b$, $b$[[8, 3], [7, 4], [4, 4, 3]]$b$, true, 5),
   ((select id from public.problems where slug = 'combination-sum'), $b$[[5], 15]$b$, $b$[[5, 5, 5]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'combination-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'combination-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().combinationSum(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'combination-sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def combinationSum(self, candidates, target):
+        out = []
+        def go(i, rem, path):
+            if rem == 0:
+                out.append(path[:]); return
+            if i == len(candidates) or rem < 0:
+                return
+            path.append(candidates[i]); go(i, rem - candidates[i], path); path.pop()
+            go(i + 1, rem, path)
+        go(0, target, [])
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'combination-sum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = combinationSum(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var combinationSum = function(candidates, target) {
+    const dp = Array.from({ length: target + 1 }, () => []);
+    dp[0] = [[]];
+    for (const c of candidates)
+        for (let s = c; s <= target; s++)
+            for (const comb of dp[s - c]) dp[s].push(comb.concat([c]));
+    return dp[target];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 63. Subsets
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$subsets$b$, $b$Subsets$b$, 'medium', $b$Given an array of **distinct** integers `nums`, return all of its subsets (the power set), including the empty set. There must be no duplicate subsets, and the answer can be in any order.
@@ -1957,17 +2876,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'subsets'), $b$[[5,-5]]$b$, $b$[[], [5], [-5], [5, -5]]$b$, true, 3),
   ((select id from public.problems where slug = 'subsets'), $b$[[4,1,0,-1]]$b$, $b$[[], [4], [1], [4, 1], [0], [4, 0], [1, 0], [4, 1, 0], [-1], [4, -1], [1, -1], [4, 1, -1], [0, -1], [4, 0, -1], [1, 0, -1], [4, 1, 0, -1]]$b$, true, 4),
   ((select id from public.problems where slug = 'subsets'), $b$[[1,2,3,4,5]]$b$, $b$[[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3], [4], [1, 4], [2, 4], [1, 2, 4], [3, 4], [1, 3, 4], [2, 3, 4], [1, 2, 3, 4], [5], [1, 5], [2, 5], [1, 2, 5], [3, 5], [1, 3, 5], [2, 3, 5], [1, 2, 3, 5], [4, 5], [1, 4, 5], [2, 4, 5], [1, 2, 4, 5], [3, 4, 5], [1, 3, 4, 5], [2, 3, 4, 5], [1, 2, 3, 4, 5]]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'subsets'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'subsets'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().subsets(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'subsets'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def subsets(self, nums):
+        out = [[]]
+        for x in nums:
+            out += [s + [x] for s in out]
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'subsets'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = subsets(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var subsets = function(nums) {
+    const out = [];
+    for (let mask = 0; mask < (1 << nums.length); mask++) out.push(nums.filter((_, i) => mask & (1 << i)));
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 64. Validate Binary Search Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$validate-binary-search-tree$b$, $b$Validate Binary Search Tree$b$, 'medium', $b$Given the `root` of a binary tree, return `true` if it is a valid **binary search tree**:
@@ -1990,17 +2918,29 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'validate-binary-search-tree'), $b$[[-2147483648,null,2147483647]]$b$, $b$true$b$, true, 6),
   ((select id from public.problems where slug = 'validate-binary-search-tree'), $b$[[10,5,15,null,null,6,20]]$b$, $b$false$b$, true, 7),
   ((select id from public.problems where slug = 'validate-binary-search-tree'), $b$[[3,1,5,0,2,4,6]]$b$, $b$true$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'validate-binary-search-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'validate-binary-search-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().isValidBST(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'validate-binary-search-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def isValidBST(self, root):
+        def ok(n, lo, hi):
+            if not n:
+                return True
+            return lo < n.val < hi and ok(n.left, lo, n.val) and ok(n.right, n.val, hi)
+        return ok(root, float('-inf'), float('inf'))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'validate-binary-search-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = isValidBST(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var isValidBST = function(root) {
+    const vals = [];
+    const walk = n => { if (!n) return; walk(n.left); vals.push(n.val); walk(n.right); };
+    walk(root);
+    for (let i = 1; i < vals.length; i++) if (vals[i] <= vals[i - 1]) return false;
+    return true;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 65. Lowest Common Ancestor of a Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$lowest-common-ancestor-of-a-binary-tree$b$, $b$Lowest Common Ancestor of a Binary Tree$b$, 'medium', $b$Given a binary tree and two of its nodes `p` and `q`, return their **lowest common ancestor**: the deepest node that has both `p` and `q` as descendants. A node counts as a descendant of itself.
@@ -2019,21 +2959,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), $b$[[3,5,1,6,2,0,8,null,null,7,4], 7, 6]$b$, $b$5$b$, true, 4),
   ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), $b$[[3,5,1,6,2,0,8,null,null,7,4], 0, 8]$b$, $b$1$b$, true, 5),
   ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), $b$[[1,2,3,null,4], 4, 3]$b$, $b$1$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _find(_a0, _args[1])
 _a2 = _find(_a0, _args[2])
 _res = Solution().lowestCommonAncestor(_a0, _a1, _a2)
 _print((_res.val if _res is not None else None))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        if root is None or root is p or root is q:
+            return root
+        l = self.lowestCommonAncestor(root.left, p, q)
+        r = self.lowestCommonAncestor(root.right, p, q)
+        return root if l and r else l or r$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'lowest-common-ancestor-of-a-binary-tree'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __find(_a0, __args[1]);
 const _a2 = __find(_a0, __args[2]);
 const __res = lowestCommonAncestor(_a0, _a1, _a2);
 __print((__res ? __res.val : null));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var lowestCommonAncestor = function(root, p, q) {
+    const parent = new Map([[root, null]]), st = [root];
+    while (st.length) { const n = st.pop(); for (const c of [n.left, n.right]) if (c) { parent.set(c, n); st.push(c); } }
+    const anc = new Set();
+    for (let x = p; x; x = parent.get(x)) anc.add(x);
+    let y = q;
+    while (!anc.has(y)) y = parent.get(y);
+    return y;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 66. Daily Temperatures
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$daily-temperatures$b$, $b$Daily Temperatures$b$, 'medium', $b$Given daily `temperatures`, return an array `answer` where `answer[i]` is how many days after day `i` you must wait for a **strictly warmer** day. Use `0` if no warmer day ever comes.
@@ -2050,17 +3004,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'daily-temperatures'), $b$[[90,80,70]]$b$, $b$[0, 0, 0]$b$, true, 4),
   ((select id from public.problems where slug = 'daily-temperatures'), $b$[[50]]$b$, $b$[0]$b$, true, 5),
   ((select id from public.problems where slug = 'daily-temperatures'), $b$[[55,55,55,56]]$b$, $b$[3, 2, 1, 0]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'daily-temperatures'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'daily-temperatures'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().dailyTemperatures(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'daily-temperatures'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def dailyTemperatures(self, temperatures):
+        ans, st = [0] * len(temperatures), []
+        for i, t in enumerate(temperatures):
+            while st and temperatures[st[-1]] < t:
+                j = st.pop(); ans[j] = i - j
+            st.append(i)
+        return ans$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'daily-temperatures'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = dailyTemperatures(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var dailyTemperatures = function(temperatures) {
+    return temperatures.map((t, i) => { for (let j = i + 1; j < temperatures.length; j++) if (temperatures[j] > t) return j - i; return 0; });
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 67. Meeting Rooms II
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$meeting-rooms-ii$b$, $b$Meeting Rooms II$b$, 'medium', $b$Given meeting times `intervals[i] = [start, end]`, return the minimum number of conference rooms needed so that every meeting has a room.
@@ -2080,17 +3043,32 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'meeting-rooms-ii'), $b$[[[9,10],[4,9],[4,17]]]$b$, $b$2$b$, true, 5),
   ((select id from public.problems where slug = 'meeting-rooms-ii'), $b$[[[2,11],[6,16],[11,16]]]$b$, $b$2$b$, true, 6),
   ((select id from public.problems where slug = 'meeting-rooms-ii'), $b$[[[1,2]]]$b$, $b$1$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'meeting-rooms-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'meeting-rooms-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().minMeetingRooms(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'meeting-rooms-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def minMeetingRooms(self, intervals):
+        ends = []
+        for s, e in sorted(intervals):
+            if ends and ends[0] <= s:
+                heapq.heapreplace(ends, e)
+            else:
+                heapq.heappush(ends, e)
+        return len(ends)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'meeting-rooms-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = minMeetingRooms(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var minMeetingRooms = function(intervals) {
+    const ev = [];
+    for (const [s, e] of intervals) { ev.push([s, 1]); ev.push([e, -1]); }
+    ev.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    let cur = 0, best = 0;
+    for (const [, d] of ev) { cur += d; best = Math.max(best, cur); }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 68. LRU Cache
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$lru-cache$b$, $b$LRU Cache$b$, 'medium', $b$Design a **least recently used (LRU)** cache with a fixed `capacity`:
@@ -2113,20 +3091,36 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'lru-cache'), $b$[["LRUCache","put","put","put","put","get","get"],[[2],[2,1],[1,1],[2,3],[4,1],[1],[2]]]$b$, $b$[null, null, null, null, null, -1, 3]$b$, true, 3),
   ((select id from public.problems where slug = 'lru-cache'), $b$[["LRUCache","get","put","get","put","put","get","get"],[[2],[2],[2,6],[1],[1,5],[1,2],[1],[2]]]$b$, $b$[null, -1, null, -1, null, null, 2, 6]$b$, true, 4),
   ((select id from public.problems where slug = 'lru-cache'), $b$[["LRUCache","put","put","get","put","put","get","get","get"],[[3],[1,1],[2,2],[1],[3,3],[4,4],[2],[1],[4]]]$b$, $b$[null, null, null, 1, null, null, -1, 1, 4]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'lru-cache'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'lru-cache'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = LRUCache(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'lru-cache'), 'javascript', $b$$b$, $b$const __obj = new LRUCache(...__args[1][0]);
+$b$, $b$class LRUCache:
+    def __init__(self, capacity):
+        self.cap, self.d = capacity, OrderedDict()
+    def get(self, key):
+        if key not in self.d:
+            return -1
+        self.d.move_to_end(key)
+        return self.d[key]
+    def put(self, key, value):
+        self.d[key] = value
+        self.d.move_to_end(key)
+        if len(self.d) > self.cap:
+            self.d.popitem(last=False)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'lru-cache'), 'javascript', $b$$b$, $b$const __obj = new LRUCache(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class LRUCache {
+    constructor(capacity) { this.cap = capacity; this.m = new Map(); }
+    get(key) { if (!this.m.has(key)) return -1; const v = this.m.get(key); this.m.delete(key); this.m.set(key, v); return v; }
+    put(key, value) { this.m.delete(key); this.m.set(key, value); if (this.m.size > this.cap) this.m.delete(this.m.keys().next().value); }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 69. Shortest Path in Binary Matrix
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$shortest-path-in-binary-matrix$b$, $b$Shortest Path in Binary Matrix$b$, 'medium', $b$Given an `n x n` grid of `0`s (open) and `1`s (blocked), return the length of the shortest **clear path** from the top-left cell to the bottom-right cell, or `-1` if none exists.
@@ -2145,17 +3139,49 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), $b$[[[1]]]$b$, $b$-1$b$, true, 5),
   ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), $b$[[[0,0,0],[1,1,1],[0,0,0]]]$b$, $b$-1$b$, true, 6),
   ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), $b$[[[0,1,1,0,0,0],[0,1,0,1,1,0],[0,1,1,0,1,0],[0,0,0,1,1,0],[1,1,1,1,1,0],[1,1,1,1,1,0]]]$b$, $b$14$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().shortestPathBinaryMatrix(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def shortestPathBinaryMatrix(self, grid):
+        n = len(grid)
+        if grid[0][0] or grid[-1][-1]:
+            return -1
+        q, dist = deque([(0, 0)]), {(0, 0): 1}
+        while q:
+            a, b = q.popleft()
+            if (a, b) == (n - 1, n - 1):
+                return dist[(a, b)]
+            for da in (-1, 0, 1):
+                for db in (-1, 0, 1):
+                    x, y = a + da, b + db
+                    if 0 <= x < n and 0 <= y < n and not grid[x][y] and (x, y) not in dist:
+                        dist[(x, y)] = dist[(a, b)] + 1; q.append((x, y))
+        return -1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'shortest-path-in-binary-matrix'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = shortestPathBinaryMatrix(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var shortestPathBinaryMatrix = function(grid) {
+    const n = grid.length;
+    if (grid[0][0] || grid[n - 1][n - 1]) return -1;
+    let frontier = [[0, 0]], steps = 1;
+    const seen = new Set(['0,0']);
+    while (frontier.length) {
+        const next = [];
+        for (const [a, b] of frontier) {
+            if (a === n - 1 && b === n - 1) return steps;
+            for (let da = -1; da <= 1; da++) for (let db = -1; db <= 1; db++) {
+                const x = a + da, y = b + db, k = x + ',' + y;
+                if (x >= 0 && y >= 0 && x < n && y < n && !grid[x][y] && !seen.has(k)) { seen.add(k); next.push([x, y]); }
+            }
+        }
+        frontier = next; steps++;
+    }
+    return -1;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 70. Simplify Path
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$simplify-path$b$, $b$Simplify Path$b$, 'medium', $b$Given an absolute Unix-style `path`, return its simplest canonical form:
@@ -2179,17 +3205,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'simplify-path'), $b$["/a/./b/../../c/"]$b$, $b$"/c"$b$, true, 6),
   ((select id from public.problems where slug = 'simplify-path'), $b$["/"]$b$, $b$"/"$b$, true, 7),
   ((select id from public.problems where slug = 'simplify-path'), $b$["/a//b////c/d//././/.."]$b$, $b$"/a/b/c"$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'simplify-path'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'simplify-path'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().simplifyPath(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'simplify-path'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def simplifyPath(self, path):
+        st = []
+        for part in path.split('/'):
+            if part == '..':
+                if st:
+                    st.pop()
+            elif part and part != '.':
+                st.append(part)
+        return '/' + '/'.join(st)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'simplify-path'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = simplifyPath(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var simplifyPath = function(path) {
+    const st = [];
+    for (const p of path.split('/')) {
+        if (p === '..') st.pop();
+        else if (p && p !== '.') st.push(p);
+    }
+    return '/' + st.join('/');
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 71. Find Duplicate File in System
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$find-duplicate-file-in-system$b$, $b$Find Duplicate File in System$b$, 'medium', $b$Each entry of `paths` describes one directory and the files in it:
@@ -2211,17 +3253,36 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'find-duplicate-file-in-system'), $b$[["root x.txt(a)"]]$b$, $b$[]$b$, true, 3),
   ((select id from public.problems where slug = 'find-duplicate-file-in-system'), $b$[["root a.txt(same) b.txt(same) c.txt(other)"]]$b$, $b$[["root/a.txt", "root/b.txt"]]$b$, true, 4),
   ((select id from public.problems where slug = 'find-duplicate-file-in-system'), $b$[["d1 f(x)","d2 f(x)","d3 f(y)","d4 g(y)","d5 h(z)"]]$b$, $b$[["d1/f", "d2/f"], ["d3/f", "d4/g"]]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-duplicate-file-in-system'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-duplicate-file-in-system'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().findDuplicate(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-duplicate-file-in-system'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findDuplicate(self, paths):
+        g = defaultdict(list)
+        for line in paths:
+            d, *files = line.split(' ')
+            for f in files:
+                name, content = f[:-1].split('(')
+                g[content].append(d + '/' + name)
+        return [v for v in g.values() if len(v) > 1]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-duplicate-file-in-system'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = findDuplicate(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findDuplicate = function(paths) {
+    const g = new Map();
+    for (const line of paths) {
+        const [d, ...files] = line.split(' ');
+        for (const f of files) {
+            const i = f.indexOf('('), name = f.slice(0, i), content = f.slice(i + 1, -1);
+            if (!g.has(content)) g.set(content, []);
+            g.get(content).push(d + '/' + name);
+        }
+    }
+    return [...g.values()].filter(v => v.length > 1);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 72. Divide Two Integers
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$divide-two-integers$b$, $b$Divide Two Integers$b$, 'medium', $b$Divide `dividend` by `divisor` **without** using multiplication, division or the modulo operator, and return the quotient truncated toward zero (so `8.3` becomes `8` and `-2.7` becomes `-2`).
@@ -2243,19 +3304,32 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'divide-two-integers'), $b$[-7, 2]$b$, $b$-3$b$, true, 7),
   ((select id from public.problems where slug = 'divide-two-integers'), $b$[2147483647, 2]$b$, $b$1073741823$b$, true, 8),
   ((select id from public.problems where slug = 'divide-two-integers'), $b$[-2147483648, 2]$b$, $b$-1073741824$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'divide-two-integers'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'divide-two-integers'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().divide(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'divide-two-integers'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def divide(self, dividend, divisor):
+        neg = (dividend < 0) != (divisor < 0)
+        a, b, q = abs(dividend), abs(divisor), 0
+        while a >= b:
+            t, m = b, 1
+            while a >= (t << 1):
+                t <<= 1; m <<= 1
+            a -= t; q += m
+        q = -q if neg else q
+        return min(max(q, -2**31), 2**31 - 1)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'divide-two-integers'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = divide(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var divide = function(dividend, divisor) {
+    const q = Math.trunc(dividend / divisor);
+    return Math.min(Math.max(q, -2147483648), 2147483647);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 73. Accounts Merge
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$accounts-merge$b$, $b$Accounts Merge$b$, 'medium', $b$Each `accounts[i]` is a list whose first element is a person's name and whose remaining elements are emails. Two accounts belong to the same person if they share **at least one** email (this is transitive). Different people can have the same name.
@@ -2273,17 +3347,45 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'accounts-merge'), $b$[[["A","a@x"],["A","b@x"],["A","a@x","b@x"]]]$b$, $b$[["A", "a@x", "b@x"]]$b$, true, 3),
   ((select id from public.problems where slug = 'accounts-merge'), $b$[[["Alex","a@x","a@x"]]]$b$, $b$[["Alex", "a@x"]]$b$, true, 4),
   ((select id from public.problems where slug = 'accounts-merge'), $b$[[["David","d0@m.co","d1@m.co"],["David","d3@m.co","d4@m.co"],["David","d4@m.co","d5@m.co"],["David","d2@m.co","d3@m.co"],["David","d1@m.co","d2@m.co"]]]$b$, $b$[["David", "d0@m.co", "d1@m.co", "d2@m.co", "d3@m.co", "d4@m.co", "d5@m.co"]]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'accounts-merge'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'accounts-merge'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().accountsMerge(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'accounts-merge'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def accountsMerge(self, accounts):
+        parent = {}
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]; x = parent[x]
+            return x
+        owner = {}
+        for acc in accounts:
+            for e in acc[1:]:
+                parent.setdefault(e, e); owner[e] = acc[0]
+                parent[find(e)] = find(acc[1])
+        groups = defaultdict(list)
+        for e in parent:
+            groups[find(e)].append(e)
+        return [[owner[r]] + sorted(es) for r, es in groups.items()]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'accounts-merge'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = accountsMerge(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var accountsMerge = function(accounts) {
+    const g = new Map(), name = new Map();
+    const link = (a, b) => { if (!g.has(a)) g.set(a, []); if (!g.has(b)) g.set(b, []); g.get(a).push(b); g.get(b).push(a); };
+    for (const acc of accounts) for (let i = 1; i < acc.length; i++) { name.set(acc[i], acc[0]); link(acc[1], acc[i]); }
+    const seen = new Set(), out = [];
+    for (const e of g.keys()) {
+        if (seen.has(e)) continue;
+        const comp = [], st = [e]; seen.add(e);
+        while (st.length) { const x = st.pop(); comp.push(x); for (const y of g.get(x)) if (!seen.has(y)) { seen.add(y); st.push(y); } }
+        comp.sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+        out.push([name.get(e)].concat(comp));
+    }
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 74. Copy List with Random Pointer
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$copy-list-with-random-pointer$b$, $b$Copy List with Random Pointer$b$, 'medium', $b$Each node of a linked list has a `next` pointer and an extra `random` pointer, which can point to any node in the list or be null.
@@ -2304,7 +3406,7 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'copy-list-with-random-pointer'), $b$[[]]$b$, $b$[]$b$, true, 4),
   ((select id from public.problems where slug = 'copy-list-with-random-pointer'), $b$[[[5,0]]]$b$, $b$[[5, 0]]$b$, true, 5),
   ((select id from public.problems where slug = 'copy-list-with-random-pointer'), $b$[[[1,3],[2,2],[3,1],[4,0]]]$b$, $b$[[1, 3], [2, 2], [3, 1], [4, 0]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'copy-list-with-random-pointer'), 'python', $b$class Node:
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'copy-list-with-random-pointer'), 'python', $b$class Node:
     def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
         self.val = int(x)
         self.next = next
@@ -2323,9 +3425,18 @@ if any(id(n) in _ids or (n.random is not None and id(n.random) in _ids) for n in
     _print("not a deep copy: your list points to original nodes")
 else:
     _print([[n.val, _pos.get(id(n.random)) if n.random is not None else None] for n in _got])
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'copy-list-with-random-pointer'), 'javascript', $b$function _Node(val, next, random) { this.val = val; this.next = next === undefined ? null : next; this.random = random === undefined ? null : random; }$b$, $b$const __a = __args[0];
+$b$, $b$class Solution:
+    def copyRandomList(self, head):
+        m = {None: None}
+        n = head
+        while n:
+            m[n] = Node(n.val); n = n.next
+        n = head
+        while n:
+            m[n].next, m[n].random = m[n.next], m[n.random]; n = n.next
+        return m[head]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'copy-list-with-random-pointer'), 'javascript', $b$function _Node(val, next, random) { this.val = val; this.next = next === undefined ? null : next; this.random = random === undefined ? null : random; }$b$, $b$const __a = __args[0];
 const __orig = __a.map(x => new _Node(x[0]));
 __orig.forEach((n, i) => { n.next = __orig[i + 1] || null; n.random = __a[i][1] === null ? null : __orig[__a[i][1]]; });
 const __res = copyRandomList(__orig.length ? __orig[0] : null);
@@ -2333,8 +3444,15 @@ const __ids = new Set(__orig), __got = [];
 for (let n = __res; n && __got.length <= __orig.length + 1; n = n.next) __got.push(n);
 if (__got.some(n => __ids.has(n) || (n.random && __ids.has(n.random)))) __print("not a deep copy: your list points to original nodes");
 else __print(__got.map(n => [n.val, n.random ? __got.indexOf(n.random) : null]));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var copyRandomList = function(head) {
+    if (!head) return null;
+    for (let n = head; n; n = n.next.next) n.next = new _Node(n.val, n.next, null);
+    for (let n = head; n; n = n.next.next) n.next.random = n.random ? n.random.next : null;
+    const copy = head.next;
+    for (let n = head; n; n = n.next) { const c = n.next; n.next = c.next; c.next = c.next ? c.next.next : null; }
+    return copy;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 75. Add Two Numbers
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$add-two-numbers$b$, $b$Add Two Numbers$b$, 'medium', $b$Two non-negative integers are stored as linked lists with their digits in **reverse order** (the ones digit comes first). Each node holds a single digit.
@@ -2353,19 +3471,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'add-two-numbers'), $b$[[5], [5]]$b$, $b$[0, 1]$b$, true, 4),
   ((select id from public.problems where slug = 'add-two-numbers'), $b$[[1,8], [0]]$b$, $b$[1, 8]$b$, true, 5),
   ((select id from public.problems where slug = 'add-two-numbers'), $b$[[2,4,9], [5,6,4,9]]$b$, $b$[7, 0, 4, 0, 1]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'add-two-numbers'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'add-two-numbers'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_list(_args[0])
 _a1 = _to_list(_args[1])
 _res = Solution().addTwoNumbers(_a0, _a1)
 _print(_from_list(_res))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'add-two-numbers'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
+$b$, $b$class Solution:
+    def addTwoNumbers(self, l1, l2):
+        dummy = cur = ListNode(); carry = 0
+        while l1 or l2 or carry:
+            s = carry + (l1.val if l1 else 0) + (l2.val if l2 else 0)
+            carry, d = divmod(s, 10)
+            cur.next = ListNode(d); cur = cur.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return dummy.next$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'add-two-numbers'), 'javascript', $b$$b$, $b$const _a0 = __toList(__args[0]);
 const _a1 = __toList(__args[1]);
 const __res = addTwoNumbers(_a0, _a1);
 __print(__fromList(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var addTwoNumbers = function(l1, l2) {
+    const toBig = l => { let s = ''; for (; l; l = l.next) s = l.val + s; return BigInt(s); };
+    const digits = String(toBig(l1) + toBig(l2)).split('').reverse();
+    const d = new ListNode(); let c = d;
+    for (const x of digits) { c.next = new ListNode(Number(x)); c = c.next; }
+    return d.next;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 76. Copy Binary Tree With Random Pointer
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$copy-binary-tree-with-random-pointer$b$, $b$Copy Binary Tree With Random Pointer$b$, 'medium', $b$Each node of a binary tree has `left` and `right` children plus a `random` pointer that may point to **any** node in the tree, or be null.
@@ -2386,7 +3519,7 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), $b$[[]]$b$, $b$[]$b$, true, 4),
   ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), $b$[[[9,0]]]$b$, $b$[[9, 0]]$b$, true, 5),
   ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), $b$[[[1,null],[2,null],[3,1],null,[4,4]]]$b$, $b$[[1, null], [2, null], [3, 1], null, [4, 4]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), 'python', $b$class Node:
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), 'python', $b$class Node:
     def __init__(self, val=0, left=None, right=None, random=None):
         self.val = val
         self.left = left
@@ -2415,9 +3548,22 @@ if any(n is not None and (id(n) in _ids or (n.random is not None and id(n.random
     _print("not a deep copy: your tree points to original nodes")
 else:
     _print([None if n is None else [n.val, _pos.get(id(n.random)) if n.random is not None else None] for n in _out])
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), 'javascript', $b$function Node(val, left, right, random) { this.val = val === undefined ? 0 : val; this.left = left === undefined ? null : left; this.right = right === undefined ? null : right; this.random = random === undefined ? null : random; }$b$, $b$const __a = __args[0];
+$b$, $b$class Solution:
+    def copyRandomBinaryTree(self, root):
+        m = {None: None}
+        def make(n):
+            if n is None:
+                return None
+            c = m[n] = Node(n.val)
+            c.left, c.right = make(n.left), make(n.right)
+            return c
+        res = make(root)
+        for o, c in m.items():
+            if o is not None:
+                c.random = m[o.random]
+        return res$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'copy-binary-tree-with-random-pointer'), 'javascript', $b$function Node(val, left, right, random) { this.val = val === undefined ? 0 : val; this.left = left === undefined ? null : left; this.right = right === undefined ? null : right; this.random = random === undefined ? null : random; }$b$, $b$const __a = __args[0];
 const __nodes = __a.map(x => x === null ? null : new Node(x[0]));
 const __root = __nodes.length ? __nodes[0] : null;
 { const q = __root ? [__root] : []; let qi = 0, i = 1;
@@ -2430,8 +3576,14 @@ while (__out.length && !__out[__out.length - 1]) __out.pop();
 const __ids = new Set(__nodes.filter(Boolean));
 if (__out.some(n => n && (__ids.has(n) || (n.random && __ids.has(n.random))))) __print("not a deep copy: your tree points to original nodes");
 else __print(__out.map(n => n ? [n.val, n.random ? __out.indexOf(n.random) : null] : null));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var copyRandomBinaryTree = function(root) {
+    const m = new Map();
+    const make = n => { if (!n) return null; const c = new Node(n.val); m.set(n, c); c.left = make(n.left); c.right = make(n.right); return c; };
+    const res = make(root);
+    for (const [o, c] of m) c.random = o.random ? m.get(o.random) : null;
+    return res;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 77. Kth Largest Element in an Array
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$kth-largest-element-in-an-array$b$, $b$Kth Largest Element in an Array$b$, 'medium', $b$Given an integer array `nums` and an integer `k`, return the `k`-th largest element, meaning its position in sorted descending order, with duplicates counted.
@@ -2450,19 +3602,23 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), $b$[[2,1], 2]$b$, $b$1$b$, true, 4),
   ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), $b$[[7,7,7,7], 3]$b$, $b$7$b$, true, 5),
   ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), $b$[[-1,-5,3,9,0], 5]$b$, $b$-5$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().findKthLargest(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findKthLargest(self, nums, k):
+        return heapq.nlargest(k, nums)[-1]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-largest-element-in-an-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = findKthLargest(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findKthLargest = function(nums, k) {
+    return nums.slice().sort((a, b) => b - a)[k - 1];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 78. BST Average Less Than K
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$bst-average-less-than-k$b$, $b$BST Average Less Than K$b$, 'medium', $b$*Beetcode original.*
@@ -2487,19 +3643,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'bst-average-less-than-k'), $b$[[5,3,8,2,4,7,9], 100]$b$, $b$5.428571428571429$b$, true, 5),
   ((select id from public.problems where slug = 'bst-average-less-than-k'), $b$[[20,10,30,5,15,25,35,1], 16]$b$, $b$7.75$b$, true, 6),
   ((select id from public.problems where slug = 'bst-average-less-than-k'), $b$[[0,-10,10,-20,-5], 0]$b$, $b$-11.666666666666666$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'bst-average-less-than-k'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'bst-average-less-than-k'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _a1 = _args[1]
 _res = Solution().averageBelowK(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'bst-average-less-than-k'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def averageBelowK(self, root, k):
+        total = count = 0
+        st = [root]
+        while st:
+            n = st.pop()
+            if not n:
+                continue
+            if n.val < k:
+                total += n.val; count += 1
+                st.append(n.left); st.append(n.right)
+            else:
+                st.append(n.left)
+        return total / count if count else 0.0$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'bst-average-less-than-k'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const _a1 = __args[1];
 const __res = averageBelowK(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var averageBelowK = function(root, k) {
+    const vals = [];
+    const walk = n => { if (!n) return; if (n.val < k) vals.push(n.val); walk(n.left); walk(n.right); };
+    walk(root);
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 79. Kth Largest from K Sorted Lists
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$kth-largest-from-k-sorted-lists$b$, $b$Kth Largest from K Sorted Lists$b$, 'medium', $b$*Beetcode original.*
@@ -2521,19 +3695,31 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), $b$[[[], [1,3,5,7], []], 4]$b$, $b$1$b$, true, 4),
   ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), $b$[[[-10,-5,0],[-7,-3],[2]], 5]$b$, $b$-7$b$, true, 5),
   ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), $b$[[[1,1,1,1],[2,2],[3]], 6]$b$, $b$1$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().kthLargest(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def kthLargest(self, lists, k):
+        h = [(-l[-1], i, len(l) - 1) for i, l in enumerate(lists) if l]
+        heapq.heapify(h)
+        while True:
+            v, i, j = heapq.heappop(h)
+            k -= 1
+            if k == 0:
+                return -v
+            if j > 0:
+                heapq.heappush(h, (-lists[i][j - 1], i, j - 1))$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'kth-largest-from-k-sorted-lists'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = kthLargest(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var kthLargest = function(lists, k) {
+    return [].concat(...lists).sort((a, b) => b - a)[k - 1];
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 80. Insert into a Sorted Circular Linked List
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$insert-into-a-sorted-circular-linked-list$b$, $b$Insert into a Sorted Circular Linked List$b$, 'medium', $b$You are given a node `head` from a **circular** linked list whose values are sorted in non-decreasing order when read around the circle. `head` can be any node, not necessarily the smallest.
@@ -2557,7 +3743,7 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), $b$[[3,5,1], 0]$b$, $b$[0, 1, 3, 5]$b$, true, 7),
   ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), $b$[[1,3,5], 4]$b$, $b$[1, 3, 4, 5]$b$, true, 8),
   ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), $b$[[2,2,3,3], 2]$b$, $b$[2, 2, 2, 3, 3]$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), 'python', $b$class Node:
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), 'python', $b$class Node:
     def __init__(self, val=None, next=None):
         self.val = val
         self.next = next$b$, $b$_a, _v = json.loads(sys.stdin.read())
@@ -2577,9 +3763,26 @@ else:
         _print("list is not a valid circle with exactly one new node")
     else:
         _print(min(_vals[i:] + _vals[:i] for i in range(len(_vals))))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), 'javascript', $b$function _Node(val, next) { this.val = val; this.next = next === undefined ? null : next; }$b$, $b$const __a = __args[0], __v = __args[1];
+$b$, $b$class Solution:
+    def insert(self, head, insertVal):
+        node = Node(insertVal)
+        if head is None:
+            node.next = node
+            return node
+        cur = head
+        while True:
+            nxt = cur.next
+            if cur.val <= insertVal <= nxt.val:
+                break
+            if cur.val > nxt.val and (insertVal >= cur.val or insertVal <= nxt.val):
+                break
+            cur = nxt
+            if cur is head:
+                break
+        node.next = cur.next; cur.next = node
+        return head$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'insert-into-a-sorted-circular-linked-list'), 'javascript', $b$function _Node(val, next) { this.val = val; this.next = next === undefined ? null : next; }$b$, $b$const __a = __args[0], __v = __args[1];
 const __nodes = __a.map(x => new _Node(x));
 __nodes.forEach((n, i) => { n.next = __nodes[(i + 1) % __nodes.length]; });
 const __head = __nodes.length ? __nodes[0] : null;
@@ -2600,8 +3803,20 @@ else {
         __print(best);
     }
 }
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var insert = function(head, insertVal) {
+    const node = new _Node(insertVal);
+    if (!head) { node.next = node; return node; }
+    let cur = head;
+    do {
+        const nx = cur.next;
+        if (cur.val <= insertVal && insertVal <= nx.val) break;
+        if (cur.val > nx.val && (insertVal >= cur.val || insertVal <= nx.val)) break;
+        cur = nx;
+    } while (cur !== head);
+    node.next = cur.next; cur.next = node;
+    return head;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 81. Random Pick with Weight
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$random-pick-with-weight$b$, $b$Random Pick with Weight$b$, 'medium', $b$You get positive weights `w`. Index `i` should be picked with probability `w[i] / sum(w)`.
@@ -2628,20 +3843,27 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'random-pick-with-weight'), $b$[["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"],[[[2,5,3,4]],[1],[2],[3],[7],[14]]]$b$, $b$[null, 0, 0, 1, 1, 3]$b$, true, 3),
   ((select id from public.problems where slug = 'random-pick-with-weight'), $b$[["Solution","pickIndex","pickIndex","pickIndex"],[[[100000,1,100000]],[100000],[100001],[100002]]]$b$, $b$[null, 0, 1, 2]$b$, true, 4),
   ((select id from public.problems where slug = 'random-pick-with-weight'), $b$[["Solution","pickIndex","pickIndex","pickIndex","pickIndex"],[[[1,1,1,1,1]],[5],[1],[3],[4]]]$b$, $b$[null, 4, 0, 2, 3]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'random-pick-with-weight'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'random-pick-with-weight'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = Solution(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'random-pick-with-weight'), 'javascript', $b$$b$, $b$const __obj = new Solution(...__args[1][0]);
+$b$, $b$class Solution:
+    def __init__(self, w):
+        self.pre = list(accumulate(w))
+    def pickIndex(self, target):
+        return bisect_left(self.pre, target)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'random-pick-with-weight'), 'javascript', $b$$b$, $b$const __obj = new Solution(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class Solution {
+    constructor(w) { this.w = w; }
+    pickIndex(target) { let s = 0; for (let i = 0; i < this.w.length; i++) { s += this.w[i]; if (target <= s) return i; } }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 82. Network Delay Time
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$network-delay-time$b$, $b$Network Delay Time$b$, 'medium', $b$A network has `n` nodes labeled `1` to `n`. `times[i] = [u, v, w]` means a signal takes `w` time units to travel the directed edge from `u` to `v`.
@@ -2662,21 +3884,42 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'network-delay-time'), $b$[[[1,2,1],[2,1,3]], 2, 2]$b$, $b$3$b$, true, 5),
   ((select id from public.problems where slug = 'network-delay-time'), $b$[[[1,2,0],[1,3,5],[2,3,0]], 3, 1]$b$, $b$0$b$, true, 6),
   ((select id from public.problems where slug = 'network-delay-time'), $b$[[[3,1,5],[3,2,2],[2,1,2],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,1,1]], 8, 3]$b$, $b$5$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'network-delay-time'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'network-delay-time'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _a2 = _args[2]
 _res = Solution().networkDelayTime(_a0, _a1, _a2)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'network-delay-time'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def networkDelayTime(self, times, n, k):
+        g = defaultdict(list)
+        for u, v, w in times:
+            g[u].append((v, w))
+        dist, h = {}, [(0, k)]
+        while h:
+            d, u = heapq.heappop(h)
+            if u in dist:
+                continue
+            dist[u] = d
+            for v, w in g[u]:
+                if v not in dist:
+                    heapq.heappush(h, (d + w, v))
+        return max(dist.values()) if len(dist) == n else -1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'network-delay-time'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const _a2 = __args[2];
 const __res = networkDelayTime(_a0, _a1, _a2);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var networkDelayTime = function(times, n, k) {
+    const d = new Array(n + 1).fill(Infinity);
+    d[k] = 0;
+    for (let i = 1; i < n; i++) for (const [u, v, w] of times) if (d[u] + w < d[v]) d[v] = d[u] + w;
+    let best = 0;
+    for (let i = 1; i <= n; i++) best = Math.max(best, d[i]);
+    return best === Infinity ? -1 : best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 83. Cheapest Flights Within K Stops
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$cheapest-flights-within-k-stops$b$, $b$Cheapest Flights Within K Stops$b$, 'medium', $b$There are `n` cities labeled `0` to `n - 1`. `flights[i] = [from, to, price]` is a one-way flight.
@@ -2697,7 +3940,7 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), $b$[3, [[0,1,100]], 0, 2, 1]$b$, $b$-1$b$, true, 4),
   ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), $b$[4, [[0,1,1],[0,2,5],[1,2,1],[2,3,1]], 0, 3, 1]$b$, $b$6$b$, true, 5),
   ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), $b$[5, [[0,1,5],[1,2,5],[0,3,2],[3,1,2],[1,4,1],[4,2,1]], 0, 2, 2]$b$, $b$7$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _a2 = _args[2]
@@ -2705,17 +3948,38 @@ _a3 = _args[3]
 _a4 = _args[4]
 _res = Solution().findCheapestPrice(_a0, _a1, _a2, _a3, _a4)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findCheapestPrice(self, n, flights, src, dst, k):
+        cost = [float('inf')] * n; cost[src] = 0
+        for _ in range(k + 1):
+            nxt = cost[:]
+            for u, v, p in flights:
+                if cost[u] + p < nxt[v]:
+                    nxt[v] = cost[u] + p
+            cost = nxt
+        return -1 if cost[dst] == float('inf') else cost[dst]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'cheapest-flights-within-k-stops'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const _a2 = __args[2];
 const _a3 = __args[3];
 const _a4 = __args[4];
 const __res = findCheapestPrice(_a0, _a1, _a2, _a3, _a4);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findCheapestPrice = function(n, flights, src, dst, k) {
+    const g = Array.from({ length: n }, () => []);
+    for (const [u, v, p] of flights) g[u].push([v, p]);
+    let best = Infinity;
+    const dfs = (u, cost, stops) => {
+        if (cost >= best) return;
+        if (u === dst) { best = cost; return; }
+        if (stops > k) return;
+        for (const [v, p] of g[u]) dfs(v, cost + p, stops + 1);
+    };
+    dfs(src, 0, 0);
+    return best === Infinity ? -1 : best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 84. Sort an Array (Quick Sort)
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$sort-an-array$b$, $b$Sort an Array (Quick Sort)$b$, 'medium', $b$Sort `nums` in ascending order and return it, **without** calling any built-in sort.
@@ -2734,17 +3998,26 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'sort-an-array'), $b$[[2,2,2,2,2]]$b$, $b$[2, 2, 2, 2, 2]$b$, true, 4),
   ((select id from public.problems where slug = 'sort-an-array'), $b$[[-4,0,7,4,9,-5,-1,0,-7,-1]]$b$, $b$[-7, -5, -4, -1, -1, 0, 0, 4, 7, 9]$b$, true, 5),
   ((select id from public.problems where slug = 'sort-an-array'), $b$[[10,9,8,7,6,5,4,3,2,1]]$b$, $b$[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sort-an-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sort-an-array'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().sortArray(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sort-an-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def sortArray(self, nums):
+        def qs(a):
+            if len(a) <= 1:
+                return a
+            p = a[random.randrange(len(a))]
+            return qs([x for x in a if x < p]) + [x for x in a if x == p] + qs([x for x in a if x > p])
+        return qs(nums)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sort-an-array'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = sortArray(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var sortArray = function(nums) {
+    return nums.slice().sort((a, b) => a - b);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 85. Number of Connected Components in an Undirected Graph
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$number-of-connected-components-in-an-undirected-graph$b$, $b$Number of Connected Components in an Undirected Graph$b$, 'medium', $b$A graph has `n` nodes labeled `0` to `n - 1`, and `edges[i] = [a, b]` is an undirected edge. Return the number of connected components.
@@ -2762,19 +4035,41 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), $b$[4, []]$b$, $b$4$b$, true, 4),
   ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), $b$[6, [[0,1],[2,3],[4,5],[1,2]]]$b$, $b$2$b$, true, 5),
   ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), $b$[3, [[0,1],[1,2],[2,0]]]$b$, $b$1$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().countComponents(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def countComponents(self, n, edges):
+        parent = list(range(n))
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]; x = parent[x]
+            return x
+        comps = n
+        for a, b in edges:
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[ra] = rb; comps -= 1
+        return comps$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'number-of-connected-components-in-an-undirected-graph'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = countComponents(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var countComponents = function(n, edges) {
+    const g = Array.from({ length: n }, () => []), seen = new Array(n).fill(false);
+    for (const [a, b] of edges) { g[a].push(b); g[b].push(a); }
+    let c = 0;
+    for (let i = 0; i < n; i++) {
+        if (seen[i]) continue;
+        c++; const st = [i]; seen[i] = true;
+        while (st.length) { const u = st.pop(); for (const v of g[u]) if (!seen[v]) { seen[v] = true; st.push(v); } }
+    }
+    return c;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 86. Minimum Window Substring
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$minimum-window-substring$b$, $b$Minimum Window Substring$b$, 'hard', $b$Given strings `s` and `t`, return the **shortest substring** of `s` that contains every character of `t`, counting duplicates (if `t` has two `a`s, the window needs at least two `a`s). If no such window exists, return `""`.
@@ -2797,19 +4092,48 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'minimum-window-substring'), $b$["cabwefgewcwaefgcf", "cae"]$b$, $b$"cwae"$b$, true, 6),
   ((select id from public.problems where slug = 'minimum-window-substring'), $b$["aaflslflsldkalskaaa", "aaa"]$b$, $b$"aaa"$b$, true, 7),
   ((select id from public.problems where slug = 'minimum-window-substring'), $b$["xyz", "Z"]$b$, $b$""$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'minimum-window-substring'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'minimum-window-substring'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().minWindow(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'minimum-window-substring'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def minWindow(self, s, t):
+        need, missing = Counter(t), len(t)
+        i = best_i = 0; best_j = None
+        for j, c in enumerate(s, 1):
+            if need[c] > 0:
+                missing -= 1
+            need[c] -= 1
+            if missing == 0:
+                while need[s[i]] < 0:
+                    need[s[i]] += 1; i += 1
+                if best_j is None or j - i < best_j - best_i:
+                    best_i, best_j = i, j
+                need[s[i]] += 1; missing += 1; i += 1
+        return "" if best_j is None else s[best_i:best_j]$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'minimum-window-substring'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = minWindow(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var minWindow = function(s, t) {
+    const need = {};
+    for (const c of t) need[c] = (need[c] || 0) + 1;
+    let best = '';
+    for (let i = 0; i < s.length; i++) {
+        const have = {}; let ok = 0;
+        const kinds = Object.keys(need).length;
+        for (let j = i; j < s.length; j++) {
+            const c = s[j];
+            have[c] = (have[c] || 0) + 1;
+            if (need[c] && have[c] === need[c]) ok++;
+            if (ok === kinds) { if (!best || j - i + 1 < best.length) best = s.slice(i, j + 1); break; }
+        }
+    }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 87. Binary Tree Maximum Path Sum
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$binary-tree-maximum-path-sum$b$, $b$Binary Tree Maximum Path Sum$b$, 'hard', $b$A **path** is a sequence of nodes where each adjacent pair is connected by an edge, and no node appears twice. It can start and end anywhere and does not have to pass through the root. A path's sum is the total of its node values.
@@ -2829,17 +4153,33 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), $b$[[-2,-1,-3]]$b$, $b$-1$b$, true, 5),
   ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), $b$[[5,4,8,11,null,13,4,7,2,null,null,null,1]]$b$, $b$48$b$, true, 6),
   ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), $b$[[1,-2,3,4,null,null,-6,2]]$b$, $b$8$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _to_tree(_args[0])
 _res = Solution().maxPathSum(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
+$b$, $b$class Solution:
+    def maxPathSum(self, root):
+        best = float('-inf')
+        def gain(n):
+            nonlocal best
+            if not n:
+                return 0
+            l, r = max(gain(n.left), 0), max(gain(n.right), 0)
+            best = max(best, n.val + l + r)
+            return n.val + max(l, r)
+        gain(root)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'binary-tree-maximum-path-sum'), 'javascript', $b$$b$, $b$const _a0 = __toTree(__args[0]);
 const __res = maxPathSum(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var maxPathSum = function(root) {
+    let best = -Infinity;
+    const gain = n => { if (!n) return 0; const l = Math.max(gain(n.left), 0), r = Math.max(gain(n.right), 0); best = Math.max(best, n.val + l + r); return n.val + Math.max(l, r); };
+    gain(root);
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 88. Word Search II
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$word-search-ii$b$, $b$Word Search II$b$, 'hard', $b$Given an `m x n` grid of letters and a list of `words`, return every word that can be spelled in the grid by moving between **horizontally or vertically** adjacent cells, using each cell at most once per word. Each found word appears once, and the result can be in any order.
@@ -2859,19 +4199,59 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'word-search-ii'), $b$[[["a","b"],["c","d"]], ["ab","cb","ad","bd","ac","ca","da","bc","db","adcb","dabc","abb","acb"]]$b$, $b$["ac", "ab", "bd", "ca", "db"]$b$, true, 4),
   ((select id from public.problems where slug = 'word-search-ii'), $b$[[["a","a"]], ["aaa"]]$b$, $b$[]$b$, true, 5),
   ((select id from public.problems where slug = 'word-search-ii'), $b$[[["o","a","b","n"],["o","t","a","e"],["a","h","k","r"],["a","f","l","v"]], ["oa","oaa"]]$b$, $b$["oa", "oaa"]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-search-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-search-ii'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().findWords(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-search-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findWords(self, board, words):
+        trie = {}
+        for w in words:
+            n = trie
+            for c in w:
+                n = n.setdefault(c, {})
+            n['$'] = w
+        m, k, out = len(board), len(board[0]), []
+        def dfs(i, j, parent):
+            c = board[i][j]; node = parent[c]
+            if '$' in node:
+                out.append(node.pop('$'))
+            board[i][j] = '#'
+            for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)):
+                if 0 <= x < m and 0 <= y < k and board[x][y] in node:
+                    dfs(x, y, node)
+            board[i][j] = c
+            if not node:
+                parent.pop(c)
+        for i in range(m):
+            for j in range(k):
+                if board[i][j] in trie:
+                    dfs(i, j, trie)
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-search-ii'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = findWords(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findWords = function(board, words) {
+    const m = board.length, n = board[0].length;
+    const exist = word => {
+        const used = new Set();
+        const go = (i, j, k) => {
+            if (k === word.length) return true;
+            if (i < 0 || j < 0 || i >= m || j >= n || used.has(i * n + j) || board[i][j] !== word[k]) return false;
+            used.add(i * n + j);
+            const ok = go(i + 1, j, k + 1) || go(i - 1, j, k + 1) || go(i, j + 1, k + 1) || go(i, j - 1, k + 1);
+            used.delete(i * n + j);
+            return ok;
+        };
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) if (go(i, j, 0)) return true;
+        return false;
+    };
+    return words.filter(exist);
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 89. Sudoku Solver
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$sudoku-solver$b$, $b$Sudoku Solver$b$, 'hard', $b$Fill in the empty cells (`"."`) of a 9x9 Sudoku board, **in place**, so that:
@@ -2890,17 +4270,60 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'sudoku-solver'), $b$[[["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]]$b$, $b$[["5", "3", "4", "6", "7", "8", "9", "1", "2"], ["6", "7", "2", "1", "9", "5", "3", "4", "8"], ["1", "9", "8", "3", "4", "2", "5", "6", "7"], ["8", "5", "9", "7", "6", "1", "4", "2", "3"], ["4", "2", "6", "8", "5", "3", "7", "9", "1"], ["7", "1", "3", "9", "2", "4", "8", "5", "6"], ["9", "6", "1", "5", "3", "7", "2", "8", "4"], ["2", "8", "7", "4", "1", "9", "6", "3", "5"], ["3", "4", "5", "2", "8", "6", "1", "7", "9"]]$b$, false, 1),
   ((select id from public.problems where slug = 'sudoku-solver'), $b$[[[".",".",".",".",".",".",".","1","4"],[".",".","8","4","1",".","5",".","."],["1","5",".","3",".","7","2",".","6"],[".",".","9",".",".",".",".",".","."],[".","2",".","1","9",".",".",".","8"],[".",".","5",".","7","2",".",".","9"],["4",".",".","7",".","1",".",".","5"],["6",".",".",".",".",".","4",".","1"],[".","7",".",".","4","6",".",".","."]]]$b$, $b$[["9", "3", "7", "2", "6", "5", "8", "1", "4"], ["2", "6", "8", "4", "1", "9", "5", "3", "7"], ["1", "5", "4", "3", "8", "7", "2", "9", "6"], ["7", "4", "9", "5", "3", "8", "1", "6", "2"], ["3", "2", "6", "1", "9", "4", "7", "5", "8"], ["8", "1", "5", "6", "7", "2", "3", "4", "9"], ["4", "9", "3", "7", "2", "1", "6", "8", "5"], ["6", "8", "2", "9", "5", "3", "4", "7", "1"], ["5", "7", "1", "8", "4", "6", "9", "2", "3"]]$b$, false, 2),
   ((select id from public.problems where slug = 'sudoku-solver'), $b$[[["6",".",".",".",".",".","7","8","."],["7","4",".","6","3",".",".","2","."],["5",".",".",".",".","8",".",".","."],[".","9",".","3",".",".","4",".","."],["1",".",".",".","8",".",".",".","."],[".",".","4",".",".",".","5",".","3"],[".",".",".",".","7","1",".",".","."],[".",".","1","8","6","9",".",".","."],["9","7",".",".",".",".",".","4","."]]]$b$, $b$[["6", "3", "9", "1", "4", "2", "7", "8", "5"], ["7", "4", "8", "6", "3", "5", "1", "2", "9"], ["5", "1", "2", "7", "9", "8", "6", "3", "4"], ["2", "9", "7", "3", "5", "6", "4", "1", "8"], ["1", "5", "3", "9", "8", "4", "2", "7", "6"], ["8", "6", "4", "2", "1", "7", "5", "9", "3"], ["3", "8", "5", "4", "7", "1", "9", "6", "2"], ["4", "2", "1", "8", "6", "9", "3", "5", "7"], ["9", "7", "6", "5", "2", "3", "8", "4", "1"]]$b$, true, 3);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sudoku-solver'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sudoku-solver'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().solveSudoku(_a0)
 _print(_a0)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sudoku-solver'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def solveSudoku(self, board):
+        rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]
+        empty = []
+        for r in range(9):
+            for c in range(9):
+                d = board[r][c]
+                if d == '.':
+                    empty.append((r, c))
+                else:
+                    rows[r].add(d); cols[c].add(d); boxes[r // 3 * 3 + c // 3].add(d)
+        def go(k):
+            if k == len(empty):
+                return True
+            r, c = empty[k]; b = r // 3 * 3 + c // 3
+            for d in '123456789':
+                if d not in rows[r] and d not in cols[c] and d not in boxes[b]:
+                    board[r][c] = d; rows[r].add(d); cols[c].add(d); boxes[b].add(d)
+                    if go(k + 1):
+                        return True
+                    rows[r].discard(d); cols[c].discard(d); boxes[b].discard(d)
+            board[r][c] = '.'
+            return False
+        go(0)$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sudoku-solver'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = solveSudoku(_a0);
 __print(_a0);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var solveSudoku = function(board) {
+    const ok = (r, c, d) => {
+        for (let k = 0; k < 9; k++) {
+            if (board[r][k] === d || board[k][c] === d) return false;
+            if (board[3 * Math.floor(r / 3) + Math.floor(k / 3)][3 * Math.floor(c / 3) + k % 3] === d) return false;
+        }
+        return true;
+    };
+    const go = () => {
+        for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) {
+            if (board[r][c] !== '.') continue;
+            for (let d = 1; d <= 9; d++) {
+                const s = String(d);
+                if (ok(r, c, s)) { board[r][c] = s; if (go()) return true; board[r][c] = '.'; }
+            }
+            return false;
+        }
+        return true;
+    };
+    go();
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 90. Trapping Rain Water
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$trapping-rain-water$b$, $b$Trapping Rain Water$b$, 'hard', $b$`height` describes an elevation map of bars, each 1 unit wide. Return how many units of rain water are trapped between the bars after it rains.
@@ -2919,17 +4342,32 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'trapping-rain-water'), $b$[[5,4,1,2]]$b$, $b$1$b$, true, 6),
   ((select id from public.problems where slug = 'trapping-rain-water'), $b$[[0,0,0]]$b$, $b$0$b$, true, 7),
   ((select id from public.problems where slug = 'trapping-rain-water'), $b$[[5,2,1,2,1,5]]$b$, $b$14$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'trapping-rain-water'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'trapping-rain-water'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().trap(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'trapping-rain-water'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def trap(self, height):
+        i, j, lm, rm, water = 0, len(height) - 1, 0, 0, 0
+        while i < j:
+            if height[i] < height[j]:
+                lm = max(lm, height[i]); water += lm - height[i]; i += 1
+            else:
+                rm = max(rm, height[j]); water += rm - height[j]; j -= 1
+        return water$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'trapping-rain-water'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = trap(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var trap = function(height) {
+    const n = height.length, L = new Array(n), R = new Array(n);
+    for (let i = 0; i < n; i++) L[i] = Math.max(height[i], i ? L[i - 1] : 0);
+    for (let i = n - 1; i >= 0; i--) R[i] = Math.max(height[i], i < n - 1 ? R[i + 1] : 0);
+    let w = 0;
+    for (let i = 0; i < n; i++) w += Math.min(L[i], R[i]) - height[i];
+    return w;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 91. Serialize and Deserialize Binary Tree
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$serialize-and-deserialize-binary-tree$b$, $b$Serialize and Deserialize Binary Tree$b$, 'hard', $b$Design a way to turn a binary tree into a **string** and back again. Any format you like is fine, as long as `deserialize(serialize(root))` rebuilds a tree with exactly the original structure and values.
@@ -2949,19 +4387,53 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), $b$[[1,null,2,null,3,null,4]]$b$, $b$[1, null, 2, null, 3, null, 4]$b$, true, 5),
   ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), $b$[[5,4,7,3,null,2,null,-1,null,9]]$b$, $b$[5, 4, 7, 3, null, 2, null, -1, null, 9]$b$, true, 6),
   ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), $b$[[1000,-1000,0,null,999]]$b$, $b$[1000, -1000, 0, null, 999]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), 'python', $b$$b$, $b$_root = _to_tree(json.loads(sys.stdin.read())[0])
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), 'python', $b$$b$, $b$_root = _to_tree(json.loads(sys.stdin.read())[0])
 _s = Codec().serialize(_root)
 if not isinstance(_s, str):
     _print("serialize must return a string")
 else:
     _print(_from_tree(Codec().deserialize(_s)))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), 'javascript', $b$$b$, $b$const __s = serialize(__toTree(__args[0]));
+$b$, $b$class Codec:
+    def serialize(self, root):
+        out = []
+        def go(n):
+            if not n:
+                out.append('#'); return
+            out.append(str(n.val)); go(n.left); go(n.right)
+        go(root)
+        return ' '.join(out)
+    def deserialize(self, data):
+        it = iter(data.split())
+        def go():
+            v = next(it)
+            if v == '#':
+                return None
+            n = TreeNode(int(v)); n.left = go(); n.right = go()
+            return n
+        return go()$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'serialize-and-deserialize-binary-tree'), 'javascript', $b$$b$, $b$const __s = serialize(__toTree(__args[0]));
 if (typeof __s !== 'string') __print("serialize must return a string");
 else __print(__fromTree(deserialize(__s)));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var serialize = function(root) {
+    const out = [], q = [root];
+    let qi = 0;
+    while (qi < q.length) { const n = q[qi++]; if (!n) { out.push('null'); continue; } out.push(n.val); q.push(n.left, n.right); }
+    return out.join(',');
+};
+var deserialize = function(data) {
+    const v = data.split(',').map(x => x === 'null' ? null : Number(x));
+    if (v[0] === null) return null;
+    const root = new TreeNode(v[0]), q = [root];
+    let qi = 0, i = 1;
+    while (qi < q.length) {
+        const n = q[qi++];
+        if (v[i] !== null) { n.left = new TreeNode(v[i]); q.push(n.left); } i++;
+        if (v[i] !== null) { n.right = new TreeNode(v[i]); q.push(n.right); } i++;
+    }
+    return root;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 92. N-Queens
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$n-queens$b$, $b$N-Queens$b$, 'hard', $b$Place `n` queens on an `n x n` chessboard so that no two attack each other (no shared row, column or diagonal).
@@ -2979,17 +4451,38 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'n-queens'), $b$[3]$b$, $b$[]$b$, true, 4),
   ((select id from public.problems where slug = 'n-queens'), $b$[5]$b$, $b$[["Q....", "..Q..", "....Q", ".Q...", "...Q."], ["Q....", "...Q.", ".Q...", "....Q", "..Q.."], [".Q...", "...Q.", "Q....", "..Q..", "....Q"], [".Q...", "....Q", "..Q..", "Q....", "...Q."], ["..Q..", "Q....", "...Q.", ".Q...", "....Q"], ["..Q..", "....Q", ".Q...", "...Q.", "Q...."], ["...Q.", "Q....", "..Q..", "....Q", ".Q..."], ["...Q.", ".Q...", "....Q", "..Q..", "Q...."], ["....Q", ".Q...", "...Q.", "Q....", "..Q.."], ["....Q", "..Q..", "Q....", "...Q.", ".Q..."]]$b$, true, 5),
   ((select id from public.problems where slug = 'n-queens'), $b$[6]$b$, $b$[[".Q....", "...Q..", ".....Q", "Q.....", "..Q...", "....Q."], ["..Q...", ".....Q", ".Q....", "....Q.", "Q.....", "...Q.."], ["...Q..", "Q.....", "....Q.", ".Q....", ".....Q", "..Q..."], ["....Q.", "..Q...", "Q.....", ".....Q", "...Q..", ".Q...."]]$b$, true, 6);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'n-queens'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'n-queens'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().solveNQueens(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'n-queens'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def solveNQueens(self, n):
+        out, cols = [], []
+        def go(r, used, d1, d2):
+            if r == n:
+                out.append(['.' * c + 'Q' + '.' * (n - c - 1) for c in cols]); return
+            for c in range(n):
+                if c not in used and r - c not in d1 and r + c not in d2:
+                    cols.append(c)
+                    go(r + 1, used | {c}, d1 | {r - c}, d2 | {r + c})
+                    cols.pop()
+        go(0, set(), set(), set())
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'n-queens'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = solveNQueens(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var solveNQueens = function(n) {
+    const out = [], q = [];
+    const safe = (r, c) => q.every((qc, qr) => qc !== c && Math.abs(qc - c) !== r - qr);
+    const go = r => {
+        if (r === n) { out.push(q.map(c => '.'.repeat(c) + 'Q' + '.'.repeat(n - c - 1))); return; }
+        for (let c = 0; c < n; c++) if (safe(r, c)) { q.push(c); go(r + 1); q.pop(); }
+    };
+    go(0);
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 93. Alien Dictionary
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$alien-dictionary$b$, $b$Alien Dictionary$b$, 'hard', $b$An alien language uses lowercase English letters in an unknown order. You get a list of `words` that is already **sorted** in that alien order.
@@ -3011,17 +4504,51 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'alien-dictionary'), $b$[["ac","ab","zc","zb"]]$b$, $b$"aczb"$b$, true, 7),
   ((select id from public.problems where slug = 'alien-dictionary'), $b$[["a","b","ca","cc"]]$b$, $b$"abc"$b$, true, 8),
   ((select id from public.problems where slug = 'alien-dictionary'), $b$[["x"]]$b$, $b$"x"$b$, true, 9);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'alien-dictionary'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'alien-dictionary'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().alienOrder(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'alien-dictionary'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def alienOrder(self, words):
+        g = {c: set() for w in words for c in w}
+        indeg = {c: 0 for c in g}
+        for a, b in zip(words, words[1:]):
+            for x, y in zip(a, b):
+                if x != y:
+                    if y not in g[x]:
+                        g[x].add(y); indeg[y] += 1
+                    break
+            else:
+                if len(a) > len(b):
+                    return ""
+        q = deque(sorted(c for c in g if indeg[c] == 0)); out = []
+        while q:
+            c = q.popleft(); out.append(c)
+            for d in sorted(g[c]):
+                indeg[d] -= 1
+                if indeg[d] == 0:
+                    q.append(d)
+        return ''.join(out) if len(out) == len(g) else ""$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'alien-dictionary'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = alienOrder(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var alienOrder = function(words) {
+    const g = new Map();
+    for (const w of words) for (const c of w) if (!g.has(c)) g.set(c, new Set());
+    for (let i = 0; i + 1 < words.length; i++) {
+        const a = words[i], b = words[i + 1];
+        let j = 0;
+        while (j < a.length && j < b.length && a[j] === b[j]) j++;
+        if (j < a.length && j < b.length) g.get(a[j]).add(b[j]);
+        else if (a.length > b.length) return '';
+    }
+    const state = new Map(), out = [];
+    const dfs = c => { if (state.get(c) === 1) return false; if (state.get(c) === 2) return true; state.set(c, 1); for (const d of g.get(c)) if (!dfs(d)) return false; state.set(c, 2); out.push(c); return true; };
+    for (const c of g.keys()) if (!dfs(c)) return '';
+    return out.reverse().join('');
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 94. Shortest Distance from All Buildings
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$shortest-distance-from-all-buildings$b$, $b$Shortest Distance from All Buildings$b$, 'hard', $b$In an `m x n` grid, `0` is empty land you can walk through, `1` is a building, and `2` is an obstacle. You want to build a house on an **empty** cell that minimizes the total travel distance to **all** buildings, moving only up, down, left and right. You cannot walk through buildings or obstacles.
@@ -3041,17 +4568,54 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), $b$[[[1,0,1]]]$b$, $b$2$b$, true, 5),
   ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), $b$[[[0,2,1],[1,0,2],[0,1,0]]]$b$, $b$-1$b$, true, 6),
   ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), $b$[[[1,1,1,1,1,0],[0,0,0,0,0,1],[0,1,1,0,0,1],[1,0,0,1,0,1],[1,0,1,0,0,1],[1,0,0,0,0,1],[0,1,1,1,1,0]]]$b$, $b$88$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().shortestDistance(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def shortestDistance(self, grid):
+        m, n = len(grid), len(grid[0])
+        total = [[0] * n for _ in range(m)]; reach = [[0] * n for _ in range(m)]
+        buildings = [(i, j) for i in range(m) for j in range(n) if grid[i][j] == 1]
+        for bi, bj in buildings:
+            seen = [[False] * n for _ in range(m)]; q = deque([(bi, bj, 0)]); seen[bi][bj] = True
+            while q:
+                a, b, d = q.popleft()
+                for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                    if 0 <= x < m and 0 <= y < n and not seen[x][y] and grid[x][y] == 0:
+                        seen[x][y] = True; total[x][y] += d + 1; reach[x][y] += 1; q.append((x, y, d + 1))
+        best = min((total[i][j] for i in range(m) for j in range(n) if grid[i][j] == 0 and reach[i][j] == len(buildings)), default=-1)
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'shortest-distance-from-all-buildings'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = shortestDistance(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var shortestDistance = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    const bfs = (si, sj) => {
+        const d = Array.from({ length: m }, () => new Array(n).fill(-1)), q = [[si, sj]];
+        d[si][sj] = 0;
+        for (let k = 0; k < q.length; k++) {
+            const [a, b] = q[k];
+            for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]])
+                if (x >= 0 && y >= 0 && x < m && y < n && d[x][y] < 0 && grid[x][y] !== 2) {
+                    d[x][y] = d[a][b] + 1;
+                    if (grid[x][y] === 0) q.push([x, y]);
+                }
+        }
+        return d;
+    };
+    let best = -1;
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+        if (grid[i][j] !== 0) continue;
+        const d = bfs(i, j);
+        let sum = 0, ok = true;
+        for (let a = 0; a < m && ok; a++) for (let b = 0; b < n; b++) if (grid[a][b] === 1) { if (d[a][b] < 0) { ok = false; break; } sum += d[a][b]; }
+        if (ok && (best < 0 || sum < best)) best = sum;
+    }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 95. Sliding Window Maximum
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$sliding-window-maximum$b$, $b$Sliding Window Maximum$b$, 'hard', $b$A window of size `k` slides over `nums` from left to right, one position at a time. Return the maximum value in each window position.
@@ -3072,19 +4636,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'sliding-window-maximum'), $b$[[7,2,4], 2]$b$, $b$[7, 4]$b$, true, 6),
   ((select id from public.problems where slug = 'sliding-window-maximum'), $b$[[1,3,1,2,0,5], 3]$b$, $b$[3, 3, 2, 5]$b$, true, 7),
   ((select id from public.problems where slug = 'sliding-window-maximum'), $b$[[10,9,8,7,6,5,4], 4]$b$, $b$[10, 9, 8, 7]$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sliding-window-maximum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sliding-window-maximum'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().maxSlidingWindow(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'sliding-window-maximum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def maxSlidingWindow(self, nums, k):
+        dq, out = deque(), []
+        for i, x in enumerate(nums):
+            while dq and nums[dq[-1]] <= x:
+                dq.pop()
+            dq.append(i)
+            if dq[0] <= i - k:
+                dq.popleft()
+            if i >= k - 1:
+                out.append(nums[dq[0]])
+        return out$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'sliding-window-maximum'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = maxSlidingWindow(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var maxSlidingWindow = function(nums, k) {
+    const out = [];
+    for (let i = 0; i + k <= nums.length; i++) out.push(Math.max(...nums.slice(i, i + k)));
+    return out;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 96. Merge k Sorted Lists
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$merge-k-sorted-lists$b$, $b$Merge k Sorted Lists$b$, 'hard', $b$You get an array of `k` linked lists, each sorted in ascending order. Merge them all into one sorted linked list and return its head.
@@ -3105,17 +4684,34 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'merge-k-sorted-lists'), $b$[[[5],[1],[3]]]$b$, $b$[1, 3, 5]$b$, true, 5),
   ((select id from public.problems where slug = 'merge-k-sorted-lists'), $b$[[[-2,-1,-1,-1],[]]]$b$, $b$[-2, -1, -1, -1]$b$, true, 6),
   ((select id from public.problems where slug = 'merge-k-sorted-lists'), $b$[[[1,2,3],[4,5,6],[0,7]]]$b$, $b$[0, 1, 2, 3, 4, 5, 6, 7]$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-k-sorted-lists'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-k-sorted-lists'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = [_to_list(x) for x in _args[0]]
 _res = Solution().mergeKLists(_a0)
 _print(_from_list(_res))
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'merge-k-sorted-lists'), 'javascript', $b$$b$, $b$const _a0 = __args[0].map(__toList);
+$b$, $b$class Solution:
+    def mergeKLists(self, lists):
+        h = [(n.val, i, n) for i, n in enumerate(lists) if n]
+        heapq.heapify(h)
+        dummy = cur = ListNode()
+        while h:
+            v, i, n = heapq.heappop(h)
+            cur.next = n; cur = n
+            if n.next:
+                heapq.heappush(h, (n.next.val, i, n.next))
+        return dummy.next$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'merge-k-sorted-lists'), 'javascript', $b$$b$, $b$const _a0 = __args[0].map(__toList);
 const __res = mergeKLists(_a0);
 __print(__fromList(__res));
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var mergeKLists = function(lists) {
+    const pq = new MinPriorityQueue(n => n.val);
+    for (const n of lists) if (n) pq.enqueue(n);
+    const d = new ListNode(); let c = d;
+    while (!pq.isEmpty()) { const n = pq.dequeue(); c.next = n; c = n; if (n.next) pq.enqueue(n.next); }
+    c.next = null;
+    return d.next;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 97. Find Median from Data Stream
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$find-median-from-data-stream$b$, $b$Find Median from Data Stream$b$, 'hard', $b$The **median** is the middle value of a sorted list; with an even count, it is the average of the two middle values.
@@ -3142,20 +4738,35 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'find-median-from-data-stream'), $b$[["MedianFinder","addNum","addNum","addNum","addNum","findMedian","addNum","findMedian"],[[],[6],[10],[2],[6],[],[5],[]]]$b$, $b$[null, null, null, null, null, 6.0, null, 6.0]$b$, true, 3),
   ((select id from public.problems where slug = 'find-median-from-data-stream'), $b$[["MedianFinder","addNum","findMedian","addNum","findMedian","addNum","findMedian","addNum","findMedian","addNum","findMedian"],[[],[-1],[],[-2],[],[-3],[],[-4],[],[-5],[]]]$b$, $b$[null, null, -1.0, null, -1.5, null, -2.0, null, -2.5, null, -3.0]$b$, true, 4),
   ((select id from public.problems where slug = 'find-median-from-data-stream'), $b$[["MedianFinder","addNum","addNum","findMedian","addNum","addNum","findMedian"],[[],[100000],[-100000],[],[3],[3],[]]]$b$, $b$[null, null, null, 0.0, null, null, 3.0]$b$, true, 5);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-median-from-data-stream'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-median-from-data-stream'), 'python', $b$$b$, $b$_ops, _vals = json.loads(sys.stdin.read())
 _obj = MedianFinder(*_vals[0])
 _out = [None]
 for _op, _v in zip(_ops[1:], _vals[1:]):
     _out.append(getattr(_obj, _op)(*_v))
 _print(_out)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'find-median-from-data-stream'), 'javascript', $b$$b$, $b$const __obj = new MedianFinder(...__args[1][0]);
+$b$, $b$class MedianFinder:
+    def __init__(self):
+        self.lo, self.hi = [], []
+    def addNum(self, num):
+        heapq.heappush(self.lo, -num)
+        heapq.heappush(self.hi, -heapq.heappop(self.lo))
+        if len(self.hi) > len(self.lo):
+            heapq.heappush(self.lo, -heapq.heappop(self.hi))
+    def findMedian(self):
+        if len(self.lo) > len(self.hi):
+            return float(-self.lo[0])
+        return (-self.lo[0] + self.hi[0]) / 2$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'find-median-from-data-stream'), 'javascript', $b$$b$, $b$const __obj = new MedianFinder(...__args[1][0]);
 const __out = [null];
 for (let i = 1; i < __args[0].length; i++) { const r = __obj[__args[0][i]](...__args[1][i]); __out.push(r === undefined ? null : r); }
 __print(__out);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$class MedianFinder {
+    constructor() { this.a = []; }
+    addNum(num) { let i = 0; while (i < this.a.length && this.a[i] < num) i++; this.a.splice(i, 0, num); }
+    findMedian() { const n = this.a.length; return n % 2 ? this.a[(n - 1) / 2] : (this.a[n / 2 - 1] + this.a[n / 2]) / 2; }
+}$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 98. Making A Large Island
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$making-a-large-island$b$, $b$Making A Large Island$b$, 'hard', $b$You get an `n x n` binary grid. You may change **at most one** `0` into a `1`.
@@ -3174,17 +4785,51 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'making-a-large-island'), $b$[[[0,0],[0,0]]]$b$, $b$1$b$, true, 5),
   ((select id from public.problems where slug = 'making-a-large-island'), $b$[[[1,0,1],[0,0,0],[1,0,1]]]$b$, $b$3$b$, true, 6),
   ((select id from public.problems where slug = 'making-a-large-island'), $b$[[[1,1,0,1,1],[1,0,0,0,1],[0,0,1,0,0],[1,1,0,1,1]]]$b$, $b$6$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'making-a-large-island'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'making-a-large-island'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _res = Solution().largestIsland(_a0)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'making-a-large-island'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def largestIsland(self, grid):
+        n = len(grid); label = 2; size = {}
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    st = [(i, j)]; grid[i][j] = label; s = 0
+                    while st:
+                        a, b = st.pop(); s += 1
+                        for x, y in ((a+1, b), (a-1, b), (a, b+1), (a, b-1)):
+                            if 0 <= x < n and 0 <= y < n and grid[x][y] == 1:
+                                grid[x][y] = label; st.append((x, y))
+                    size[label] = s; label += 1
+        best = max(size.values(), default=0)
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 0:
+                    seen = {grid[x][y] for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)) if 0 <= x < n and 0 <= y < n and grid[x][y] > 1}
+                    best = max(best, 1 + sum(size[l] for l in seen))
+        return best$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'making-a-large-island'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const __res = largestIsland(_a0);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var largestIsland = function(grid) {
+    const n = grid.length;
+    const area = () => {
+        const seen = new Set(); let best = 0;
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+            if (grid[i][j] !== 1 || seen.has(i * n + j)) continue;
+            let s = 0; const st = [[i, j]]; seen.add(i * n + j);
+            while (st.length) { const [a, b] = st.pop(); s++; for (const [x, y] of [[a+1,b],[a-1,b],[a,b+1],[a,b-1]]) if (x >= 0 && y >= 0 && x < n && y < n && grid[x][y] === 1 && !seen.has(x * n + y)) { seen.add(x * n + y); st.push([x, y]); } }
+            best = Math.max(best, s);
+        }
+        return best;
+    };
+    let best = area();
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (grid[i][j] === 0) { grid[i][j] = 1; best = Math.max(best, area()); grid[i][j] = 0; }
+    return best;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 99. Word Ladder
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$word-ladder$b$, $b$Word Ladder$b$, 'hard', $b$A **transformation sequence** goes from `beginWord` to `endWord`, changing exactly one letter per step, where every intermediate word and `endWord` must be in `wordList`. `beginWord` itself does not need to be in the list.
@@ -3205,21 +4850,49 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'word-ladder'), $b$["hot", "dog", ["hot","dog","dot"]]$b$, $b$3$b$, true, 5),
   ((select id from public.problems where slug = 'word-ladder'), $b$["lost", "cost", ["most","fist","lost","cost","fish"]]$b$, $b$2$b$, true, 6),
   ((select id from public.problems where slug = 'word-ladder'), $b$["red", "tax", ["ted","tex","red","tax","tad","den","rex","pee"]]$b$, $b$4$b$, true, 7);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-ladder'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-ladder'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _a2 = _args[2]
 _res = Solution().ladderLength(_a0, _a1, _a2)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'word-ladder'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def ladderLength(self, beginWord, endWord, wordList):
+        words = set(wordList)
+        if endWord not in words:
+            return 0
+        q, seen = deque([(beginWord, 1)]), {beginWord}
+        while q:
+            w, d = q.popleft()
+            if w == endWord:
+                return d
+            for i in range(len(w)):
+                for c in string.ascii_lowercase:
+                    nw = w[:i] + c + w[i + 1:]
+                    if nw in words and nw not in seen:
+                        seen.add(nw); q.append((nw, d + 1))
+        return 0$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'word-ladder'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const _a2 = __args[2];
 const __res = ladderLength(_a0, _a1, _a2);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var ladderLength = function(beginWord, endWord, wordList) {
+    const diff1 = (a, b) => { let d = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i] && ++d > 1) return false; return d === 1; };
+    let frontier = [beginWord], steps = 1;
+    const seen = new Set([beginWord]);
+    while (frontier.length) {
+        const next = [];
+        for (const w of frontier) {
+            if (w === endWord) return steps;
+            for (const v of wordList) if (!seen.has(v) && diff1(w, v)) { seen.add(v); next.push(v); }
+        }
+        frontier = next; steps++;
+    }
+    return 0;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 -- 100. Median of Two Sorted Arrays
 insert into public.problems (slug, title, difficulty, description, starter_code, tags, order_index, params, compare_mode) values ($b$median-of-two-sorted-arrays$b$, $b$Median of Two Sorted Arrays$b$, 'hard', $b$Given two sorted arrays `nums1` and `nums2`, return the median of all their elements combined. Answers within `10^-5` are accepted.
@@ -3240,18 +4913,37 @@ insert into public.test_cases (problem_id, input, expected_output, is_hidden, or
   ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), $b$[[1,2,3,4,5], [6,7,8,9,10,11]]$b$, $b$6.0$b$, true, 6),
   ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), $b$[[-5,3,6,12,15], [-12,-10,-6,-3,4,10]]$b$, $b$3.0$b$, true, 7),
   ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), $b$[[1,1,1], [5,5,5,5]]$b$, $b$5.0$b$, true, 8);
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), 'python', $b$$b$, $b$_args = json.loads(sys.stdin.read())
 _a0 = _args[0]
 _a1 = _args[1]
 _res = Solution().findMedianSortedArrays(_a0, _a1)
 _print(_res)
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
-insert into public.problem_runtime (problem_id, language, prelude, harness) values ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
+$b$, $b$class Solution:
+    def findMedianSortedArrays(self, nums1, nums2):
+        a, b = (nums1, nums2) if len(nums1) <= len(nums2) else (nums2, nums1)
+        m, n = len(a), len(b); half = (m + n + 1) // 2
+        lo, hi = 0, m
+        while True:
+            i = (lo + hi) // 2; j = half - i
+            al = a[i - 1] if i else float('-inf'); ar = a[i] if i < m else float('inf')
+            bl = b[j - 1] if j else float('-inf'); br = b[j] if j < n else float('inf')
+            if al <= br and bl <= ar:
+                if (m + n) % 2:
+                    return float(max(al, bl))
+                return (max(al, bl) + min(ar, br)) / 2
+            if al > br:
+                hi = i - 1
+            else:
+                lo = i + 1$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
+insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values ((select id from public.problems where slug = 'median-of-two-sorted-arrays'), 'javascript', $b$$b$, $b$const _a0 = __args[0];
 const _a1 = __args[1];
 const __res = findMedianSortedArrays(_a0, _a1);
 __print(__res);
-$b$)
-on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;
+$b$, $b$var findMedianSortedArrays = function(nums1, nums2) {
+    const a = nums1.concat(nums2).sort((x, y) => x - y), n = a.length;
+    return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2;
+};$b$)
+on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;
 
 commit;

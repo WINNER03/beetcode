@@ -10,6 +10,17 @@ export type CompareMode =
   | "palindrome_substring" // any longest palindromic substring (input: [s])
   | "min_remove_parens";   // any valid string with minimum removals (input: [s])
 
+export const RESULT_MARKER = "@@BEET_RESULT@@";
+
+// The harness prints the user's debug output first, then the marker, then the judged JSON.
+// Returns [stdout shown to the user, result to judge]. Mirrors split_output() in scripts/beet.py.
+export function splitOutput(raw: string | null): [string, string] {
+  const s = raw ?? "";
+  const i = s.lastIndexOf(RESULT_MARKER);
+  if (i < 0) return [s, ""];
+  return [s.slice(0, i).replace(/\n+$/, ""), s.slice(i + RESULT_MARKER.length).trim()];
+}
+
 function parse(text: string): { ok: boolean; value?: unknown } {
   try {
     return { ok: true, value: JSON.parse(text.trim()) };

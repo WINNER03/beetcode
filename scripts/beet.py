@@ -97,7 +97,7 @@ def _find(r, v):
         st.append(n.left); st.append(n.right)
     return None
 def _print(x):
-    print(json.dumps(x))
+    sys.stdout.write("\\n@@BEET_RESULT@@\\n" + json.dumps(x) + "\\n")
 '''
 
 JS_PRELUDE = """function ListNode(val, next) { this.val = (val === undefined ? 0 : val); this.next = (next === undefined ? null : next); }
@@ -114,7 +114,7 @@ function __fromList(h) { const out = []; while (h && out.length < 100000) { out.
 function __toTree(a) { if (!a || !a.length || a[0] === null) return null; const root = new TreeNode(a[0]); const q = [root]; let qi = 0, i = 1; while (qi < q.length && i < a.length) { const n = q[qi++]; if (i < a.length && a[i] !== null) { n.left = new TreeNode(a[i]); q.push(n.left); } i++; if (i < a.length && a[i] !== null) { n.right = new TreeNode(a[i]); q.push(n.right); } i++; } return root; }
 function __fromTree(r) { const out = [], q = [r]; let qi = 0; while (qi < q.length && out.length < 100000) { const n = q[qi++]; if (!n) { out.push(null); continue; } out.push(n.val); q.push(n.left); q.push(n.right); } while (out.length && out[out.length - 1] === null) out.pop(); return out; }
 function __find(r, v) { const st = [r]; while (st.length) { const n = st.pop(); if (!n) continue; if (n.val === v) return n; st.push(n.left, n.right); } return null; }
-function __print(x) { console.log(x === undefined ? 'undefined' : JSON.stringify(x)); }
+function __print(x) { process.stdout.write('\\n@@BEET_RESULT@@\\n' + (x === undefined ? 'undefined' : JSON.stringify(x)) + '\\n'); }
 const __args = JSON.parse(require('fs').readFileSync(0, 'utf8'));
 """
 
@@ -357,6 +357,15 @@ def assemble(p, lang, user_code):
 # ----------------------------------------------------------------------------
 # Running
 # ----------------------------------------------------------------------------
+MARKER = "@@BEET_RESULT@@"
+
+def split_output(stdout):
+    """(user stdout, judged result). Mirrors splitOutput() in compare.ts."""
+    i = stdout.rfind(MARKER)
+    if i < 0:
+        return stdout, ""
+    return stdout[:i].rstrip("\n"), stdout[i + len(MARKER):].strip()
+
 def run(lang, source, stdin):
     with tempfile.NamedTemporaryFile("w", suffix=".py" if lang == "python" else ".js", delete=False) as f:
         f.write(source)
@@ -364,7 +373,7 @@ def run(lang, source, stdin):
     try:
         cmd = ["python3", "-I", path] if lang == "python" else ["node", path]
         r = subprocess.run(cmd, input=stdin, capture_output=True, text=True, timeout=20)
-        return r.returncode, r.stdout.strip(), r.stderr.strip()
+        return r.returncode, split_output(r.stdout)[1], r.stderr.strip()
     except subprocess.TimeoutExpired:
         return -1, "", "TIMEOUT"
     finally:
@@ -456,10 +465,11 @@ def build(problems):
         out.append("insert into public.test_cases (problem_id, input, expected_output, is_hidden, order_index) values\n  " + ",\n  ".join(rows) + ";")
         for lang in ("python", "javascript"):
             out.append(
-                "insert into public.problem_runtime (problem_id, language, prelude, harness) values "
-                "((select id from public.problems where slug = '%s'), '%s', %s, %s)\n"
-                "on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness;"
-                % (p["slug"], lang, dq(p["sections"].get("prelude." + lang, "")), dq(gen_harness(p, lang))))
+                "insert into public.problem_runtime (problem_id, language, prelude, harness, reference) values "
+                "((select id from public.problems where slug = '%s'), '%s', %s, %s, %s)\n"
+                "on conflict (problem_id, language) do update set prelude = excluded.prelude, harness = excluded.harness, reference = excluded.reference;"
+                % (p["slug"], lang, dq(p["sections"].get("prelude." + lang, "")), dq(gen_harness(p, lang)),
+                   dq(p["sections"][lang])))
     out += ["", "commit;", ""]
     with open(os.path.join(ROOT, "supabase/seed.sql"), "w") as f:
         f.write("\n".join(out))

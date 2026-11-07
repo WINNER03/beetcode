@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/server";
 import { compact, formatArgs } from "@/lib/format";
-import Workspace from "@/components/Workspace";
+import ProblemShell from "@/components/ProblemShell";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +27,10 @@ export default async function ProblemPage({ params }: { params: Promise<{ slug: 
   // Only sample tests are readable by clients (RLS); hidden ones never leave the server.
   const [{ data: samples }, { data: neighbors }] = await Promise.all([
     supabase.from("test_cases").select("input, expected_output").eq("problem_id", problem.id).order("order_index"),
-    supabase.from("problems").select("slug, order_index")
-      .in("order_index", [problem.order_index - 1, problem.order_index + 1]),
+    supabase.from("problems").select("slug, order_index").in("order_index", [problem.order_index - 1, problem.order_index + 1]),
   ]);
-  const prev = neighbors?.find((n) => n.order_index === problem.order_index - 1);
-  const next = neighbors?.find((n) => n.order_index === problem.order_index + 1);
 
-  // Restore where the user left off: last language + all saved drafts
+  // Restore where the user left off: last language + saved drafts
   let drafts: Record<string, string> = {};
   let lastLanguage: string | null = null;
   let solved = false;
@@ -48,51 +44,45 @@ export default async function ProblemPage({ params }: { params: Promise<{ slug: 
     solved = prog?.status === "solved";
   }
 
-  return (
-    <main className="grid h-[calc(100vh-3.5rem)] grid-cols-1 lg:grid-cols-2">
-      <section className="overflow-y-auto border-r border-zinc-800 p-6">
-        <div className="mb-4 flex items-center justify-between text-sm text-zinc-500">
-          <Link href="/" className="hover:text-zinc-200">← All problems</Link>
-          <div className="flex gap-3">
-            {prev && <Link href={`/problems/${prev.slug}`} className="hover:text-zinc-200">‹ Prev</Link>}
-            {next && <Link href={`/problems/${next.slug}`} className="hover:text-zinc-200">Next ›</Link>}
-          </div>
-        </div>
-        <h1 className="text-2xl font-semibold">
-          {problem.order_index}. {problem.title} {solved && <span title="Solved">✅</span>}
-        </h1>
-        <div className="mb-5 mt-2 flex flex-wrap items-center gap-2 text-xs">
-          <span className={`rounded-full px-2.5 py-0.5 capitalize ${diffColor[problem.difficulty]}`}>{problem.difficulty}</span>
-          {problem.tags.map((t: string) => (
-            <span key={t} className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-zinc-400">{t}</span>
-          ))}
-        </div>
-        <div className="prose-beet text-zinc-300">
-          <ReactMarkdown>{problem.description}</ReactMarkdown>
-        </div>
-
-        {samples?.map((s, i) => (
-          <div key={i} className="mt-5">
-            <p className="mb-1.5 font-semibold text-zinc-100">Example {i + 1}</p>
-            <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-3 font-mono text-sm">
-              <p className="text-zinc-500">Input</p>
-              {formatArgs(s.input, problem.params).map((line, j) => (
-                <p key={j} className="break-all text-zinc-200">{line}</p>
-              ))}
-              <p className="mt-2 text-zinc-500">Output</p>
-              <p className="break-all text-zinc-200">{compact(s.expected_output)}</p>
-            </div>
-          </div>
+  const description = (
+    <>
+      <h1 className="text-2xl font-semibold">{problem.order_index}. {problem.title}</h1>
+      <div className="mb-5 mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <span className={`rounded-full px-2.5 py-0.5 capitalize ${diffColor[problem.difficulty]}`}>{problem.difficulty}</span>
+        {problem.tags.map((t: string) => (
+          <span key={t} className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-zinc-400">{t}</span>
         ))}
-      </section>
-      <Workspace
-        problemId={problem.id}
-        params={problem.params}
-        starterCode={problem.starter_code as Record<string, string>}
-        initialDrafts={drafts}
-        initialLanguage={lastLanguage}
-        signedIn={!!user}
-      />
-    </main>
+      </div>
+      <div className="prose-beet text-zinc-300">
+        <ReactMarkdown>{problem.description}</ReactMarkdown>
+      </div>
+      {samples?.map((s, i) => (
+        <div key={i} className="mt-5">
+          <p className="mb-1.5 font-semibold text-zinc-100">Example {i + 1}</p>
+          <div className="border-l-2 border-zinc-700 pl-4 font-mono text-sm">
+            <p><span className="text-zinc-500">Input: </span><span className="break-all text-zinc-200">{formatArgs(s.input, problem.params).join(", ")}</span></p>
+            <p className="mt-1"><span className="text-zinc-500">Output: </span><span className="break-all text-zinc-200">{compact(s.expected_output)}</span></p>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+
+  return (
+    <ProblemShell
+      problemId={problem.id}
+      slug={problem.slug}
+      title={problem.title}
+      params={problem.params}
+      samples={(samples ?? []).map((s) => s.input)}
+      starterCode={problem.starter_code as Record<string, string>}
+      initialDrafts={drafts}
+      initialLanguage={lastLanguage}
+      initiallySolved={solved}
+      signedIn={!!user}
+      prevSlug={neighbors?.find((n) => n.order_index === problem.order_index - 1)?.slug ?? null}
+      nextSlug={neighbors?.find((n) => n.order_index === problem.order_index + 1)?.slug ?? null}
+      description={description}
+    />
   );
 }

@@ -13,6 +13,12 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Return to where the user came from (e.g. a problem page), only allowing local paths
+  const nextPath = () => {
+    const n = new URLSearchParams(location.search).get("next") ?? "/";
+    return n.startsWith("/") && !n.startsWith("//") ? n : "/";
+  };
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -21,18 +27,18 @@ export default function LoginPage() {
       ? await supabase.auth.signInWithPassword({ email, password })
       : await supabase.auth.signUp({
           email, password,
-          options: { emailRedirectTo: `${location.origin}/auth/callback` },
+          options: { emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(nextPath())}` },
         });
     setLoading(false);
     if (error) return setError(error.message);
-    router.push("/");
+    router.push(nextPath());
     router.refresh();
   }
 
   async function github() {
     await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo: `${location.origin}/auth/callback` },
+      options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(nextPath())}` },
     });
   }
 
