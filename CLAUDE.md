@@ -1,5 +1,7 @@
 # Beetcode: project rules
 
+> **New session?** Read `docs/PROJECT_HISTORY.md` first. It summarizes how Beetcode was planned and built, the decisions made, and what is next.
+
 ## Product principle (from the owner)
 **Beetcode works exactly like LeetCode, with our own design.**
 
