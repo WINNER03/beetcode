@@ -1,0 +1,11 @@
+{
+  // VS Code suggests these when you open the project
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "denoland.vscode-deno",
+    "ms-python.python",
+    "supabase.vscode-supabase-extension",
+    "anthropic.claude-code"
+  ]
+}

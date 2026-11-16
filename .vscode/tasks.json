@@ -1,0 +1,11 @@
+{
+  // Run these from Terminal > Run Task…
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Beetcode: dev server", "type": "npm", "script": "dev", "isBackground": true, "problemMatcher": [] },
+    { "label": "Beetcode: verify problems", "type": "npm", "script": "problems:verify", "problemMatcher": [] },
+    { "label": "Beetcode: build problems (seed.sql)", "type": "npm", "script": "problems:build", "problemMatcher": [] },
+    { "label": "Beetcode: lint", "type": "npm", "script": "lint", "problemMatcher": ["$eslint-stylish"] },
+    { "label": "Beetcode: deploy run-code function", "type": "shell", "command": "npx supabase functions deploy run-code", "problemMatcher": [] }
+  ]
+}

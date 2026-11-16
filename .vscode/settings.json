@@ -1,0 +1,20 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // The edge function runs on Deno, the rest of the app on Node
+  "deno.enablePaths": ["supabase/functions"],
+
+  // Problem packs are plain text; keep their indentation exact
+  "files.associations": { "problems/*.txt": "markdown" },
+  "[markdown]": { "editor.tabSize": 4, "files.trimTrailingWhitespace": false },
+
+  // Generated files: read-only hint (regenerate with `npm run problems:build`)
+  "files.readonlyInclude": {
+    "supabase/seed.sql": true,
+    "supabase/functions/run-code/runtime.ts": true
+  },
+  "files.exclude": { "**/__pycache__": true, ".next": true }
+}
